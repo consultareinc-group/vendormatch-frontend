@@ -30,6 +30,7 @@ jobs:
     # Install dependencies
     - name: Install Dependencies
       run: |
+        npm cache clean --force
         sudo npm install -g @quasar/cl
         npm install
 
