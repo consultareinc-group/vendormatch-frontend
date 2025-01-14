@@ -1,65 +1,54 @@
-name: Deploy to cPanel
+name: Deploy Vendor Match Frontend to cPanel
 
 on:
   push:
     branches:
-      - staging
+      - staging  # Trigger on push to the main branch (or your default branch)
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    # Checkout the repository
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-      shell: bash
+    # Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'  # Use the appropriate version of Node.js for your Quasar app
 
-    - name: Pull updates on cPanel server
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/public_html/frontend
-          git checkout staging
-          git pull origin staging
-        EOF
+    # Install dependencies
+    - name: Install Dependencies
+      run: npm install
 
-    - name: Update API URL in axios.js
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-          cd ~/public_html/frontend
-          sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.API_URL }}'|" src/boot/axios.js
-        EOF
-
-    - name: Install Quasar CLI and dependencies
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/public_html/frontend
-          npm install -g @quasar/cli --prefix ~/.npm-global
-          npm install
-        EOF
-
+    # Build the Quasar app
     - name: Build Quasar App
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/public_html/frontend
-          quasar build
-        EOF
+      run: quasar build
 
-    - name: Deploy built files to public_html
+    # Deploy to cPanel using SSH
+    - name: Deploy to cPanel
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+        CPANEL_USER: ${{ secrets.CPANEL_USER }}
+        CPANEL_WEBROOT: ${{ secrets.CPANEL_WEBROOT }}
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/public_html/frontend/dist/spa
-          cp -r . ~/public_html/
-        EOF
+        # Start SSH agent
+        eval "$(ssh-agent -s)"
+        
+        # Add SSH private key to the agent
+        echo "$SSH_PRIVATE_KEY" | ssh-add -
 
-    - name: Restart Web Server (Optional)
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          /usr/local/cpanel/scripts/restartsrv_httpd
-        EOF
+        # Test SSH connection
+        ssh -o StrictHostKeyChecking=no $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
+
+        # Navigate to the web root directory
+        ssh $CPANEL_USER@$CPANEL_HOST "cd $CPANEL_WEBROOT && rm -rf * && exit"
+
+        # Upload the build files to the cPanel server
+        rsync -avz --delete dist/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
+
+        echo "Deployment to cPanel completed."
