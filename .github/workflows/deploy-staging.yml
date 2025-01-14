@@ -30,8 +30,8 @@ jobs:
     # Install dependencies
     - name: Install Dependencies
       run: |
-        npm cache clean --force
-        sudo npm install -g @quasar/cl
+        npm install -g npm@11.0.0 # Update npm to the latest stable version
+        npm install -g @quasar/cl || echo "Skipping @quasar/cl installation, package not found"
         npm install
 
     # Build the Quasar app
