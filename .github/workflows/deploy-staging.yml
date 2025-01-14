@@ -22,13 +22,16 @@ jobs:
         
     - name: Install npm
       run: |
-        curl -sL https://deb.nodesource.com/setup_18.x | bash - # Install Node.js & npm (for Ubuntu/Debian-based systems)
-        sudo apt install -y nodejs # Install npm
+        sudo apt-get update -y # Update apt repository (with sudo for permissions)
+        curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash - # Install Node.js & npm
+        sudo apt-get install -y nodejs # Install npm and nodejs
         node -v # Verify node installation
         npm -v  # Verify npm installation
     # Install dependencies
     - name: Install Dependencies
-      run: npm install
+      run: |
+        sudo npm install -g @quasar/cl
+        npm install
 
     # Build the Quasar app
     - name: Build Quasar App
