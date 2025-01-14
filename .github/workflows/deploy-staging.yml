@@ -31,7 +31,7 @@ jobs:
     - name: Install Dependencies
       run: |
         npm install -g npm@11.0.0 # Update npm to the latest stable version
-        npm install -g @quasar/cl || echo "Skipping @quasar/cl installation, package not found"
+        npm install @quasar/cl
         npm install
 
     # Build the Quasar app
