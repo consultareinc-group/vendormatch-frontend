@@ -1,0 +1,64 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Pull updates on cPanel server
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/public_html/frontend
+          git checkout staging
+          git pull origin staging
+        EOF
+
+    - name: Update API URL in axios.js
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+          cd ~/public_html/frontend
+          sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.API_URL }}'|" src/boot/axios.js
+        EOF
+
+    - name: Install Quasar CLI and dependencies
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/public_html/frontend
+          npm install -g @quasar/cli --prefix ~/.npm-global
+          npm install
+        EOF
+
+    - name: Build Quasar App
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/public_html/frontend
+          quasar build
+        EOF
+
+    - name: Deploy built files to public_html
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/public_html/frontend/dist/spa
+          cp -r . ~/public_html/
+        EOF
+
+    - name: Restart Web Server (Optional)
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          /usr/local/cpanel/scripts/restartsrv_httpd
+        EOF
