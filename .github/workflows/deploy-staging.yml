@@ -18,8 +18,14 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'  # Use the appropriate version of Node.js for your Quasar app
-
+        node-version: '20.x' # Use an appropriate version of Node.js (>=18)
+        
+    - name: Install npm
+      run: |
+        curl -sL https://deb.nodesource.com/setup_18.x | bash - # Install Node.js & npm (for Ubuntu/Debian-based systems)
+        sudo apt install -y nodejs # Install npm
+        node -v # Verify node installation
+        npm -v  # Verify npm installation
     # Install dependencies
     - name: Install Dependencies
       run: npm install
