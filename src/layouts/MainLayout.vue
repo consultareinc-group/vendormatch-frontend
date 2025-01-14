@@ -1,43 +1,58 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="lHh lpR fFf">
+    <q-header elevated class="bg-primary text-white">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
+        <!-- <q-toolbar-title> VENDOR<span style="color: #5ce1e6">MATCH</span> </q-toolbar-title> -->
         <q-toolbar-title>
-          Quasar App
+          <!-- <q-img src="../assets/vendormatch-logo.png" width="200px"></q-img> -->
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>
+          <q-btn flat round dense icon="person" class="q-mr-sm">
+            <q-menu>
+              <q-list style="min-width: 200px">
+                <q-item clickable v-close-popup @click="navigateToProfile">
+                  <q-item-section>Profile</q-item-section>
+                </q-item>
+                <q-separator />
+                <q-item clickable v-close-popup @click="logout">
+                  <q-item-section>Logout</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered side="left" :width="240">
       <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
+        <q-item-label header>
+          <q-img src="../assets/vendormatch-logo.png" width="200px"></q-img>
         </q-item-label>
 
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item
+          clickable
+          v-ripple
+          :to="authStore.user?.role === 'vendor' ? '/dashboard/vendor' : '/dashboard/buyer'"
+        >
+          <q-item-section avatar>
+            <q-icon name="dashboard" />
+          </q-item-section>
+          <q-item-section>Dashboard</q-item-section>
+        </q-item>
+
+        <q-item clickable v-ripple to="/products">
+          <q-item-section avatar>
+            <q-icon name="inventory_2" />
+          </q-item-section>
+          <q-item-section>Products</q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
+    <right-drawer></right-drawer>
 
     <q-page-container>
       <router-view />
@@ -47,56 +62,24 @@
 
 <script setup>
 import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from 'src/stores/auth'
+import RightDrawer from 'src/components/RightDrawer.vue'
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
-
+const router = useRouter()
+const authStore = useAuthStore()
 const leftDrawerOpen = ref(false)
 
-function toggleLeftDrawer () {
+const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+const navigateToProfile = () => {
+  router.push('/profile')
+}
+
+const logout = () => {
+  authStore.logout()
+  router.push('/login')
 }
 </script>
