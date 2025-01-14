@@ -20,12 +20,6 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
       shell: bash
-    
-    - name: Debug SSH Setup
-      run: |
-        ls -la ~/.ssh
-        cat ~/.ssh/known_hosts
-      shell: bash
 
     - name: Pull updates on cPanel server
       run: |
