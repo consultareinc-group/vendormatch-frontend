@@ -15,7 +15,9 @@
               <q-card-section>
                 <div class="text-h6">{{ product.name }}</div>
                 <div class="text-subtitle2">{{ product.category }}</div>
-                <div class="text-body2 q-mt-sm">{{ product.description }}</div>
+                <div class="text-body2 q-mt-sm">
+                  <span class="text-grey">Cost:</span> ${{ product.cost }}
+                </div>
               </q-card-section>
 
               <q-card-actions align="right">
@@ -44,7 +46,7 @@ const productStore = useProductStore()
 
 const searchQuery = ref('')
 const selectedCategories = ref([])
-const priceRange = ref({ min: 0, max: 1000 })
+const costRange = ref({ min: 0, max: 1000 })
 
 const filteredProducts = computed(() => {
   return productStore.products.filter((product) => {
@@ -55,10 +57,9 @@ const filteredProducts = computed(() => {
     const matchesCategory =
       selectedCategories.value.length === 0 || selectedCategories.value.includes(product.category)
 
-    const matchesPrice =
-      product.price >= priceRange.value.min && product.price <= priceRange.value.max
+    const matchesCost = product.cost >= costRange.value.min && product.cost <= costRange.value.max
 
-    return matchesSearch && matchesCategory && matchesPrice
+    return matchesSearch && matchesCategory && matchesCost
   })
 })
 </script>

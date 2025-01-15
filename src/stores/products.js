@@ -9,7 +9,7 @@ export const useProductStore = defineStore('products', () => {
       id: "1736875333123",
       images: [new File([], "file1")], // Replace "file1" with the actual file name
       name: "Product1",
-      price: 20,
+      cost: 20,
       status: "draft",
       supplierId: "current-user-id"
     },
@@ -19,7 +19,7 @@ export const useProductStore = defineStore('products', () => {
       id: "1736875340693",
       images: [new File([], "file2")], // Replace "file2" with the actual file name
       name: "Product2",
-      price: 20,
+      cost: 20,
       status: "draft",
       supplierId: "current-user-id"
     },
@@ -29,7 +29,7 @@ export const useProductStore = defineStore('products', () => {
       id: "1736875344782",
       images: [new File([], "file3")], // Replace "file3" with the actual file name
       name: "Product3",
-      price: 20,
+      cost: 20,
       status: "draft",
       supplierId: "current-user-id"
     },
@@ -39,7 +39,7 @@ export const useProductStore = defineStore('products', () => {
       id: "1736875462097",
       images: [new File([], "file4")], // Replace "file4" with the actual file name
       name: "Product4",
-      price: 20,
+      cost: 20,
       status: "draft",
       supplierId: "current-user-id"
     }
