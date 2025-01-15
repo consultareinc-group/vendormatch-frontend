@@ -30,7 +30,7 @@ jobs:
     # Install dependencies
     - name: Install Dependencies
       run: |
-        npm install @quasar/cli
+        sudo npm install @quasar/cli
         npm install
 
     # Build the Quasar app
