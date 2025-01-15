@@ -1,5 +1,5 @@
 <template>
-  <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered>
+  <q-drawer show-if-above v-model="triggerStore.RightDrawerOpen" side="right" bordered>
     <!-- Filters Sidebar -->
     <div class="q-px-sm">
       <q-card class="filter-card no-shadow">
@@ -42,21 +42,16 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
+import { useTriggerStore } from 'src/stores/triggers'
 
-const route = useRoute()
-const rightDrawerOpen = ref(true)
+const triggerStore = useTriggerStore()
 
 const searchQuery = ref('')
 const selectedCategories = ref([])
 const priceRange = ref({ min: 0, max: 1000 })
 
 const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
-
-watch(route, () => {
-  rightDrawerOpen.value = route.name === 'products' ? true : false
-})
 </script>
 
 <style lang="scss" scoped>

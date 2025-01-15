@@ -38,11 +38,19 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useProductStore } from 'src/stores/products'
+import { useTriggerStore } from 'src/stores/triggers'
 // import { useAuthStore } from 'src/stores/auth'
 
 const productStore = useProductStore()
+const triggerStore = useTriggerStore()
 // const authStore = useAuthStore()
+
+triggerStore.RightDrawerOpen = true
+onBeforeRouteLeave(() => {
+  triggerStore.RightDrawerOpen = false
+})
 
 const searchQuery = ref('')
 const selectedCategories = ref([])

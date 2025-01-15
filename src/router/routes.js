@@ -1,9 +1,11 @@
 const routes = [
   {
     path: '/',
+    redirect: {
+      name: 'products'
+    },
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
       {
         path: 'products',
         name: 'products',
@@ -31,9 +33,13 @@ const routes = [
       //   path: 'profile',
       //   component: () => import('pages/Profile.vue'),
       //   meta: { requiresAuth: true }
-      // }
+      // },
     ]
   },
+  // {
+  //     path: '/login',
+  //     component: () => import('pages/Login.vue')
+  //   },
 
   // Always leave this as last one,
   // but you can also remove it
