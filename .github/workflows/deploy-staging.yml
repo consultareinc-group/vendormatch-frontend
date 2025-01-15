@@ -45,7 +45,7 @@ jobs:
         CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
         CPANEL_USER: ${{ secrets.CPANEL_USER }}
         CPANEL_WEBROOT: ${{ secrets.CPANEL_WEBROOT }}
-        SSH_PORT: 21098 # Set the custom SSH port
+        SSH_PORT: ${{ secrets.CPANEL_PORT }}
       run: |
         # Start SSH agent
         eval "$(ssh-agent -s)"
