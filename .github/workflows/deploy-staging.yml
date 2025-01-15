@@ -30,8 +30,7 @@ jobs:
     # Install dependencies
     - name: Install Dependencies
       run: |
-        npm install -g npm@11.0.0 # Update npm to the latest stable version
-        npm install -g @quasar/cli
+        npm install -g @quasar/cl
         npm install
 
     # Build the Quasar app
@@ -45,6 +44,7 @@ jobs:
         CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
         CPANEL_USER: ${{ secrets.CPANEL_USER }}
         CPANEL_WEBROOT: ${{ secrets.CPANEL_WEBROOT }}
+        SSH_PORT: 21098 # Set the custom SSH port
       run: |
         # Start SSH agent
         eval "$(ssh-agent -s)"
@@ -52,13 +52,13 @@ jobs:
         # Add SSH private key to the agent
         echo "$SSH_PRIVATE_KEY" | ssh-add -
 
-        # Test SSH connection with verbose output and increased timeout
-        ssh -v -o StrictHostKeyChecking=no -o ConnectTimeout=30 $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
-       
+        # Test SSH connection
+        ssh -o StrictHostKeyChecking=no -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
+
         # Navigate to the web root directory
-        ssh $CPANEL_USER@$CPANEL_HOST "cd $CPANEL_WEBROOT && rm -rf * && exit"
+        ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "cd $CPANEL_WEBROOT && rm -rf * && exit"
 
         # Upload the build files to the cPanel server
-        rsync -avz --delete dist/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
+        rsync -avz --delete -e "ssh -p $SSH_PORT" dist/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
 
         echo "Deployment to cPanel completed."
