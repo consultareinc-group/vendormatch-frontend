@@ -13,7 +13,7 @@
       <div class="col-12 col-sm-6 col-md-3">
         <q-card class="stats-card">
           <q-card-section>
-            <div class="text-h6">Active Listings</div>
+            <div class="text-h6">Publish Listings</div>
             <div class="text-h4">{{ activeListings }}</div>
           </q-card-section>
         </q-card>
@@ -21,7 +21,7 @@
       <div class="col-12 col-sm-6 col-md-3">
         <q-card class="stats-card">
           <q-card-section>
-            <div class="text-h6">Retailer Views</div>
+            <div class="text-h6">Buyer Views</div>
             <div class="text-h4">{{ retailerViews }}</div>
           </q-card-section>
         </q-card>
@@ -166,7 +166,15 @@ const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
 const columns = [
   { name: 'name', label: 'Product Name', field: 'name', sortable: true, align: 'left' },
   { name: 'category', label: 'Category', field: 'category', sortable: true, align: 'left' },
-  { name: 'price', label: 'Price', field: 'price', sortable: true, align: 'left' },
+  { name: 'cost', label: 'Cost', field: 'cost', sortable: true, align: 'left' },
+  {
+    name: 'landed_cost',
+    label: 'Landed Cost',
+    field: 'landed_cost',
+    sortable: true,
+    align: 'left',
+  },
+  { name: 'srp', label: 'SRP', field: 'srp', sortable: true, align: 'left' },
   { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'left' },
   { name: 'actions', label: 'Actions', field: 'actions' },
 ]
