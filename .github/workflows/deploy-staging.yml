@@ -57,7 +57,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
 
         # Navigate to the web root directory
-        ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "cd $CPANEL_WEBROOT && rm -rf * && exit"
+        # ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "cd $CPANEL_WEBROOT && rm -rf * && exit"
 
         # Upload the build files to the cPanel server
         rsync -avz --delete -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
