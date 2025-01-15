@@ -1,0 +1,65 @@
+name: Deploy Vendor Match Frontend to cPanel
+
+on:
+  push:
+    branches:
+      - staging  # Trigger on push to the main branch (or your default branch)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    # Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20.x' # Use an appropriate version of Node.js (>=18)
+        
+    - name: Install npm
+      run: |
+        sudo apt-get update -y # Update apt repository (with sudo for permissions)
+        curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash - # Install Node.js & npm
+        sudo apt-get install -y nodejs # Install npm and nodejs
+        node -v # Verify node installation
+        npm -v  # Verify npm installation
+    # Install dependencies
+    - name: Install Dependencies
+      run: |
+        npm install -g npm@11.0.0
+        npm install -g @quasar/cli
+        npm install
+
+    # Build the Quasar app
+    - name: Build Quasar App
+      run: quasar build
+
+    # Deploy to cPanel using SSH
+    - name: Deploy to cPanel
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+        CPANEL_USER: ${{ secrets.CPANEL_USER }}
+        CPANEL_WEBROOT: ${{ secrets.CPANEL_WEBROOT }}
+        SSH_PORT: ${{ secrets.CPANEL_PORT }}
+      run: |
+        # Start SSH agent
+        eval "$(ssh-agent -s)"
+        
+        # Add SSH private key to the agent
+        echo "$SSH_PRIVATE_KEY" | ssh-add -
+
+        # Test SSH connection
+        ssh -o StrictHostKeyChecking=no -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
+
+        # Navigate to the web root directory
+        # ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "cd $CPANEL_WEBROOT && rm -rf * && exit"
+
+        # Upload the build files to the cPanel server
+        rsync -avz --delete -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
+
+        echo "Deployment to cPanel completed."
