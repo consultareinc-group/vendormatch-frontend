@@ -42,10 +42,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useTriggerStore } from 'src/stores/triggers'
 
 const triggerStore = useTriggerStore()
+onMounted(() => {
+  triggerStore.RightDrawerOpen = false
+})
 
 const searchQuery = ref('')
 const selectedCategories = ref([])
