@@ -33,11 +33,11 @@
           <q-img src="../assets/vendormatch-logo.png" width="200px"></q-img>
         </q-item-label>
 
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/products">
           <q-item-section avatar>
-            <q-icon name="dashboard" />
+            <q-icon name="inventory_2" />
           </q-item-section>
-          <q-item-section>Dashboard</q-item-section>
+          <q-item-section>Products</q-item-section>
         </q-item>
       </q-list>
     </q-drawer>

@@ -1,13 +1,16 @@
 const routes = [
   {
     path: '/',
+    redirect: {
+      name: 'products'
+    },
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '',
-        component: () => import('pages/IndexPage.vue')
+        path: 'products',
+        name: 'products',
+        component: () => import('pages/ProductList.vue')
       },
-
     ]
   },
 
