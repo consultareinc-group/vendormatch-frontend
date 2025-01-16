@@ -162,19 +162,19 @@ const savedProductsList = ref([
     id: 1,
     name: 'Organic Coffee Beans',
     supplier: 'Green Mountain Coffee',
-    image: 'https://cdn.quasar.dev/img/mountains.jpg',
+    image: 'src/assets/vinegar.jpg',
   },
   {
     id: 2,
     name: 'Bamboo Cutlery Set',
     supplier: 'Eco Essentials',
-    image: 'https://cdn.quasar.dev/img/parallax2.jpg',
+    image: 'src/assets/vinegar.jpg',
   },
   {
     id: 3,
     name: 'Natural Honey',
     supplier: 'Beekeepers Co',
-    image: 'https://cdn.quasar.dev/img/parallax1.jpg',
+    image: 'src/assets/vinegar.jpg',
   },
 ])
 
@@ -182,27 +182,27 @@ const savedProductsList = ref([
 const recommendedProducts = ref([
   {
     id: 1,
-    name: 'Organic Tea Selection',
+    name: 'Vinegar',
     supplier: 'Tea Masters Inc',
-    image: 'https://cdn.quasar.dev/img/mountains.jpg',
+    image: 'src/assets/vinegar.jpg',
   },
   {
     id: 2,
-    name: 'Reusable Food Wraps',
+    name: 'Vinegar',
     supplier: 'Green Living',
-    image: 'https://cdn.quasar.dev/img/parallax2.jpg',
+    image: 'src/assets/vinegar.jpg',
   },
   {
     id: 3,
-    name: 'Organic Quinoa',
+    name: 'Vinegar',
     supplier: 'Natural Foods Co',
-    image: 'https://cdn.quasar.dev/img/parallax1.jpg',
+    image: 'src/assets/vinegar.jpg',
   },
   {
     id: 4,
-    name: 'Hemp Protein Powder',
+    name: 'Vinegar',
     supplier: 'Wellness Foods',
-    image: 'https://cdn.quasar.dev/img/mountains.jpg',
+    image: 'src/assets/vinegar.jpg',
   },
 ])
 
