@@ -38,49 +38,129 @@
       <!-- Product Management -->
       <div class="col-12">
         <q-card>
-          <q-card-section>
-            <div class="row items-center justify-between q-mb-md">
-              <div class="text-h6">My Products</div>
-              <q-btn
-                color="primary"
-                icon="add"
-                label="Add Product"
-                @click="showAddProductDialog = true"
-              />
-            </div>
+          <q-tabs
+            v-model="tab"
+            no-caps
+            dense
+            class="text-grey"
+            active-color="primary"
+            indicator-color="primary"
+            align="left"
+            narrow-indicator
+          >
+            <q-tab name="products" label="My Products" />
+            <q-tab name="services" label="My Services" />
+          </q-tabs>
 
-            <q-table
-              :rows="products"
-              :columns="columns"
-              row-key="id"
-              :loading="tableLoadingState"
-              class="sticky-table-header"
-              color="primary"
-            >
-              <template v-slot:body-cell-actions="props">
-                <q-td :props="props">
-                  <q-btn-group flat>
-                    <q-btn
-                      flat
-                      round
-                      color="secondary"
-                      icon="visibility"
-                      @click="editProduct(props.row)"
-                    />
-                    <q-btn flat round color="primary" icon="edit" @click="editProduct(props.row)" />
-                    <q-btn
-                      flat
-                      round
-                      color="negative"
-                      icon="delete"
-                      @click="confirmDelete(props.row)"
-                    />
-                  </q-btn-group>
-                </q-td>
-              </template>
-            </q-table>
-          </q-card-section>
+          <q-separator />
+
+          <q-tab-panels v-model="tab" animated>
+            <q-tab-panel name="products">
+              <div class="row items-center justify-between q-mb-md">
+                <div class="text-h6">My Products</div>
+                <q-btn
+                  color="primary"
+                  icon="add"
+                  label="Add Product"
+                  @click="showAddProductDialog = true"
+                  no-caps
+                />
+              </div>
+
+              <q-table
+                :rows="products"
+                :columns="productColumns"
+                row-key="id"
+                :loading="tableLoadingState"
+                class="sticky-table-header"
+                color="primary"
+              >
+                <template v-slot:body-cell-actions="props">
+                  <q-td :props="props">
+                    <q-btn-group flat>
+                      <q-btn
+                        flat
+                        round
+                        color="secondary"
+                        icon="visibility"
+                        @click="editProduct(props.row)"
+                      />
+                      <q-btn
+                        flat
+                        round
+                        color="primary"
+                        icon="edit"
+                        @click="editProduct(props.row)"
+                      />
+                      <q-btn
+                        flat
+                        round
+                        color="negative"
+                        icon="delete"
+                        @click="confirmDelete(props.row)"
+                      />
+                    </q-btn-group>
+                  </q-td>
+                </template>
+              </q-table>
+            </q-tab-panel>
+            <q-tab-panel name="services">
+              <div class="row items-center justify-between q-mb-md">
+                <div class="text-h6">My Services</div>
+                <q-btn
+                  color="primary"
+                  icon="add"
+                  label="Add Service"
+                  @click="showAddProductDialog = true"
+                  no-caps
+                />
+              </div>
+
+              <q-table
+                :rows="services"
+                :columns="serviceColumns"
+                row-key="id"
+                :loading="tableLoadingState"
+                class="sticky-table-header"
+                color="primary"
+              >
+                <template v-slot:body-cell-actions="props">
+                  <q-td :props="props">
+                    <q-btn-group flat>
+                      <q-btn
+                        flat
+                        round
+                        color="secondary"
+                        icon="visibility"
+                        @click="editProduct(props.row)"
+                      />
+                      <q-btn
+                        flat
+                        round
+                        color="primary"
+                        icon="edit"
+                        @click="editProduct(props.row)"
+                      />
+                      <q-btn
+                        flat
+                        round
+                        color="negative"
+                        icon="delete"
+                        @click="confirmDelete(props.row)"
+                      />
+                    </q-btn-group>
+                  </q-td>
+                </template>
+              </q-table>
+            </q-tab-panel>
+          </q-tab-panels>
         </q-card>
+
+        <!-- <q-card>
+          <q-card-section>
+
+          </q-card-section>
+        </q-card> -->
       </div>
     </div>
 
@@ -169,7 +249,18 @@ const inquiries = ref(0)
 
 const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
 
-const columns = [
+const productForm = ref({
+  name: '',
+  description: '',
+  category: '',
+  price: 0,
+  images: [],
+})
+
+const tab = ref('products')
+const tableLoadingState = ref(false)
+const products = ref([])
+const productColumns = [
   { name: 'name', label: 'Product Name', field: 'name', sortable: true, align: 'left' },
   { name: 'category', label: 'Category', field: 'category', sortable: true, align: 'left' },
   { name: 'cost', label: 'Cost', field: 'cost', sortable: true, align: 'left' },
@@ -184,17 +275,6 @@ const columns = [
   { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'left' },
   { name: 'actions', label: 'Actions', field: 'actions' },
 ]
-
-const productForm = ref({
-  name: '',
-  description: '',
-  category: '',
-  price: 0,
-  images: [],
-})
-
-const tableLoadingState = ref(false)
-const products = ref([])
 
 // Function to fetch the list of products, recursively fetching until all are loaded
 const getProducts = () => {
@@ -230,6 +310,9 @@ onMounted(() => {
   tableLoadingState.value = true
   getProducts()
 })
+
+const services = ref([])
+const serviceColumns = []
 
 const editProduct = (product) => {
   editingProduct.value = product.id
