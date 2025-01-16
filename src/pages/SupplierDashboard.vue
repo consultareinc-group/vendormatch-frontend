@@ -146,11 +146,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useProductStore } from 'src/stores/products'
+import { useDashboardStore } from 'src/stores/dashboard'
 import { useQuasar } from 'quasar'
 
 const $q = useQuasar()
-const productStore = useProductStore()
+const dashboardStore = useDashboardStore()
 
 const showAddProductDialog = ref(false)
 const editingProduct = ref(null)
@@ -188,7 +188,7 @@ const productForm = ref({
 })
 
 const myProducts = computed(() => {
-  return productStore.products.filter((p) => p.supplierId === 'current-user-id')
+  return dashboardStore.products.filter((p) => p.supplierId === 'current-user-id')
 })
 
 const editProduct = (product) => {
@@ -211,9 +211,9 @@ const confirmDelete = (product) => {
 const saveProduct = async () => {
   try {
     if (editingProduct.value) {
-      await productStore.updateProduct(editingProduct.value, productForm.value)
+      await dashboardStore.updateProduct(editingProduct.value, productForm.value)
     } else {
-      await productStore.addProduct({
+      await dashboardStore.addProduct({
         id: Date.now().toString(),
         ...productForm.value,
         supplierId: 'current-user-id',
