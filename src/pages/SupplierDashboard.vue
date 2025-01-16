@@ -49,7 +49,14 @@
               />
             </div>
 
-            <q-table :rows="myProducts" :columns="columns" row-key="id" :loading="loading">
+            <q-table
+              :rows="products"
+              :columns="columns"
+              row-key="id"
+              :loading="tableLoadingState"
+              class="sticky-table-header"
+              color="primary"
+            >
               <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                   <q-btn-group flat>
@@ -145,7 +152,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useDashboardStore } from 'src/stores/dashboard'
 import { useQuasar } from 'quasar'
 
@@ -159,7 +166,6 @@ const totalProducts = ref(0)
 const activeListings = ref(0)
 const retailerViews = ref(0)
 const inquiries = ref(0)
-const loading = ref(false)
 
 const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
 
@@ -187,8 +193,42 @@ const productForm = ref({
   images: [],
 })
 
-const myProducts = computed(() => {
-  return dashboardStore.products.filter((p) => p.supplierId === 'current-user-id')
+const tableLoadingState = ref(false)
+const products = ref([])
+
+// Function to fetch the list of products, recursively fetching until all are loaded
+const getProducts = () => {
+  dashboardStore
+    .GetProducts({ offset: products.value.length })
+    .then((response) => {
+      if (response.status === 'success') {
+        response.data.forEach((data) => {
+          products.value.push(data)
+        })
+
+        if (response.data.length) {
+          getProducts() // Continue fetching if more data is available
+        }
+      }
+    })
+    .catch((error) => {
+      // Show a notification based on the response status
+      $q.notify({
+        message: `<p class='q-mb-none'>${error.message}</p>`,
+        color: `red-2`, // Set notification color
+        position: 'top-right', // Notification position
+        textColor: `red`, // Set text color
+        html: true, // Enable HTML content
+      })
+    })
+    .finally(() => {
+      tableLoadingState.value = false
+    })
+}
+
+onMounted(() => {
+  tableLoadingState.value = true
+  getProducts()
 })
 
 const editProduct = (product) => {
@@ -208,30 +248,7 @@ const confirmDelete = (product) => {
   })
 }
 
-const saveProduct = async () => {
-  try {
-    if (editingProduct.value) {
-      await dashboardStore.updateProduct(editingProduct.value, productForm.value)
-    } else {
-      await dashboardStore.addProduct({
-        id: Date.now().toString(),
-        ...productForm.value,
-        supplierId: 'current-user-id',
-        status: 'draft',
-      })
-    }
-    showAddProductDialog.value = false
-    $q.notify({
-      type: 'positive',
-      message: `Product ${editingProduct.value ? 'updated' : 'added'} successfully`,
-    })
-  } catch (error) {
-    $q.notify({
-      type: 'negative',
-      message: `Error saving product: ${error}`,
-    })
-  }
-}
+const saveProduct = async () => {}
 </script>
 
 <style lang="scss" scoped>
