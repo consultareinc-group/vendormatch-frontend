@@ -19,7 +19,7 @@ export const useDashboardStore = defineStore('dashboard', {
       });
     },
     // Action to fetch specific products from the API
-    GetCourse(request) {
+    GetProduct(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch products based on the offset
         api.get(`vendor-match/product/${request.id}`).then((response) => {
@@ -41,18 +41,18 @@ export const useDashboardStore = defineStore('dashboard', {
       });
     },
     // Action to insert products
-    PostCourse(request) {
+    InsertProduct(request) {
       return new Promise((resolve, reject) => {
         // Make a POST request to insert products in the database products table
         api.post(`vendor-match/product`, request).then((response) => {
           resolve(response.data); // Resolve the promise with the API response data
-        }).catch((response) => {
-          reject(response.data); // Reject the promise if the API request fails
+        }).catch((error) => {
+          reject(error); // Reject the promise if the API request fails
         });
       });
     },
     // Action to insert products
-    PutCourse(request) {
+    UpdateProduct(request) {
       return new Promise((resolve, reject) => {
         // Make a POST request to insert products in the database products table
         api.put(`vendor-match/product/${request.id}`, request).then((response) => {

@@ -172,11 +172,12 @@
         </q-card-section>
 
         <q-card-section>
-          <q-form @submit="saveProduct">
+          <q-form @submit="saveProduct" greedy ref="productQForm">
             <q-input
               v-model="productForm.name"
               label="Product Name"
               :rules="[(val) => !!val || 'Name is required']"
+              lazy-rules
               class="q-mb-md"
             />
 
@@ -185,6 +186,7 @@
               type="textarea"
               label="Description"
               :rules="[(val) => !!val || 'Description is required']"
+              lazy-rules
               class="q-mb-md"
             />
 
@@ -192,19 +194,48 @@
               v-model="productForm.category"
               :options="categories"
               label="Category"
-              :rules="[(val) => !!val || 'Category is required']"
+              :rules="[(val) => (Array.isArray(val) && val.length > 0) || 'Category is required']"
+              lazy-rules
+              class="q-mb-md"
+              multiple
+            />
+
+            <q-input
+              v-model.number="productForm.cost"
+              type="number"
+              label="Cost"
+              prefix="$"
+              :rules="[
+                (val) => !!val || 'Cost is required',
+                (val) => val > 0 || 'Cost must be greater than 0',
+              ]"
+              lazy-rules
               class="q-mb-md"
             />
 
             <q-input
-              v-model.number="productForm.price"
+              v-model.number="productForm.landed_cost"
               type="number"
-              label="Price"
+              label="Landed Cost"
               prefix="$"
               :rules="[
-                (val) => !!val || 'Price is required',
-                (val) => val > 0 || 'Price must be greater than 0',
+                (val) => !!val || 'Cost is required',
+                (val) => val > 0 || 'Cost must be greater than 0',
               ]"
+              lazy-rules
+              class="q-mb-md"
+            />
+
+            <q-input
+              v-model.number="productForm.srp"
+              type="number"
+              label="SRP"
+              prefix="$"
+              :rules="[
+                (val) => !!val || 'Cost is required',
+                (val) => val > 0 || 'Cost must be greater than 0',
+              ]"
+              lazy-rules
               class="q-mb-md"
             />
 
@@ -214,15 +245,63 @@
               multiple
               accept=".jpg,.png,.jpeg"
               class="q-mb-md"
+              :rules="[
+                (val) => (Array.isArray(val) && val.length > 0) || 'Product Image is required',
+              ]"
+              lazy-rules
             >
               <template v-slot:append>
                 <q-icon name="attach_file" />
               </template>
             </q-file>
 
+            <q-file
+              v-model="productForm.product_certificates"
+              label="Product Certificates"
+              multiple
+              accept=".jpg,.png,.jpeg.,.pdf"
+              class="q-mb-md"
+              :rules="[
+                (val) =>
+                  (Array.isArray(val) && val.length > 0) || 'Product certificate is required',
+              ]"
+              lazy-rules
+            >
+              <template v-slot:append>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+
+            <q-file
+              v-model="productForm.facility_certificates"
+              label="Facility/Process Certificates"
+              multiple
+              accept=".jpg,.png,.jpeg.,.pdf"
+              class="q-mb-md"
+              :rules="[
+                (val) =>
+                  (Array.isArray(val) && val.length > 0) ||
+                  'Facility/Process certificate is required',
+              ]"
+              lazy-rules
+            >
+              <template v-slot:append>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+
+            <q-select
+              v-model="productForm.status"
+              :options="statuses"
+              label="Status"
+              :rules="[(val) => !!val || 'Status is required']"
+              lazy-rules
+              class="q-mb-md"
+            />
+
             <div class="row justify-end q-mt-md">
               <q-btn flat label="Cancel" color="negative" v-close-popup class="q-mr-sm" />
-              <q-btn type="submit" label="Save" color="primary" />
+              <q-btn type="submit" label="Save" color="primary" :loading="formLoadingState" />
             </div>
           </q-form>
         </q-card-section>
@@ -248,13 +327,18 @@ const retailerViews = ref(0)
 const inquiries = ref(0)
 
 const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
-
+const statuses = ['Draft', 'Publish']
 const productForm = ref({
   name: '',
   description: '',
-  category: '',
-  price: 0,
+  category: [],
+  cost: 0,
+  landed_cost: 0,
+  srp: 0,
+  status: '',
   images: [],
+  product_certificates: [],
+  facility_certificates: [],
 })
 
 const tab = ref('products')
@@ -314,6 +398,57 @@ onMounted(() => {
 const services = ref([])
 const serviceColumns = []
 
+const formLoadingState = ref(false)
+const productQForm = ref(null)
+const saveProduct = () => {
+  productQForm.value.validate().then((success) => {
+    if (success) {
+      formLoadingState.value = true
+
+      const formData = new FormData()
+
+      // Loop through the `productForm` object keys and append them dynamically
+      Object.entries(productForm.value).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          // Convert arrays to JSON strings
+          formData.append(key, JSON.stringify(value))
+        } else {
+          // Convert numbers and other types to strings
+          formData.append(key, String(value))
+        }
+      })
+
+      dashboardStore
+        .InsertProduct(productForm.value)
+        .then((response) => {
+          let status = Boolean(response.status === 'success')
+          $q.notify({
+            message: `<p class='q-mb-none'>${status ? 'Success' : 'Fail'}! the product ${status ? 'has been' : 'was not'} saved.</p>`,
+            color: `${status ? 'green' : 'red'}-2`,
+            position: 'center',
+            textColor: `${status ? 'green' : 'red'}`,
+            html: true,
+          })
+        })
+        .catch((error) => {
+          // Show a notification based on the response status
+          $q.notify({
+            message: `<p class='q-mb-none'>${error.message}</p>`,
+            color: `red-2`,
+            position: 'top-right',
+            textColor: `red`,
+            html: true,
+          })
+        })
+        .finally(() => {
+          formLoadingState.value = false
+        })
+    }
+  })
+
+  console.log('product form ', productForm.value)
+}
+
 const editProduct = (product) => {
   editingProduct.value = product.id
   productForm.value = { ...product }
@@ -330,8 +465,6 @@ const confirmDelete = (product) => {
     // Handle product deletion
   })
 }
-
-const saveProduct = async () => {}
 </script>
 
 <style lang="scss" scoped>
