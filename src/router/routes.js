@@ -4,10 +4,15 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '',
-        component: () => import('pages/IndexPage.vue')
+        path: 'dashboard/vendor',
+        component: () => import('pages/SupplierDashboard.vue'),
+        meta: { requiresAuth: true, role: 'supplier' }
       },
-
+      {
+        path: 'dashboard/buyer',
+        component: () => import('pages/RetailerDashboard.vue'),
+        meta: { requiresAuth: true, role: 'retailer' }
+      },
     ]
   },
 
