@@ -175,6 +175,7 @@
           <q-form @submit="saveProduct" greedy ref="productQForm">
             <q-input
               v-model="productForm.name"
+              dense
               label="Product Name"
               :rules="[(val) => !!val || 'Name is required']"
               lazy-rules
@@ -183,6 +184,7 @@
 
             <q-input
               v-model="productForm.description"
+              dense
               type="textarea"
               label="Description"
               :rules="[(val) => !!val || 'Description is required']"
@@ -192,6 +194,7 @@
 
             <q-select
               v-model="productForm.category"
+              dense
               :options="categories"
               label="Category"
               :rules="[(val) => (Array.isArray(val) && val.length > 0) || 'Category is required']"
@@ -202,6 +205,7 @@
 
             <q-input
               v-model.number="productForm.cost"
+              dense
               type="number"
               label="Cost"
               prefix="$"
@@ -215,12 +219,13 @@
 
             <q-input
               v-model.number="productForm.landed_cost"
+              dense
               type="number"
               label="Landed Cost"
               prefix="$"
               :rules="[
-                (val) => !!val || 'Cost is required',
-                (val) => val > 0 || 'Cost must be greater than 0',
+                (val) => !!val || 'Landed cost is required',
+                (val) => val > 0 || 'Landed cost must be greater than 0',
               ]"
               lazy-rules
               class="q-mb-md"
@@ -228,49 +233,203 @@
 
             <q-input
               v-model.number="productForm.srp"
+              dense
               type="number"
               label="SRP"
               prefix="$"
               :rules="[
-                (val) => !!val || 'Cost is required',
-                (val) => val > 0 || 'Cost must be greater than 0',
+                (val) => !!val || 'SRP is required',
+                (val) => val > 0 || 'SRP must be greater than 0',
               ]"
               lazy-rules
-              class="q-mb-md"
             />
-
+            <h6 class="q-mt-lg text-grey-14">Product Image</h6>
             <q-uploader
               ref="imageUploadRef"
               @vue:updated="productForm.images = imageUploadRef.files"
               hide-upload-btn
               multiple
               accept=".jpg,.png,.jpeg"
-              label="Product Images"
+              label="Upload file"
               color="secondary"
               class="q-mb-md full-width"
             />
+            <h6 class="text-grey-14">Certifications</h6>
+            <q-card class="q-pa-md q-mb-md">
+              <div class="q-mb-md"><label>Product Certificate</label></div>
+              <div v-for="(certificate, index) in productForm.product_certificates" :key="index">
+                <q-uploader
+                  :ref="(el) => (refs[`productCertificateUploadRef${index}`] = el)"
+                  @vue:updated="() => updateCertificateFile(index, 'product')"
+                  hide-upload-btn
+                  accept=".jpg,.png,.jpeg,.pdf"
+                  label="Upload file"
+                  color="secondary"
+                  class="q-mb-md full-width"
+                />
 
-            <q-uploader
-              ref="productCertificateUploadRef"
-              @vue:updated="productForm.product_certificates = productCertificateUploadRef.files"
-              hide-upload-btn
-              multiple
-              accept=".jpg,.png,.jpeg,.pdf"
-              label="Product Certificates"
-              color="secondary"
-              class="q-mb-md full-width"
-            />
+                <q-input
+                  outlined
+                  v-model="certificate.document_name"
+                  label="Document Name"
+                  :rules="[(val) => !!val || 'Name is required']"
+                  lazy-rules
+                  dense
+                  class="q-mb-md"
+                />
+                <q-input
+                  outlined
+                  v-model="certificate.issuance_date"
+                  label="Issuance Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="[(val) => !!val || 'Field is required']"
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`productCertificateIssuanceDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.issuance_date"
+                          @update:model-value="
+                            () => refs[`productCertificateIssuanceDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+                <q-input
+                  outlined
+                  v-model="certificate.expiry_date"
+                  label="Expiry Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="[(val) => !!val || 'Field is required']"
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`productCertificateExpiryDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.expiry_date"
+                          @update:model-value="
+                            () => refs[`productCertificateExpiryDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+                <div v-if="index !== productForm.product_certificates.length - 1" class="q-pb-sm">
+                  <hr class="q-mb-lg q-pb-xs bg-primary" />
+                </div>
+              </div>
+              <q-btn
+                icon="add"
+                label="Add Certificate"
+                no-caps
+                @click="addCertificate('product')"
+              />
+            </q-card>
 
-            <q-uploader
-              ref="facilityCertificateUploadRef"
-              @vue:updated="productForm.facility_certificates = facilityCertificateUploadRef.files"
-              hide-upload-btn
-              multiple
-              accept=".jpg,.png,.jpeg,.pdf"
-              label="Facility/Process Certificates"
-              color="secondary"
-              class="q-mb-md full-width"
-            />
+            <q-card class="q-pa-md q-mb-md">
+              <div class="q-mb-md"><label>Facility/Process Certificate</label></div>
+              <div v-for="(certificate, index) in productForm.facility_certificates" :key="index">
+                <q-uploader
+                  :ref="(el) => (refs[`facilityCertificateUploadRef${index}`] = el)"
+                  @vue:updated="() => updateCertificateFile(index, 'facility')"
+                  hide-upload-btn
+                  accept=".jpg,.png,.jpeg,.pdf"
+                  label="Upload file"
+                  color="secondary"
+                  class="q-mb-md full-width"
+                />
+
+                <q-input
+                  outlined
+                  v-model="certificate.document_name"
+                  label="Document Name"
+                  :rules="[(val) => !!val || 'Name is required']"
+                  lazy-rules
+                  dense
+                  class="q-mb-md"
+                />
+                <q-input
+                  outlined
+                  v-model="certificate.issuance_date"
+                  label="Issuance Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="[(val) => !!val || 'Field is required']"
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`facilityCertificateIssuanceDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.issuance_date"
+                          @update:model-value="
+                            () => refs[`facilityCertificateIssuanceDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+                <q-input
+                  outlined
+                  v-model="certificate.expiry_date"
+                  label="Expiry Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="[(val) => !!val || 'Field is required']"
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`facilityCertificateExpiryDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.expiry_date"
+                          @update:model-value="
+                            () => refs[`facilityCertificateExpiryDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+                <div v-if="index !== productForm.facility_certificates.length - 1" class="q-pb-sm">
+                  <hr class="q-mb-lg q-pb-xs bg-primary" />
+                </div>
+              </div>
+              <q-btn
+                icon="add"
+                label="Add Certificate"
+                no-caps
+                @click="addCertificate('facility')"
+              />
+            </q-card>
 
             <q-select
               v-model="productForm.status"
@@ -319,8 +478,22 @@ const productForm = ref({
   srp: 0,
   status: '',
   images: [],
-  product_certificates: [],
-  facility_certificates: [],
+  product_certificates: [
+    {
+      file: '',
+      document_name: '',
+      issuance_date: '',
+      expiry_date: '',
+    },
+  ],
+  facility_certificates: [
+    {
+      file: '',
+      document_name: '',
+      issuance_date: '',
+      expiry_date: '',
+    },
+  ],
 })
 
 const tab = ref('products')
@@ -399,11 +572,40 @@ const formLoadingState = ref(false)
 const productQForm = ref(null)
 
 const imageUploadRef = ref(null)
-const productCertificateUploadRef = ref(null)
-const facilityCertificateUploadRef = ref(null)
-// const onImageFileUpload = () => {
-//   productForm.value.images = imageUploadRef.value.files
-// }
+
+const addCertificate = (type) => {
+  let data = {
+    file: '',
+    document_name: '',
+    issuance_date: '',
+    expiry_date: '',
+  }
+  if (type === 'product') {
+    productForm.value.product_certificates.push(data)
+  } else {
+    productForm.value.facility_certificates.push(data)
+  }
+}
+
+// Dynamic refs (stores all uploader refs)
+const refs = {}
+const updateCertificateFile = (index, type) => {
+  // Access the specific uploader ref dynamically
+  const uploaderRef =
+    type === 'product'
+      ? refs[`productCertificateUploadRef${index}`]
+      : refs[`facilityCertificateUploadRef${index}`]
+  if (uploaderRef) {
+    // Assign files to the corresponding certificate
+    if (type === 'product') {
+      productForm.value.product_certificates[index].file = uploaderRef.files
+    } else {
+      productForm.value.facility_certificates[index].file = uploaderRef.files
+    }
+
+    console.log('productForm ', productForm.value)
+  }
+}
 
 const saveProduct = () => {
   productQForm.value.validate().then((success) => {
