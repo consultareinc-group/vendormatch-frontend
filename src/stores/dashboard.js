@@ -43,12 +43,20 @@ export const useDashboardStore = defineStore('dashboard', {
     // Action to insert products
     InsertProduct(request) {
       return new Promise((resolve, reject) => {
+        // Define headers with Content-Type
+        const headers = {
+          'Content-Type': 'multipart/form-data'
+        };
+
         // Make a POST request to insert products in the database products table
-        api.post(`vendor-match/product`, request).then((response) => {
-          resolve(response.data); // Resolve the promise with the API response data
-        }).catch((error) => {
-          reject(error); // Reject the promise if the API request fails
-        });
+        api
+          .post(`vendor-match/product`, request, { headers })
+          .then((response) => {
+            resolve(response.data); // Resolve the promise with the API response data
+          })
+          .catch((error) => {
+            reject(error); // Reject the promise if the API request fails
+          });
       });
     },
     // Action to insert products

@@ -239,56 +239,38 @@
               class="q-mb-md"
             />
 
-            <q-file
-              v-model="productForm.images"
-              label="Product Images"
+            <q-uploader
+              ref="imageUploadRef"
+              @vue:updated="productForm.images = imageUploadRef.files"
+              hide-upload-btn
               multiple
               accept=".jpg,.png,.jpeg"
-              class="q-mb-md"
-              :rules="[
-                (val) => (Array.isArray(val) && val.length > 0) || 'Product Image is required',
-              ]"
-              lazy-rules
-            >
-              <template v-slot:append>
-                <q-icon name="attach_file" />
-              </template>
-            </q-file>
+              label="Product Images"
+              color="secondary"
+              class="q-mb-md full-width"
+            />
 
-            <q-file
-              v-model="productForm.product_certificates"
+            <q-uploader
+              ref="productCertificateUploadRef"
+              @vue:updated="productForm.product_certificates = productCertificateUploadRef.files"
+              hide-upload-btn
+              multiple
+              accept=".jpg,.png,.jpeg,.pdf"
               label="Product Certificates"
-              multiple
-              accept=".jpg,.png,.jpeg.,.pdf"
-              class="q-mb-md"
-              :rules="[
-                (val) =>
-                  (Array.isArray(val) && val.length > 0) || 'Product certificate is required',
-              ]"
-              lazy-rules
-            >
-              <template v-slot:append>
-                <q-icon name="attach_file" />
-              </template>
-            </q-file>
+              color="secondary"
+              class="q-mb-md full-width"
+            />
 
-            <q-file
-              v-model="productForm.facility_certificates"
-              label="Facility/Process Certificates"
+            <q-uploader
+              ref="facilityCertificateUploadRef"
+              @vue:updated="productForm.facility_certificates = facilityCertificateUploadRef.files"
+              hide-upload-btn
               multiple
-              accept=".jpg,.png,.jpeg.,.pdf"
-              class="q-mb-md"
-              :rules="[
-                (val) =>
-                  (Array.isArray(val) && val.length > 0) ||
-                  'Facility/Process certificate is required',
-              ]"
-              lazy-rules
-            >
-              <template v-slot:append>
-                <q-icon name="attach_file" />
-              </template>
-            </q-file>
+              accept=".jpg,.png,.jpeg,.pdf"
+              label="Facility/Process Certificates"
+              color="secondary"
+              class="q-mb-md full-width"
+            />
 
             <q-select
               v-model="productForm.status"
@@ -347,15 +329,30 @@ const products = ref([])
 const productColumns = [
   { name: 'name', label: 'Product Name', field: 'name', sortable: true, align: 'left' },
   { name: 'category', label: 'Category', field: 'category', sortable: true, align: 'left' },
-  { name: 'cost', label: 'Cost', field: 'cost', sortable: true, align: 'left' },
+  {
+    name: 'cost',
+    label: 'Cost',
+    field: 'cost',
+    sortable: true,
+    align: 'left',
+    format: (val) => `$${val}`,
+  },
   {
     name: 'landed_cost',
     label: 'Landed Cost',
     field: 'landed_cost',
     sortable: true,
     align: 'left',
+    format: (val) => `$${val}`,
   },
-  { name: 'srp', label: 'SRP', field: 'srp', sortable: true, align: 'left' },
+  {
+    name: 'srp',
+    label: 'SRP',
+    field: 'srp',
+    sortable: true,
+    align: 'left',
+    format: (val) => `$${val}`,
+  },
   { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'left' },
   { name: 'actions', label: 'Actions', field: 'actions' },
 ]
@@ -400,6 +397,14 @@ const serviceColumns = []
 
 const formLoadingState = ref(false)
 const productQForm = ref(null)
+
+const imageUploadRef = ref(null)
+const productCertificateUploadRef = ref(null)
+const facilityCertificateUploadRef = ref(null)
+// const onImageFileUpload = () => {
+//   productForm.value.images = imageUploadRef.value.files
+// }
+
 const saveProduct = () => {
   productQForm.value.validate().then((success) => {
     if (success) {
@@ -407,35 +412,53 @@ const saveProduct = () => {
 
       const formData = new FormData()
 
-      // Loop through the `productForm` object keys and append them dynamically
-      Object.entries(productForm.value).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          // Convert arrays to JSON strings
-          formData.append(key, JSON.stringify(value))
-        } else {
-          // Convert numbers and other types to strings
-          formData.append(key, String(value))
-        }
+      productForm.value.images.forEach((file) => {
+        formData.append('images[]', file)
+      })
+      productForm.value.product_certificates.forEach((file) => {
+        formData.append('product_certificates[]', file)
+      })
+      productForm.value.facility_certificates.forEach((file) => {
+        formData.append('facility_certificates[]', file)
       })
 
+      formData.append('name', productForm.value.name)
+      formData.append('description', productForm.value.description)
+      formData.append('category', productForm.value.category)
+      formData.append('cost', productForm.value.cost)
+      formData.append('landed_cost', productForm.value.landed_cost)
+      formData.append('srp', productForm.value.srp)
+      formData.append('status', productForm.value.status)
+
       dashboardStore
-        .InsertProduct(productForm.value)
+        .InsertProduct(formData)
         .then((response) => {
           let status = Boolean(response.status === 'success')
           $q.notify({
             message: `<p class='q-mb-none'>${status ? 'Success' : 'Fail'}! the product ${status ? 'has been' : 'was not'} saved.</p>`,
             color: `${status ? 'green' : 'red'}-2`,
-            position: 'center',
+            position: 'bottom',
             textColor: `${status ? 'green' : 'red'}`,
             html: true,
           })
+          // add new data to the table row temporarily
+          if (status) {
+            products.value.unshift({
+              name: productForm.value.name,
+              category: productForm.value.category.join(', '),
+              cost: productForm.value.cost.toFixed(2),
+              landed_cost: productForm.value.landed_cost.toFixed(2),
+              srp: productForm.value.srp.toFixed(2),
+              status: productForm.value.status,
+            })
+          }
         })
         .catch((error) => {
           // Show a notification based on the response status
           $q.notify({
             message: `<p class='q-mb-none'>${error.message}</p>`,
             color: `red-2`,
-            position: 'top-right',
+            position: 'bottom',
             textColor: `red`,
             html: true,
           })
@@ -445,8 +468,6 @@ const saveProduct = () => {
         })
     }
   })
-
-  console.log('product form ', productForm.value)
 }
 
 const editProduct = (product) => {
