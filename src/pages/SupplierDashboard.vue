@@ -872,9 +872,14 @@ const saveProduct = () => {
               name: '',
               description: '',
               category: [],
-              cost: 0,
-              landed_cost: 0,
-              srp: 0,
+              cost: '',
+              landed_cost: [
+                {
+                  country: '',
+                  amount: '',
+                },
+              ],
+              srp: '',
               status: '',
               images: [],
               product_certificates: [
