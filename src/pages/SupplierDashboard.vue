@@ -77,6 +77,18 @@
                 class="sticky-table-header"
                 color="primary"
               >
+                <template v-slot:body-cell-landed_cost="props">
+                  <q-td :props="props">
+                    <div
+                      class="flex justify-between full-width"
+                      v-for="cost in props.row.landed_cost"
+                      :key="cost"
+                    >
+                      <div>{{ cost.country }}</div>
+                      <div>${{ cost.amount }}</div>
+                    </div>
+                  </q-td>
+                </template>
                 <template v-slot:body-cell-actions="props">
                   <q-td :props="props">
                     <q-btn-group flat>
@@ -621,19 +633,19 @@ const productColumns = [
     format: (val) => `$${val}`,
   },
   {
-    name: 'landed_cost',
-    label: 'Landed Cost',
-    field: 'landed_cost',
-    sortable: true,
-    align: 'left',
-  },
-  {
     name: 'srp',
     label: 'SRP',
     field: 'srp',
     sortable: true,
     align: 'left',
     format: (val) => `$${val}`,
+  },
+  {
+    name: 'landed_cost',
+    label: 'Landed Cost',
+    field: 'landed_cost',
+    sortable: true,
+    align: 'left',
   },
   { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'left' },
   { name: 'actions', label: 'Actions', field: 'actions' },
