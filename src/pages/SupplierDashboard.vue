@@ -254,6 +254,7 @@
               color="secondary"
               class="q-mb-md full-width"
             />
+
             <h6 class="text-grey-14">Certifications</h6>
             <q-card class="q-pa-md q-mb-md">
               <div class="q-mb-md"><label>Product Certificate</label></div>
@@ -272,18 +273,22 @@
                   outlined
                   v-model="certificate.document_name"
                   label="Document Name"
-                  :rules="[(val) => !!val || 'Name is required']"
+                  :rules="[(val) => !!val || 'Document name is required']"
                   lazy-rules
                   dense
                   class="q-mb-md"
                 />
                 <q-input
                   outlined
-                  v-model="certificate.issuance_date"
+                  v-model="certificate.issue_date"
+                  lazy-rules
                   label="Issuance Date"
                   dense
                   class="q-mt-sm q-mb-md"
-                  :rules="[(val) => !!val || 'Field is required']"
+                  :rules="[
+                    (val) => !!val || 'Field is required', // Ensure the field is not empty
+                    (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                  ]"
                 >
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -294,7 +299,7 @@
                       >
                         <q-date
                           minimal
-                          v-model="certificate.issuance_date"
+                          v-model="certificate.issue_date"
                           @update:model-value="
                             () => refs[`productCertificateIssuanceDate${index}`]?.hide()
                           "
@@ -307,10 +312,14 @@
                 <q-input
                   outlined
                   v-model="certificate.expiry_date"
+                  lazy-rules
                   label="Expiry Date"
                   dense
                   class="q-mt-sm q-mb-md"
-                  :rules="[(val) => !!val || 'Field is required']"
+                  :rules="[
+                    (val) => !!val || 'Field is required', // Ensure the field is not empty
+                    (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                  ]"
                 >
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -360,18 +369,22 @@
                   outlined
                   v-model="certificate.document_name"
                   label="Document Name"
-                  :rules="[(val) => !!val || 'Name is required']"
+                  :rules="[(val) => !!val || 'Document name is required']"
                   lazy-rules
                   dense
                   class="q-mb-md"
                 />
                 <q-input
                   outlined
-                  v-model="certificate.issuance_date"
+                  v-model="certificate.issue_date"
+                  lazy-rules
                   label="Issuance Date"
                   dense
                   class="q-mt-sm q-mb-md"
-                  :rules="[(val) => !!val || 'Field is required']"
+                  :rules="[
+                    (val) => !!val || 'Field is required', // Ensure the field is not empty
+                    (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                  ]"
                 >
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -382,7 +395,7 @@
                       >
                         <q-date
                           minimal
-                          v-model="certificate.issuance_date"
+                          v-model="certificate.issue_date"
                           @update:model-value="
                             () => refs[`facilityCertificateIssuanceDate${index}`]?.hide()
                           "
@@ -395,10 +408,14 @@
                 <q-input
                   outlined
                   v-model="certificate.expiry_date"
+                  lazy-rules
                   label="Expiry Date"
                   dense
                   class="q-mt-sm q-mb-md"
-                  :rules="[(val) => !!val || 'Field is required']"
+                  :rules="[
+                    (val) => !!val || 'Field is required', // Ensure the field is not empty
+                    (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                  ]"
                 >
                   <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
@@ -452,53 +469,82 @@
 </template>
 
 <script setup lang="ts">
+// Import Vue's reactive and lifecycle utilities
 import { ref, onMounted } from 'vue'
+
+// Import the store for dashboard-related state management
 import { useDashboardStore } from 'src/stores/dashboard'
+
+// Import Quasar framework utilities
 import { useQuasar } from 'quasar'
 
+// Initialize Quasar for UI utilities
 const $q = useQuasar()
+
+// Initialize the dashboard store for state and actions related to the dashboard
 const dashboardStore = useDashboardStore()
 
+// Reactive reference to control the visibility of the "Add Product" dialog
 const showAddProductDialog = ref(false)
+
+// Reactive reference to hold the product being edited, if any
 const editingProduct = ref(null)
 
+// Reactive reference to track the total number of products
 const totalProducts = ref(0)
+
+// Reactive reference to track the number of active product listings
 const activeListings = ref(0)
+
+// Reactive reference to track the number of views from retailers
 const retailerViews = ref(0)
+
+// Reactive reference to track the number of inquiries made
 const inquiries = ref(0)
 
+// Array of predefined product categories
 const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
+
+// Array of predefined product statuses
 const statuses = ['Draft', 'Publish']
+
+// Reactive object to manage the product form data
 const productForm = ref({
-  name: '',
-  description: '',
-  category: [],
-  cost: 0,
-  landed_cost: 0,
-  srp: 0,
-  status: '',
-  images: [],
+  name: '', // Name of the product
+  description: '', // Description of the product
+  category: [], // Categories associated with the product
+  cost: 0, // Cost of the product
+  landed_cost: 0, // Landed cost of the product
+  srp: 0, // Suggested retail price of the product
+  status: '', // Status of the product (e.g., Draft or Publish)
+  images: [], // Array to store uploaded product images
   product_certificates: [
     {
-      file: '',
-      document_name: '',
-      issuance_date: '',
-      expiry_date: '',
+      file: '', // File associated with the certificate
+      document_name: '', // Name of the certificate document
+      issue_date: '', // Issue date of the certificate
+      expiry_date: '', // Expiry date of the certificate
     },
-  ],
+  ], // Array to store certificates related to the product
   facility_certificates: [
     {
-      file: '',
-      document_name: '',
-      issuance_date: '',
-      expiry_date: '',
+      file: '', // File associated with the certificate
+      document_name: '', // Name of the certificate document
+      issue_date: '', // Issue date of the certificate
+      expiry_date: '', // Expiry date of the certificate
     },
-  ],
+  ], // Array to store facility-related certificates
 })
 
+// Reactive reference to track the active tab in the UI
 const tab = ref('products')
+
+// Reactive reference to manage the loading state of the product table
 const tableLoadingState = ref(false)
+
+// Reactive reference to store the list of products fetched from the backend
 const products = ref([])
+
 const productColumns = [
   { name: 'name', label: 'Product Name', field: 'name', sortable: true, align: 'left' },
   { name: 'category', label: 'Category', field: 'category', sortable: true, align: 'left' },
@@ -560,30 +606,42 @@ const getProducts = () => {
     })
 }
 
+// Execute when the component is mounted
 onMounted(() => {
-  tableLoadingState.value = true
-  getProducts()
+  tableLoadingState.value = true // Set the table loading state to true to show a loading indicator
+  getProducts() // Fetch the list of products
 })
 
+// Reference to store service data
 const services = ref([])
+
+// Define columns for the service table (currently empty)
 const serviceColumns = []
 
+// Reactive state to track loading status of the form
 const formLoadingState = ref(false)
+
+// Reference for the Quasar product form component
 const productQForm = ref(null)
 
+// Reference for the image upload component
 const imageUploadRef = ref(null)
 
+// Function to add a certificate to the specified type (product or facility)
 const addCertificate = (type) => {
+  // Define the structure of the certificate data
   let data = {
-    file: '',
-    document_name: '',
-    issuance_date: '',
-    expiry_date: '',
+    file: '', // File reference for the certificate
+    document_name: '', // Name of the document
+    issue_date: '', // Issue date of the certificate
+    expiry_date: '', // Expiry date of the certificate
   }
+
+  // Check the type of certificate and push it to the respective list
   if (type === 'product') {
-    productForm.value.product_certificates.push(data)
+    productForm.value.product_certificates.push(data) // Add to product certificates
   } else {
-    productForm.value.facility_certificates.push(data)
+    productForm.value.facility_certificates.push(data) // Add to facility certificates
   }
 }
 
@@ -602,28 +660,89 @@ const updateCertificateFile = (index, type) => {
     } else {
       productForm.value.facility_certificates[index].file = uploaderRef.files
     }
-
-    console.log('productForm ', productForm.value)
   }
 }
 
+// Function to handle product saving
 const saveProduct = () => {
+  // Validate the product form
   productQForm.value.validate().then((success) => {
     if (success) {
-      formLoadingState.value = true
+      // Check if at least one image is uploaded
+      if (!productForm.value.images.length) {
+        $q.notify({
+          message: `<p class='q-mb-none'>Product image is required.</p>`,
+          color: `red-2`,
+          position: 'bottom',
+          textColor: `red`,
+          html: true,
+        })
+        return // Exit if no image is uploaded
+      }
 
+      // Initialize error flag for certificate validation
+      let error = false
+
+      // Validate product certificates
+      productForm.value.product_certificates.forEach((cert) => {
+        if (!cert.file.length) {
+          $q.notify({
+            message: `<p class='q-mb-none'>Product certificate is required.</p>`,
+            color: `red-2`,
+            position: 'bottom',
+            textColor: `red`,
+            html: true,
+          })
+          error = true // Set error flag to true if validation fails
+        }
+      })
+
+      // Validate facility certificates
+      productForm.value.facility_certificates.forEach((cert) => {
+        if (!cert.file.length) {
+          $q.notify({
+            message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
+            color: `red-2`,
+            position: 'bottom',
+            textColor: `red`,
+            html: true,
+          })
+          error = true // Set error flag to true if validation fails
+        }
+      })
+
+      // Exit if any certificate validation failed
+      if (error) {
+        return
+      }
+
+      formLoadingState.value = true // Set loading state to true
+
+      // Create a FormData object to prepare the data for submission
       const formData = new FormData()
 
+      // Append product images to FormData
       productForm.value.images.forEach((file) => {
         formData.append('images[]', file)
       })
-      productForm.value.product_certificates.forEach((file) => {
-        formData.append('product_certificates[]', file)
-      })
-      productForm.value.facility_certificates.forEach((file) => {
-        formData.append('facility_certificates[]', file)
+
+      // Append product certificates to FormData
+      productForm.value.product_certificates.forEach((cert, index) => {
+        formData.append(`product_certificates[${index}][file]`, cert.file[0]) // Add file
+        formData.append(`product_certificates[${index}][document_name]`, cert.document_name) // Add document name
+        formData.append(`product_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
+        formData.append(`product_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
       })
 
+      // Append facility certificates to FormData
+      productForm.value.facility_certificates.forEach((cert, index) => {
+        formData.append(`facility_certificates[${index}][file]`, cert.file[0]) // Add file
+        formData.append(`facility_certificates[${index}][document_name]`, cert.document_name) // Add document name
+        formData.append(`facility_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
+        formData.append(`facility_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
+      })
+
+      // Append product details to FormData
       formData.append('name', productForm.value.name)
       formData.append('description', productForm.value.description)
       formData.append('category', productForm.value.category)
@@ -632,20 +751,23 @@ const saveProduct = () => {
       formData.append('srp', productForm.value.srp)
       formData.append('status', productForm.value.status)
 
+      // Call the API to insert the product
       dashboardStore
         .InsertProduct(formData)
         .then((response) => {
-          let status = Boolean(response.status === 'success')
+          let status = Boolean(response.status === 'success') // Determine the status of the response
           $q.notify({
-            message: `<p class='q-mb-none'>${status ? 'Success' : 'Fail'}! the product ${status ? 'has been' : 'was not'} saved.</p>`,
+            message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the product ${status ? 'has been' : 'was not'} saved.</p>`,
             color: `${status ? 'green' : 'red'}-2`,
-            position: 'bottom',
+            position: 'top-right',
             textColor: `${status ? 'green' : 'red'}`,
             html: true,
           })
-          // add new data to the table row temporarily
+
+          // Add the new product to the table if successful
           if (status) {
             products.value.unshift({
+              id: response.data.id,
               name: productForm.value.name,
               category: productForm.value.category.join(', '),
               cost: productForm.value.cost.toFixed(2),
@@ -653,20 +775,48 @@ const saveProduct = () => {
               srp: productForm.value.srp.toFixed(2),
               status: productForm.value.status,
             })
+
+            // Reset the product form
+            productForm.value = {
+              name: '',
+              description: '',
+              category: [],
+              cost: 0,
+              landed_cost: 0,
+              srp: 0,
+              status: '',
+              images: [],
+              product_certificates: [
+                {
+                  file: '',
+                  document_name: '',
+                  issue_date: '',
+                  expiry_date: '',
+                },
+              ],
+              facility_certificates: [
+                {
+                  file: '',
+                  document_name: '',
+                  issue_date: '',
+                  expiry_date: '',
+                },
+              ],
+            }
           }
         })
         .catch((error) => {
-          // Show a notification based on the response status
+          // Notify user of the error
           $q.notify({
             message: `<p class='q-mb-none'>${error.message}</p>`,
             color: `red-2`,
-            position: 'bottom',
+            position: 'top-right',
             textColor: `red`,
             html: true,
           })
         })
         .finally(() => {
-          formLoadingState.value = false
+          formLoadingState.value = false // Reset loading state
         })
     }
   })
