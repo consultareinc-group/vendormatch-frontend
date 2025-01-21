@@ -61,6 +61,8 @@
                 <q-btn
                   color="primary"
                   icon="add"
+                  dense
+                  class="q-px-sm"
                   label="Add Product"
                   @click="showAddProductDialog = true"
                   no-caps
@@ -218,20 +220,6 @@
             />
 
             <q-input
-              v-model.number="productForm.landed_cost"
-              dense
-              type="number"
-              label="Landed Cost"
-              prefix="$"
-              :rules="[
-                (val) => !!val || 'Landed cost is required',
-                (val) => val > 0 || 'Landed cost must be greater than 0',
-              ]"
-              lazy-rules
-              class="q-mb-md"
-            />
-
-            <q-input
               v-model.number="productForm.srp"
               dense
               type="number"
@@ -242,7 +230,54 @@
                 (val) => val > 0 || 'SRP must be greater than 0',
               ]"
               lazy-rules
+              class="q-mb-md"
             />
+
+            <div class="q-mb-sm"><label class="text-grey-7">Landed Cost</label></div>
+            <q-card class="q-pa-md q-mb-md">
+              <div v-for="(cost, index) in productForm.landed_cost" :key="index">
+                <div class="flex justify-end q-mb-md">
+                  <q-icon
+                    v-if="index !== 0"
+                    name="close"
+                    size="sm"
+                    color="red"
+                    class="cursor-pointer"
+                    @click="removeLandedCost(index)"
+                  />
+                </div>
+                <q-input
+                  v-model.number="cost.country"
+                  dense
+                  label="Country"
+                  :rules="[(val) => !!val || 'Country is required']"
+                  lazy-rules
+                  class="q-mb-md"
+                />
+                <q-input
+                  v-model.number="cost.amount"
+                  dense
+                  type="number"
+                  label="Landed Cost"
+                  prefix="$"
+                  :rules="[
+                    (val) => !!val || 'Landed cost is required',
+                    (val) => val > 0 || 'Landed cost must be greater than 0',
+                  ]"
+                  lazy-rules
+                />
+              </div>
+
+              <q-btn
+                icon="add"
+                dense
+                label="Add Country"
+                class="q-px-sm"
+                no-caps
+                @click="addLandedCost()"
+              />
+            </q-card>
+
             <h6 class="q-mt-lg text-grey-14">Product Image</h6>
             <q-uploader
               ref="imageUploadRef"
@@ -257,8 +292,18 @@
 
             <h6 class="text-grey-14">Certifications</h6>
             <q-card class="q-pa-md q-mb-md">
-              <div class="q-mb-md"><label>Product Certificate</label></div>
               <div v-for="(certificate, index) in productForm.product_certificates" :key="index">
+                <div class="flex justify-between q-mb-md">
+                  <label>Product Certificate</label>
+                  <q-icon
+                    v-if="index !== 0"
+                    name="close"
+                    size="sm"
+                    color="red"
+                    class="cursor-pointer"
+                    @click="removeCertificate(index, 'product')"
+                  />
+                </div>
                 <q-uploader
                   :ref="(el) => (refs[`productCertificateUploadRef${index}`] = el)"
                   @vue:updated="() => updateCertificateFile(index, 'product')"
@@ -346,6 +391,8 @@
               </div>
               <q-btn
                 icon="add"
+                dense
+                class="q-px-sm"
                 label="Add Certificate"
                 no-caps
                 @click="addCertificate('product')"
@@ -353,8 +400,18 @@
             </q-card>
 
             <q-card class="q-pa-md q-mb-md">
-              <div class="q-mb-md"><label>Facility/Process Certificate</label></div>
               <div v-for="(certificate, index) in productForm.facility_certificates" :key="index">
+                <div class="flex justify-between q-mb-md">
+                  <label>Facility/Process Certificate</label>
+                  <q-icon
+                    v-if="index !== 0"
+                    name="close"
+                    size="sm"
+                    color="red"
+                    class="cursor-pointer"
+                    @click="removeCertificate(index, 'facility')"
+                  />
+                </div>
                 <q-uploader
                   :ref="(el) => (refs[`facilityCertificateUploadRef${index}`] = el)"
                   @vue:updated="() => updateCertificateFile(index, 'facility')"
@@ -442,6 +499,8 @@
               </div>
               <q-btn
                 icon="add"
+                dense
+                class="q-px-sm"
                 label="Add Certificate"
                 no-caps
                 @click="addCertificate('facility')"
@@ -458,7 +517,7 @@
             />
 
             <div class="row justify-end q-mt-md">
-              <q-btn flat label="Cancel" color="negative" v-close-popup class="q-mr-sm" />
+              <q-btn flat label="Close" color="negative" v-close-popup class="q-mr-sm" />
               <q-btn type="submit" label="Save" color="primary" :loading="formLoadingState" />
             </div>
           </q-form>
@@ -513,9 +572,14 @@ const productForm = ref({
   name: '', // Name of the product
   description: '', // Description of the product
   category: [], // Categories associated with the product
-  cost: 0, // Cost of the product
-  landed_cost: 0, // Landed cost of the product
-  srp: 0, // Suggested retail price of the product
+  cost: '', // Cost of the product
+  landed_cost: [
+    {
+      country: '',
+      amount: '',
+    },
+  ], // Landed cost of the product
+  srp: '', // Suggested retail price of the product
   status: '', // Status of the product (e.g., Draft or Publish)
   images: [], // Array to store uploaded product images
   product_certificates: [
@@ -562,7 +626,6 @@ const productColumns = [
     field: 'landed_cost',
     sortable: true,
     align: 'left',
-    format: (val) => `$${val}`,
   },
   {
     name: 'srp',
@@ -627,6 +690,13 @@ const productQForm = ref(null)
 // Reference for the image upload component
 const imageUploadRef = ref(null)
 
+const addLandedCost = () => {
+  productForm.value.landed_cost.push({
+    country: '',
+    amount: '',
+  })
+}
+
 // Function to add a certificate to the specified type (product or facility)
 const addCertificate = (type) => {
   // Define the structure of the certificate data
@@ -643,6 +713,23 @@ const addCertificate = (type) => {
   } else {
     productForm.value.facility_certificates.push(data) // Add to facility certificates
   }
+}
+
+// Function to remove a certificate by its index and type (product or facility)
+const removeCertificate = (index, type) => {
+  if (type === 'product') {
+    // Remove the certificate at the specified index from the product_certificates array
+    productForm.value.product_certificates.splice(index, 1)
+  } else {
+    // Remove the certificate at the specified index from the facility_certificates array
+    productForm.value.facility_certificates.splice(index, 1)
+  }
+}
+
+// Function to remove a landed cost value by its index
+const removeLandedCost = (index) => {
+  // Remove the landed cost at the specified index from the landed_cost array
+  productForm.value.landed_cost.splice(index, 1)
 }
 
 // Dynamic refs (stores all uploader refs)
@@ -742,12 +829,17 @@ const saveProduct = () => {
         formData.append(`facility_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
       })
 
+      // Append landed_costs to FormData
+      productForm.value.landed_cost.forEach((cost, index) => {
+        formData.append(`landed_cost[${index}][country]`, cost.country) // Add country
+        formData.append(`landed_cost[${index}][amount]`, cost.amount) // Add amount
+      })
+
       // Append product details to FormData
       formData.append('name', productForm.value.name)
       formData.append('description', productForm.value.description)
-      formData.append('category', productForm.value.category)
+      formData.append('category', productForm.value.category.join(', '))
       formData.append('cost', productForm.value.cost)
-      formData.append('landed_cost', productForm.value.landed_cost)
       formData.append('srp', productForm.value.srp)
       formData.append('status', productForm.value.status)
 
@@ -771,7 +863,6 @@ const saveProduct = () => {
               name: productForm.value.name,
               category: productForm.value.category.join(', '),
               cost: productForm.value.cost.toFixed(2),
-              landed_cost: productForm.value.landed_cost.toFixed(2),
               srp: productForm.value.srp.toFixed(2),
               status: productForm.value.status,
             })
