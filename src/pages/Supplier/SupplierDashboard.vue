@@ -64,7 +64,7 @@
                   dense
                   class="q-px-sm"
                   label="Add Product"
-                  @click="showAddProductDialog = true"
+                  @click="addProductDialog = true"
                   no-caps
                 />
               </div>
@@ -97,7 +97,7 @@
                         round
                         color="secondary"
                         icon="visibility"
-                        @click="editProduct(props.row)"
+                        @click="showProductDetailsDialog(props.row)"
                       />
                       <q-btn
                         flat
@@ -111,7 +111,7 @@
                         round
                         color="negative"
                         icon="delete"
-                        @click="showDialog(props.row)"
+                        @click="showDeleteDialog(props.row)"
                       />
                     </q-btn-group>
                   </q-td>
@@ -125,7 +125,7 @@
                   color="primary"
                   icon="add"
                   label="Add Service"
-                  @click="showAddProductDialog = true"
+                  @click="addProductDialog = true"
                   no-caps
                 />
               </div>
@@ -160,7 +160,7 @@
                         round
                         color="negative"
                         icon="delete"
-                        @click="showDialog(props.row)"
+                        @click="showDeleteDialog(props.row)"
                       />
                     </q-btn-group>
                   </q-td>
@@ -179,7 +179,7 @@
     </div>
 
     <!-- Add/Edit Product Dialog -->
-    <q-dialog v-model="showAddProductDialog">
+    <q-dialog v-model="addProductDialog">
       <q-card style="min-width: 500px">
         <q-card-section>
           <div class="text-h6">{{ editingProduct ? 'Edit' : 'Add' }} Product</div>
@@ -537,7 +537,131 @@
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="showDeleteProductDialog">
+    <q-dialog v-model="productDetailsDialog">
+      <q-card style="width: 700px; max-width: 80vw">
+        <q-card-section>
+          <div class="row">
+            <div class="col-6">
+              <div class="bg-grey-5 q-px-xs q-py-md">
+                <q-skeleton v-if="!productDetails.images.length" height="300px"></q-skeleton>
+                <q-carousel
+                  v-if="productDetails.images.length"
+                  v-model="slide"
+                  transition-prev="scale"
+                  transition-next="scale"
+                  swipeable
+                  animated
+                  control-color="black"
+                  arrows
+                  height="300px"
+                >
+                  <q-carousel-slide
+                    v-for="image in productDetails.images"
+                    :key="image"
+                    name="style"
+                    class="column flex-center"
+                  >
+                    <q-img :src="`data:image/jpeg;base64,${image.binary}`" alt="Product Image" />
+                  </q-carousel-slide>
+                </q-carousel>
+              </div>
+            </div>
+            <div class="col-6 q-px-md">
+              <q-skeleton
+                v-if="!productDetails.name"
+                square
+                height="64px"
+                class="q-mb-sm"
+              ></q-skeleton>
+              <h6 v-else class="q-ma-none">{{ productDetails.name }}</h6>
+              <q-skeleton
+                v-if="!productDetails.category"
+                square
+                height="21px"
+                class="q-mb-sm"
+              ></q-skeleton>
+              <div class="">{{ productDetails.category }}</div>
+              <q-skeleton
+                v-if="!productDetails.cost"
+                square
+                height="167px"
+                class="q-mb-sm"
+              ></q-skeleton>
+              <div v-else>
+                <div class="row q-mt-md">
+                  <div class="col-6">
+                    <div class="flex justify-between items-center">
+                      <div class="text-bold">Cost:</div>
+                      <h5 class="q-ma-none text-bold">${{ productDetails.cost }}</h5>
+                    </div>
+                  </div>
+                </div>
+                <div class="row q-mt-md">
+                  <div class="col-6">
+                    <div class="flex justify-between items-center">
+                      <div class="text-bold">SRP:</div>
+                      <h5 class="q-ma-none text-bold">${{ productDetails.srp }}</h5>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-bold q-mt-md">Landed Cost:</div>
+                <div v-for="cost in productDetails.landed_cost" :key="cost" class="row q-mt-xs">
+                  <div class="col-8">
+                    {{ cost.country }}
+                  </div>
+                  <div class="col-4">${{ cost.amount }}</div>
+                </div>
+              </div>
+              <q-skeleton
+                v-if="!productDetails.description"
+                square
+                height="98px"
+                class="q-mb-sm"
+              ></q-skeleton>
+              <div v-else class="q-mt-md">
+                <div class="text-bold">Description:</div>
+                <div>
+                  <pre style="font-family: sans-serif">{{ productDetails.description }}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Close" color="primary" no-caps v-close-popup />
+          <q-btn flat label="Connect to Vendor" no-caps color="primary bg-secondary text-white" />
+        </q-card-actions>
+      </q-card>
+
+      <!-- PDF Preview -->
+      <!-- <object
+        v-if="isPdf"
+        :data="`data:application/pdf;base64,${fileData}`"
+        type="application/pdf"
+        width="100%"
+        height="500px"
+      >
+        <p>
+          PDF cannot be displayed. You can
+          <a :href="`data:application/pdf;base64,${fileData}`" download>download it</a>.
+        </p>
+      </object> -->
+
+      <!-- DOCX & XLSX Files -->
+      <!-- <div v-if="isDocxOrXlsx">
+        <p>
+          Document cannot be displayed. You can
+          <a
+            :href="`data:application/vnd.openxmlformats-officedocument.${fileExtension};base64,${fileData}`"
+            download
+            >download the file</a
+          >.
+        </p>
+      </div> -->
+    </q-dialog>
+
+    <q-dialog v-model="deleteProductDialog">
       <q-card>
         <q-card-section>
           <div class="text-h6">Confirm Deletion</div>
@@ -579,7 +703,7 @@ const $q = useQuasar()
 const dashboardStore = useDashboardStore()
 
 // Reactive reference to control the visibility of the "Add Product" dialog
-const showAddProductDialog = ref(false)
+const addProductDialog = ref(false)
 
 // Reactive reference to hold the product being edited, if any
 const editingProduct = ref(null)
@@ -956,15 +1080,45 @@ const saveProduct = () => {
 const editProduct = (product) => {
   editingProduct.value = product.id
   productForm.value = { ...product }
-  showAddProductDialog.value = true
+  addProductDialog.value = true
+}
+const slide = ref('style')
+const productDetailsDialog = ref(false)
+const productDetailsLoadingState = ref(false)
+const showProductDetailsDialog = (product_details) => {
+  productDetails.value = { images: [] }
+  productDetailsDialog.value = true
+  productDetailsLoadingState.value = true
+  dashboardStore
+    .GetProduct({ id: product_details.id })
+    .then((response) => {
+      if (response.status === 'success') {
+        productDetails.value = response.data
+      }
+    })
+    .catch((error) => {
+      // Show a notification based on the response status
+      $q.notify({
+        message: `<p class='q-mb-none'>${error.message}</p>`,
+        color: `red-2`, // Set notification color
+        position: 'top-right', // Notification position
+        textColor: `red`, // Set text color
+        html: true, // Enable HTML content
+      })
+    })
+    .finally(() => {
+      productDetailsLoadingState.value = false
+    })
 }
 
-const showDeleteProductDialog = ref(false)
+const deleteProductDialog = ref(false)
 const btnDeleteLoadingState = ref(false)
-const productDetails = ref({})
+const productDetails = ref({
+  images: [],
+})
 
-const showDialog = (product_details) => {
-  showDeleteProductDialog.value = true
+const showDeleteDialog = (product_details) => {
+  deleteProductDialog.value = true
   productDetails.value = product_details
 }
 const deleteProduct = () => {
@@ -987,7 +1141,7 @@ const deleteProduct = () => {
         if (index !== -1) {
           products.value.splice(index, 1) // Remove the product at the found index
         }
-        showDeleteProductDialog.value = false
+        deleteProductDialog.value = false
       }
     })
     .catch((error) => {
