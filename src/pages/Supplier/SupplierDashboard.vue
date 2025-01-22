@@ -179,7 +179,7 @@
     </div>
 
     <!-- Add/Edit Product Dialog -->
-    <AddProduct />
+    <AddProduct v-if="triggerStore.AddProductDialog" />
     <ViewProductDetails v-if="triggerStore.ViewProductDetailsDialog" />
 
     <q-dialog v-model="deleteProductDialog">
