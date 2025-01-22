@@ -181,29 +181,7 @@
     <!-- Add/Edit Product Dialog -->
     <AddProduct v-if="triggerStore.AddProductDialog" />
     <ViewProductDetails v-if="triggerStore.ViewProductDetailsDialog" />
-
-    <q-dialog v-model="deleteProductDialog">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Confirm Deletion</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          Are you sure you want to delete <b>{{ productDetails.name }}?</b>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Close" color="primary" v-close-popup />
-          <q-btn
-            flat
-            label="OK"
-            color="primary bg-primary text-white"
-            @click="deleteProduct()"
-            :loading="btnDeleteLoadingState"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <DeleteProduct v-if="triggerStore.DeleteProductDialog" />
   </q-page>
 </template>
 
@@ -220,6 +198,7 @@ import { useQuasar } from 'quasar'
 
 import AddProduct from './components/AddProduct.vue'
 import ViewProductDetails from './components/ViewProductDetails.vue'
+import DeleteProduct from './components/DeleteProduct.vue'
 
 // Initialize Quasar for UI utilities
 const $q = useQuasar()
@@ -328,52 +307,9 @@ const showProductDetailsDialog = (product_details) => {
   triggerStore.ViewProductDetailsDialog = true
 }
 
-const deleteProductDialog = ref(false)
-const btnDeleteLoadingState = ref(false)
-
-const productDetails = ref({ images: [] })
 const showDeleteDialog = (product_details) => {
-  deleteProductDialog.value = true
-  productDetails.value = product_details
-}
-const deleteProduct = () => {
-  btnDeleteLoadingState.value = true
-  // Handle product deletion
-  dashboardStore
-    .DeleteProduct({ id: productDetails.value.id })
-    .then((response) => {
-      let status = Boolean(response.status === 'success') // Determine the status of the response
-      $q.notify({
-        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the product ${status ? 'has been' : 'was not'} deleted.</p>`,
-        color: `${status ? 'green' : 'red'}-2`,
-        position: 'top-right',
-        textColor: `${status ? 'green' : 'red'}`,
-        html: true,
-      })
-
-      if (status) {
-        const index = dashboardStore.Products.findIndex(
-          (product) => product.id === productDetails.value.id,
-        )
-        if (index !== -1) {
-          dashboardStore.Products.splice(index, 1) // Remove the product at the found index
-        }
-        deleteProductDialog.value = false
-      }
-    })
-    .catch((error) => {
-      // Notify user of the error
-      $q.notify({
-        message: `<p class='q-mb-none'>${error.message}</p>`,
-        color: `red-2`,
-        position: 'top-right',
-        textColor: `red`,
-        html: true,
-      })
-    })
-    .finally(() => {
-      btnDeleteLoadingState.value = false
-    })
+  triggerStore.DeleteProductDialog = true
+  dashboardStore.ProductDetails = product_details
 }
 </script>
 
