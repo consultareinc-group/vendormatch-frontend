@@ -536,7 +536,8 @@
         </q-card-section>
       </q-card>
     </q-dialog>
-    <q-dialog v-model="deleteDialog">
+
+    <q-dialog v-model="showDeleteProductDialog">
       <q-card>
         <q-card-section>
           <div class="text-h6">Confirm Deletion</div>
@@ -958,12 +959,12 @@ const editProduct = (product) => {
   showAddProductDialog.value = true
 }
 
-const deleteDialog = ref(false)
+const showDeleteProductDialog = ref(false)
 const btnDeleteLoadingState = ref(false)
 const productDetails = ref({})
 
 const showDialog = (product_details) => {
-  deleteDialog.value = true
+  showDeleteProductDialog.value = true
   productDetails.value = product_details
 }
 const deleteProduct = () => {
@@ -986,7 +987,7 @@ const deleteProduct = () => {
         if (index !== -1) {
           products.value.splice(index, 1) // Remove the product at the found index
         }
-        deleteDialog.value = false
+        showDeleteProductDialog.value = false
       }
     })
     .catch((error) => {
