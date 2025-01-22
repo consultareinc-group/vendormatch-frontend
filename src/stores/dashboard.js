@@ -4,7 +4,8 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 // Define a Pinia store named 'counter' for managing products-related data
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
-    Products: []
+    Products: [],
+    ProductDetails: {}
   }),
   actions: {
     // Action to fetch products from the API with pagination support
