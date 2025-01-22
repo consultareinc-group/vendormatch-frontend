@@ -70,5 +70,16 @@ export const useDashboardStore = defineStore('dashboard', {
         });
       });
     },
+    // Action to delete product
+    DeleteProduct(request) {
+      return new Promise((resolve, reject) => {
+        // Make a DELETE request to delete product in the database products table
+        api.delete(`vendor-match/product/${request.id}`, { data: request }).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
+    },
   },
 })

@@ -111,7 +111,7 @@
                         round
                         color="negative"
                         icon="delete"
-                        @click="confirmDelete(props.row)"
+                        @click="showDialog(props.row)"
                       />
                     </q-btn-group>
                   </q-td>
@@ -160,7 +160,7 @@
                         round
                         color="negative"
                         icon="delete"
-                        @click="confirmDelete(props.row)"
+                        @click="showDialog(props.row)"
                       />
                     </q-btn-group>
                   </q-td>
@@ -261,8 +261,8 @@
                 <q-input
                   v-model.number="cost.country"
                   dense
-                  label="Country"
-                  :rules="[(val) => !!val || 'Country is required']"
+                  label="Destination/Country"
+                  :rules="[(val) => !!val || 'Destination/Country is required']"
                   lazy-rules
                   class="q-mb-md"
                 />
@@ -283,7 +283,7 @@
               <q-btn
                 icon="add"
                 dense
-                label="Add Country"
+                label="Add Destination/Country"
                 class="q-px-sm"
                 no-caps
                 @click="addLandedCost()"
@@ -534,6 +534,28 @@
             </div>
           </q-form>
         </q-card-section>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="deleteDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Confirm Deletion</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Are you sure you want to delete <b>{{ productDetails.name }}?</b>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Close" color="primary" v-close-popup />
+          <q-btn
+            flat
+            label="OK"
+            color="primary bg-primary text-white"
+            @click="deleteProduct()"
+            :loading="btnDeleteLoadingState"
+          />
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </q-page>
@@ -936,15 +958,50 @@ const editProduct = (product) => {
   showAddProductDialog.value = true
 }
 
-const confirmDelete = (product) => {
-  $q.dialog({
-    title: 'Confirm Deletion',
-    message: `Are you sure you want to delete ${product.name}?`,
-    cancel: true,
-    persistent: true,
-  }).onOk(() => {
-    // Handle product deletion
-  })
+const deleteDialog = ref(false)
+const btnDeleteLoadingState = ref(false)
+const productDetails = ref({})
+
+const showDialog = (product_details) => {
+  deleteDialog.value = true
+  productDetails.value = product_details
+}
+const deleteProduct = () => {
+  btnDeleteLoadingState.value = true
+  // Handle product deletion
+  dashboardStore
+    .DeleteProduct({ id: productDetails.value.id })
+    .then((response) => {
+      let status = Boolean(response.status === 'success') // Determine the status of the response
+      $q.notify({
+        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the product ${status ? 'has been' : 'was not'} deleted.</p>`,
+        color: `${status ? 'green' : 'red'}-2`,
+        position: 'top-right',
+        textColor: `${status ? 'green' : 'red'}`,
+        html: true,
+      })
+
+      if (status) {
+        const index = products.value.findIndex((product) => product.id === productDetails.value.id)
+        if (index !== -1) {
+          products.value.splice(index, 1) // Remove the product at the found index
+        }
+        deleteDialog.value = false
+      }
+    })
+    .catch((error) => {
+      // Notify user of the error
+      $q.notify({
+        message: `<p class='q-mb-none'>${error.message}</p>`,
+        color: `red-2`,
+        position: 'top-right',
+        textColor: `red`,
+        html: true,
+      })
+    })
+    .finally(() => {
+      btnDeleteLoadingState.value = false
+    })
 }
 </script>
 
