@@ -77,18 +77,35 @@
                 class="sticky-table-header"
                 color="primary"
               >
-                <template v-slot:body-cell-landed_cost="props">
+                <template v-slot:body-cell-size="props">
                   <q-td :props="props">
                     <div
                       class="flex justify-between full-width"
-                      v-for="cost in props.row.landed_cost"
-                      :key="cost"
+                      v-for="size in props.row.size"
+                      :key="size"
                     >
-                      <div>{{ cost.country }}</div>
-                      <div>${{ cost.amount }}</div>
+                      <div>{{ size.size }} - {{ size.upc_code }}</div>
                     </div>
                   </q-td>
                 </template>
+                <!-- <template v-slot:body-cell-landed_cost="props">
+                  <q-td :props="props">
+                    <div
+                      class="flex justify-between full-width"
+                      v-for="size in props.row.size"
+                      :key="size"
+                    >
+                      <div
+                        class="flex justify-between full-width"
+                        v-for="cost in size.landed_cost"
+                        :key="cost"
+                      >
+                        <div>{{ cost.country }}</div>
+                        <div>${{ cost.amount }}</div>
+                      </div>
+                    </div>
+                  </q-td>
+                </template> -->
                 <template v-slot:body-cell-actions="props">
                   <q-td :props="props">
                     <q-btn-group flat>
@@ -234,28 +251,35 @@ const productColumns = [
   { name: 'name', label: 'Product Name', field: 'name', sortable: true, align: 'left' },
   { name: 'category', label: 'Category', field: 'category', sortable: true, align: 'left' },
   {
-    name: 'cost',
-    label: 'Cost',
-    field: 'cost',
-    sortable: true,
-    align: 'left',
-    format: (val) => `$${val}`,
-  },
-  {
-    name: 'srp',
-    label: 'SRP',
-    field: 'srp',
-    sortable: true,
-    align: 'left',
-    format: (val) => `$${val}`,
-  },
-  {
-    name: 'landed_cost',
-    label: 'Landed Cost',
-    field: 'landed_cost',
+    name: 'size',
+    label: 'Sizes',
+    field: 'size',
     sortable: true,
     align: 'left',
   },
+  // {
+  //   name: 'cost',
+  //   label: 'Cost',
+  //   field: 'cost',
+  //   sortable: true,
+  //   align: 'left',
+  //   format: (val) => `$${val}`,
+  // },
+  // {
+  //   name: 'srp',
+  //   label: 'SRP',
+  //   field: 'srp',
+  //   sortable: true,
+  //   align: 'left',
+  //   format: (val) => `$${val}`,
+  // },
+  // {
+  //   name: 'landed_cost',
+  //   label: 'Landed Cost',
+  //   field: 'landed_cost',
+  //   sortable: true,
+  //   align: 'left',
+  // },
   { name: 'status', label: 'Status', field: 'status', sortable: true, align: 'left' },
   { name: 'actions', label: 'Actions', field: 'actions' },
 ]
