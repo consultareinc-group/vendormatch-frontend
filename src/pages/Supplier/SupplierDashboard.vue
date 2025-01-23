@@ -84,7 +84,7 @@
                       v-for="size in props.row.size"
                       :key="size"
                     >
-                      <div>{{ size.size }} - {{ size.upc_code }}</div>
+                      <div>{{ size.size }} - {{ size.upc }}</div>
                     </div>
                   </q-td>
                 </template>
