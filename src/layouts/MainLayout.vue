@@ -45,7 +45,7 @@
         </q-item>
       </q-list>
     </q-drawer>
-    <right-drawer></right-drawer>
+    <right-drawer v-if="triggerStore.RightDrawerOpen"></right-drawer>
 
     <q-page-container>
       <router-view />
@@ -58,9 +58,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
 import RightDrawer from 'src/components/RightDrawer.vue'
+import { useTriggerStore } from 'src/stores/triggers'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const triggerStore = useTriggerStore()
 const leftDrawerOpen = ref(false)
 
 const toggleLeftDrawer = () => {
