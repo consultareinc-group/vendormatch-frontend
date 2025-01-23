@@ -61,10 +61,10 @@
               />
               <q-input
                 outlined
-                v-model.number="size.upc_code"
+                v-model.number="size.upc"
                 dense
-                label="UPC Code"
-                :rules="[(val) => !!val || 'UPC Code is required']"
+                label="UPC"
+                :rules="[(val) => !!val || 'UPC is required']"
                 lazy-rules
                 class="q-mb-md"
               />
@@ -150,7 +150,7 @@
           <q-btn
             icon="add"
             dense
-            label="Add Size"
+            label="Add Product Size"
             class="q-px-sm"
             no-caps
             @click="addProductSize()"
@@ -431,7 +431,7 @@ const productForm = ref({
   size: [
     {
       size: '', // Size of the product
-      upc_code: '', // Upc code of the product
+      upc: '', // Upc code of the product
       cost: '', // Cost of the product
       srp: '', // Suggested retail price of the product
       landed_cost: [
@@ -533,7 +533,7 @@ const updateCertificateFile = (index, type) => {
 const addProductSize = () => {
   productForm.value.size.push({
     size: '',
-    upc_code: '',
+    upc: '',
     cost: '',
     srp: '',
     landed_cost: [
@@ -642,15 +642,16 @@ const saveProduct = () => {
       })
 
       // Append sizes to FormData
+      // Append sizes to FormData
       productForm.value.size.forEach((size, size_index) => {
         formData.append(`size[${size_index}][size]`, size.size) // Add size
-        formData.append(`size[${size_index}][upc_code]`, size.upc_code) // Add upc_code
+        formData.append(`size[${size_index}][upc]`, size.upc) // Add upc
         formData.append(`size[${size_index}][cost]`, size.cost) // Add cost
         formData.append(`size[${size_index}][srp]`, size.srp) // Add cost
 
         size.landed_cost.forEach((cost, cost_index) => {
-          formData.append(`size[${size_index}]landed_cost[${cost_index}][country]`, cost.country) // Add country
-          formData.append(`size[${size_index}]landed_cost[${cost_index}][amount]`, cost.amount) // Add amount
+          formData.append(`size[${size_index}][landed_cost][${cost_index}][country]`, cost.country) // Add country
+          formData.append(`size[${size_index}][landed_cost][${cost_index}][amount]`, cost.amount) // Add amount
         })
       })
 
@@ -673,10 +674,7 @@ const saveProduct = () => {
               id: response.data.id,
               name: productForm.value.name,
               category: productForm.value.category.join(', '),
-              cost: productForm.value.cost.toFixed(2),
-              srp: productForm.value.srp.toFixed(2),
               status: productForm.value.status,
-              landed_cost: productForm.value.landed_cost,
             })
 
             // Reset the product form
@@ -696,7 +694,7 @@ const saveProduct = () => {
               size: [
                 {
                   size: '',
-                  upc_code: '',
+                  upc: '',
                   cost: '',
                   srp: '',
                   landed_cost: [
