@@ -43,18 +43,13 @@
               class="q-mb-sm"
             ></q-skeleton>
             <div class="">{{ productDetails.category }}</div>
-            <q-skeleton
-              v-if="!productDetails.cost"
-              square
-              height="167px"
-              class="q-mb-sm"
-            ></q-skeleton>
+            <q-skeleton v-if="!size.size" square height="167px" class="q-mb-sm"></q-skeleton>
             <div v-else>
               <div class="row q-mt-md">
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">Cost:</div>
-                    <h5 class="q-ma-none text-bold">${{ productDetails.cost }}</h5>
+                    <h5 class="q-ma-none text-bold">${{ size.cost }}</h5>
                   </div>
                 </div>
               </div>
@@ -62,18 +57,41 @@
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">SRP:</div>
-                    <h5 class="q-ma-none text-bold">${{ productDetails.srp }}</h5>
+                    <h5 class="q-ma-none text-bold">${{ size.srp }}</h5>
                   </div>
                 </div>
               </div>
               <div class="text-bold q-mt-md">Landed Cost:</div>
-              <div v-for="cost in productDetails.landed_cost" :key="cost" class="row q-mt-xs">
+              <div v-for="cost in size.landed_cost" :key="cost" class="row q-mt-xs">
                 <div class="col-8">
                   {{ cost.country }}
                 </div>
                 <div class="col-4">${{ cost.amount }}</div>
               </div>
             </div>
+            <hr class="q-mt-md" />
+            <q-skeleton v-if="!size.size" square height="21px" class="q-mb-sm"></q-skeleton>
+            <div v-else class="flex justify-start items-center q-mt-md">
+              <div class="text-bold q-mr-md">Size:</div>
+              <div>
+                <q-select
+                  v-model="size_option"
+                  dense
+                  :options="sizes"
+                  @vue:updated="changeProductCost()"
+                  outlined
+                  class="q-pa-none"
+                />
+              </div>
+            </div>
+            <q-skeleton v-if="!size.upc" square height="21px" class="q-mb-sm"></q-skeleton>
+            <div v-else class="flex justify-start items-center q-mt-md">
+              <div class="text-bold q-mr-md">UPC:</div>
+              <div>
+                {{ size.upc }}
+              </div>
+            </div>
+            <hr class="q-mt-md" />
             <q-skeleton
               v-if="!productDetails.description"
               square
@@ -146,9 +164,28 @@ const triggerStore = useTriggerStore()
 
 const slide = ref('style')
 
+const size_option = ref('')
+const sizes = ref([])
+
+const size = ref({
+  size: '',
+  upc: '',
+  cost: '',
+  srp: '',
+  landed_cost: [],
+})
+
 const productDetails = ref({
   images: [],
 })
+
+const changeProductCost = () => {
+  productDetails.value.size.forEach((product_size) => {
+    if (size_option.value === product_size.size) {
+      size.value = product_size
+    }
+  })
+}
 
 onMounted(() => {
   productDetails.value = { images: [] }
@@ -157,6 +194,10 @@ onMounted(() => {
     .then((response) => {
       if (response.status === 'success') {
         productDetails.value = response.data
+        // Assign a default value
+        size_option.value = response.data.size[0].size
+        sizes.value = response.data.size.map((size) => size.size)
+        changeProductCost()
       }
     })
     .catch((error) => {
