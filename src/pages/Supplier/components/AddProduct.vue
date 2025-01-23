@@ -37,78 +37,124 @@
             multiple
           />
 
-          <q-input
-            v-model.number="productForm.cost"
-            dense
-            type="number"
-            label="Cost"
-            prefix="$"
-            :rules="[
-              (val) => !!val || 'Cost is required',
-              (val) => val > 0 || 'Cost must be greater than 0',
-            ]"
-            lazy-rules
-            class="q-mb-md"
-          />
-
-          <q-input
-            v-model.number="productForm.srp"
-            dense
-            type="number"
-            label="SRP"
-            prefix="$"
-            :rules="[
-              (val) => !!val || 'SRP is required',
-              (val) => val > 0 || 'SRP must be greater than 0',
-            ]"
-            lazy-rules
-            class="q-mb-md"
-          />
-
-          <div class="q-mb-sm"><label class="text-grey-7">Landed Cost</label></div>
-          <q-card class="q-pa-md q-mb-md">
-            <div v-for="(cost, index) in productForm.landed_cost" :key="index">
-              <div class="flex justify-end q-mb-md">
-                <q-icon
-                  v-if="index !== 0"
-                  name="close"
-                  size="sm"
-                  color="red"
-                  class="cursor-pointer"
-                  @click="removeLandedCost(index)"
-                />
-              </div>
+          <div v-for="(size, size_index) in productForm.size" :key="size_index">
+            <div class="flex justify-between q-mb-sm">
+              <label>Product Size</label>
+              <q-icon
+                v-if="size_index !== 0"
+                name="close"
+                size="sm"
+                color="red"
+                class="cursor-pointer"
+                @click="removeProductSize(size_index)"
+              />
+            </div>
+            <q-card class="q-pa-md q-mb-md">
               <q-input
-                v-model.number="cost.country"
+                outlined
+                v-model.number="size.size"
                 dense
-                label="Destination/Country"
-                :rules="[(val) => !!val || 'Destination/Country is required']"
+                label="Size"
+                :rules="[(val) => !!val || 'Size is required']"
                 lazy-rules
                 class="q-mb-md"
               />
               <q-input
-                v-model.number="cost.amount"
+                outlined
+                v-model.number="size.upc_code"
+                dense
+                label="UPC Code"
+                :rules="[(val) => !!val || 'UPC Code is required']"
+                lazy-rules
+                class="q-mb-md"
+              />
+              <q-input
+                outlined
+                v-model.number="size.cost"
                 dense
                 type="number"
-                label="Landed Cost"
+                label="Cost"
                 prefix="$"
                 :rules="[
-                  (val) => !!val || 'Landed cost is required',
-                  (val) => val > 0 || 'Landed cost must be greater than 0',
+                  (val) => !!val || 'Cost is required',
+                  (val) => val > 0 || 'Cost must be greater than 0',
                 ]"
                 lazy-rules
+                class="q-mb-md"
               />
-            </div>
 
-            <q-btn
-              icon="add"
-              dense
-              label="Add Destination/Country"
-              class="q-px-sm"
-              no-caps
-              @click="addLandedCost()"
-            />
-          </q-card>
+              <q-input
+                outlined
+                v-model.number="size.srp"
+                dense
+                type="number"
+                label="SRP"
+                prefix="$"
+                :rules="[
+                  (val) => !!val || 'SRP is required',
+                  (val) => val > 0 || 'SRP must be greater than 0',
+                ]"
+                lazy-rules
+                class="q-mb-md"
+              />
+
+              <div class="q-px-md q-mb-md">
+                <div class="q-mb-sm"><label class="text-grey-7">Landed Cost</label></div>
+                <div v-for="(cost, cost_index) in size.landed_cost" :key="cost_index">
+                  <div class="flex justify-end q-mb-md">
+                    <q-icon
+                      v-if="cost_index !== 0"
+                      name="close"
+                      size="sm"
+                      color="red"
+                      class="cursor-pointer"
+                      @click="removeLandedCost(size_index, cost_index)"
+                    />
+                  </div>
+                  <q-input
+                    outlined
+                    v-model.number="cost.country"
+                    dense
+                    label="Destination/Country"
+                    :rules="[(val) => !!val || 'Destination/Country is required']"
+                    lazy-rules
+                    class="q-mb-md"
+                  />
+                  <q-input
+                    outlined
+                    v-model.number="cost.amount"
+                    dense
+                    type="number"
+                    label="Landed Cost"
+                    prefix="$"
+                    :rules="[
+                      (val) => !!val || 'Landed cost is required',
+                      (val) => val > 0 || 'Landed cost must be greater than 0',
+                    ]"
+                    lazy-rules
+                  />
+                </div>
+
+                <q-btn
+                  icon="add"
+                  dense
+                  label="Add Destination/Country"
+                  class="q-px-sm"
+                  no-caps
+                  @click="addLandedCost(size_index)"
+                />
+              </div>
+            </q-card>
+          </div>
+
+          <q-btn
+            icon="add"
+            dense
+            label="Add Size"
+            class="q-px-sm"
+            no-caps
+            @click="addProductSize()"
+          />
 
           <h6 class="q-mt-lg text-grey-14">Product Image</h6>
           <q-uploader
@@ -382,14 +428,20 @@ const productForm = ref({
   name: '', // Name of the product
   description: '', // Description of the product
   category: [], // Categories associated with the product
-  cost: '', // Cost of the product
-  landed_cost: [
+  size: [
     {
-      country: '',
-      amount: '',
+      size: '', // Size of the product
+      upc_code: '', // Upc code of the product
+      cost: '', // Cost of the product
+      srp: '', // Suggested retail price of the product
+      landed_cost: [
+        {
+          country: '',
+          amount: '',
+        },
+      ], // Landed cost of the product
     },
-  ], // Landed cost of the product
-  srp: '', // Suggested retail price of the product
+  ],
   status: '', // Status of the product (e.g., Draft or Publish)
   images: [], // Array to store uploaded product images
   product_certificates: [
@@ -448,10 +500,16 @@ const removeCertificate = (index, type) => {
   }
 }
 
+// Function to remove a product size value by its index
+const removeProductSize = (size_index) => {
+  // Remove the product size at the specified index from the product size array
+  productForm.value.size.splice(size_index, 1)
+}
+
 // Function to remove a landed cost value by its index
-const removeLandedCost = (index) => {
+const removeLandedCost = (size_index, cost_index) => {
   // Remove the landed cost at the specified index from the landed_cost array
-  productForm.value.landed_cost.splice(index, 1)
+  productForm.value.size[size_index].landed_cost.splice(cost_index, 1)
 }
 
 // Dynamic refs (stores all uploader refs)
@@ -472,8 +530,23 @@ const updateCertificateFile = (index, type) => {
   }
 }
 
-const addLandedCost = () => {
-  productForm.value.landed_cost.push({
+const addProductSize = () => {
+  productForm.value.size.push({
+    size: '',
+    upc_code: '',
+    cost: '',
+    srp: '',
+    landed_cost: [
+      {
+        country: '',
+        amount: '',
+      },
+    ],
+  })
+}
+
+const addLandedCost = (index) => {
+  productForm.value.size[index].landed_cost.push({
     country: '',
     amount: '',
   })
@@ -541,6 +614,12 @@ const saveProduct = () => {
       // Create a FormData object to prepare the data for submission
       const formData = new FormData()
 
+      // Append product details to FormData
+      formData.append('name', productForm.value.name)
+      formData.append('description', productForm.value.description)
+      formData.append('category', productForm.value.category.join(', '))
+      formData.append('status', productForm.value.status)
+
       // Append product images to FormData
       productForm.value.images.forEach((file) => {
         formData.append('images[]', file)
@@ -562,19 +641,18 @@ const saveProduct = () => {
         formData.append(`facility_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
       })
 
-      // Append landed_costs to FormData
-      productForm.value.landed_cost.forEach((cost, index) => {
-        formData.append(`landed_cost[${index}][country]`, cost.country) // Add country
-        formData.append(`landed_cost[${index}][amount]`, cost.amount) // Add amount
-      })
+      // Append sizes to FormData
+      productForm.value.size.forEach((size, size_index) => {
+        formData.append(`size[${size_index}][size]`, size.size) // Add size
+        formData.append(`size[${size_index}][upc_code]`, size.upc_code) // Add upc_code
+        formData.append(`size[${size_index}][cost]`, size.cost) // Add cost
+        formData.append(`size[${size_index}][srp]`, size.srp) // Add cost
 
-      // Append product details to FormData
-      formData.append('name', productForm.value.name)
-      formData.append('description', productForm.value.description)
-      formData.append('category', productForm.value.category.join(', '))
-      formData.append('cost', productForm.value.cost)
-      formData.append('srp', productForm.value.srp)
-      formData.append('status', productForm.value.status)
+        size.landed_cost.forEach((cost, cost_index) => {
+          formData.append(`size[${size_index}]landed_cost[${cost_index}][country]`, cost.country) // Add country
+          formData.append(`size[${size_index}]landed_cost[${cost_index}][amount]`, cost.amount) // Add amount
+        })
+      })
 
       // Call the API to insert the product
       dashboardStore
@@ -615,14 +693,20 @@ const saveProduct = () => {
               name: '',
               description: '',
               category: [],
-              cost: '',
-              landed_cost: [
+              size: [
                 {
-                  country: '',
-                  amount: '',
+                  size: '',
+                  upc_code: '',
+                  cost: '',
+                  srp: '',
+                  landed_cost: [
+                    {
+                      country: '',
+                      amount: '',
+                    },
+                  ],
                 },
               ],
-              srp: '',
               status: '',
               images: [],
               product_certificates: [
