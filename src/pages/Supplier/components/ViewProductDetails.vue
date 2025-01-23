@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="triggerStore.ViewProductDetailsDialog">
+  <q-dialog class="vendor-view-product-details" v-model="triggerStore.ViewProductDetailsDialog">
     <q-card style="width: 700px; max-width: 80vw">
       <q-card-section>
         <div class="row">
@@ -212,3 +212,18 @@ onMounted(() => {
     })
 })
 </script>
+
+<style lang="scss">
+.vendor-view-product-details {
+  .q-field--auto-height.q-field--dense .q-field__control {
+    min-height: 30px;
+    max-height: 30px;
+  }
+  .q-field--auto-height.q-field--dense .q-field__native {
+    min-height: 30px;
+  }
+  .q-field--dense .q-field__marginal {
+    height: 30px;
+  }
+}
+</style>
