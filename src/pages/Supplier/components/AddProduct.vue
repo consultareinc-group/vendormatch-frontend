@@ -52,7 +52,7 @@
             <q-card class="q-pa-md q-mb-md">
               <q-input
                 outlined
-                v-model.number="size.size"
+                v-model="size.size"
                 dense
                 label="Size"
                 :rules="[(val) => !!val || 'Size is required']"
@@ -61,7 +61,7 @@
               />
               <q-input
                 outlined
-                v-model.number="size.upc"
+                v-model="size.upc"
                 dense
                 label="UPC"
                 :rules="[(val) => !!val || 'UPC is required']"
@@ -186,7 +186,7 @@
                 :ref="(el) => (refs[`productCertificateUploadRef${index}`] = el)"
                 @vue:updated="() => updateCertificateFile(index, 'product')"
                 hide-upload-btn
-                accept=".jpg,.png,.jpeg,.pdf"
+                accept=".pdf"
                 label="Upload file"
                 color="secondary"
                 class="q-mb-md full-width"
@@ -294,7 +294,7 @@
                 :ref="(el) => (refs[`facilityCertificateUploadRef${index}`] = el)"
                 @vue:updated="() => updateCertificateFile(index, 'facility')"
                 hide-upload-btn
-                accept=".jpg,.png,.jpeg,.pdf"
+                accept=".pdf"
                 label="Upload file"
                 color="secondary"
                 class="q-mb-md full-width"
@@ -673,6 +673,7 @@ const saveProduct = () => {
             dashboardStore.Products.unshift({
               id: response.data.id,
               name: productForm.value.name,
+              size: productForm.value.size,
               category: productForm.value.category.join(', '),
               status: productForm.value.status,
             })
