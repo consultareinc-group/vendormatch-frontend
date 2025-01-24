@@ -194,7 +194,7 @@
 
               <q-input
                 outlined
-                v-model="certificate.document_name"
+                v-model="certificate.description"
                 label="Document Name"
                 :rules="[(val) => !!val || 'Document name is required']"
                 lazy-rules
@@ -302,7 +302,7 @@
 
               <q-input
                 outlined
-                v-model="certificate.document_name"
+                v-model="certificate.description"
                 label="Document Name"
                 :rules="[(val) => !!val || 'Document name is required']"
                 lazy-rules
@@ -447,7 +447,7 @@ const productForm = ref({
   product_certificates: [
     {
       file: '', // File associated with the certificate
-      document_name: '', // Name of the certificate document
+      description: '', // Name of the certificate document
       issue_date: '', // Issue date of the certificate
       expiry_date: '', // Expiry date of the certificate
     },
@@ -455,7 +455,7 @@ const productForm = ref({
   facility_certificates: [
     {
       file: '', // File associated with the certificate
-      document_name: '', // Name of the certificate document
+      description: '', // Name of the certificate document
       issue_date: '', // Issue date of the certificate
       expiry_date: '', // Expiry date of the certificate
     },
@@ -476,7 +476,7 @@ const addCertificate = (type) => {
   // Define the structure of the certificate data
   let data = {
     file: '', // File reference for the certificate
-    document_name: '', // Name of the document
+    description: '', // Name of the document
     issue_date: '', // Issue date of the certificate
     expiry_date: '', // Expiry date of the certificate
   }
@@ -628,7 +628,7 @@ const saveProduct = () => {
       // Append product certificates to FormData
       productForm.value.product_certificates.forEach((cert, index) => {
         formData.append(`product_certificates[${index}][file]`, cert.file[0]) // Add file
-        formData.append(`product_certificates[${index}][document_name]`, cert.document_name) // Add document name
+        formData.append(`product_certificates[${index}][description]`, cert.description) // Add document name
         formData.append(`product_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
         formData.append(`product_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
       })
@@ -636,7 +636,7 @@ const saveProduct = () => {
       // Append facility certificates to FormData
       productForm.value.facility_certificates.forEach((cert, index) => {
         formData.append(`facility_certificates[${index}][file]`, cert.file[0]) // Add file
-        formData.append(`facility_certificates[${index}][document_name]`, cert.document_name) // Add document name
+        formData.append(`facility_certificates[${index}][description]`, cert.description) // Add document name
         formData.append(`facility_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
         formData.append(`facility_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
       })
@@ -711,7 +711,7 @@ const saveProduct = () => {
               product_certificates: [
                 {
                   file: '',
-                  document_name: '',
+                  description: '',
                   issue_date: '',
                   expiry_date: '',
                 },
@@ -719,7 +719,7 @@ const saveProduct = () => {
               facility_certificates: [
                 {
                   file: '',
-                  document_name: '',
+                  description: '',
                   issue_date: '',
                   expiry_date: '',
                 },

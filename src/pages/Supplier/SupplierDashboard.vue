@@ -121,7 +121,7 @@
                         round
                         color="primary"
                         icon="edit"
-                        @click="editProduct(props.row)"
+                        @click="showEditProductDialog(props.row)"
                       />
                       <q-btn
                         flat
@@ -163,14 +163,14 @@
                         round
                         color="secondary"
                         icon="visibility"
-                        @click="editProduct(props.row)"
+                        @click="showEditProductDialog(props.row)"
                       />
                       <q-btn
                         flat
                         round
                         color="primary"
                         icon="edit"
-                        @click="editProduct(props.row)"
+                        @click="showEditProductDialog(props.row)"
                       />
                       <q-btn
                         flat
@@ -197,6 +197,7 @@
 
     <!-- Add/Edit Product Dialog -->
     <AddProduct v-if="triggerStore.AddProductDialog" />
+    <EditProduct v-if="triggerStore.EditProductDialog" />
     <ViewProductDetails v-if="triggerStore.ViewProductDetailsDialog" />
     <DeleteProduct v-if="triggerStore.DeleteProductDialog" />
   </q-page>
@@ -214,6 +215,7 @@ import { useTriggerStore } from 'src/stores/triggers'
 import { useQuasar } from 'quasar'
 
 import AddProduct from './components/AddProduct.vue'
+import EditProduct from './components/EditProduct.vue'
 import ViewProductDetails from './components/ViewProductDetails.vue'
 import DeleteProduct from './components/DeleteProduct.vue'
 
@@ -325,6 +327,11 @@ const services = ref([])
 
 // Define columns for the service table (currently empty)
 const serviceColumns = []
+
+const showEditProductDialog = (product_details) => {
+  dashboardStore.ProductDetails = product_details
+  triggerStore.EditProductDialog = true
+}
 
 const showProductDetailsDialog = (product_details) => {
   dashboardStore.ProductDetails = product_details
