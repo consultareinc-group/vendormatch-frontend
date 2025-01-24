@@ -4,6 +4,7 @@ export const useTriggerStore = defineStore('triggers', {
   state: () => ({
     RightDrawerOpen: false,
     AddProductDialog: false,
+    EditProductDialog: false,
     ViewProductDetailsDialog: false,
     DeleteProductDialog: false
   }),
