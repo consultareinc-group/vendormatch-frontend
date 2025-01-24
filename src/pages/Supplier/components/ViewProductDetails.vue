@@ -104,6 +104,28 @@
                 <pre style="font-family: sans-serif">{{ productDetails.description }}</pre>
               </div>
             </div>
+            <q-skeleton
+              v-if="!productDetails.product_certificates"
+              height="85px"
+              class="q-my-sm"
+            ></q-skeleton>
+            <div v-else class="q-mt-sm">
+              <label class="text-bold">Product Certificate:</label>
+              <div class="flex justify-start">
+                <div v-for="(cert, index) in productDetails.product_certificates" :key="cert">
+                  <div :id="`pdf-product-certificates${index}`"></div>
+                </div>
+              </div>
+            </div>
+            <q-skeleton v-if="!productDetails.facility_certificates" height="85px"></q-skeleton>
+            <div v-else class="q-mt-sm">
+              <label class="text-bold">Facility/Process Certificate:</label>
+              <div class="flex justify-start">
+                <div v-for="(cert, index) in productDetails.facility_certificates" :key="cert">
+                  <div :id="`pdf-facility-certificates${index}`"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </q-card-section>
@@ -149,6 +171,10 @@ import { onMounted, ref } from 'vue'
 // Import the store for dashboard-related state management
 import { useDashboardStore } from 'src/stores/dashboard'
 import { useTriggerStore } from 'src/stores/triggers'
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
+
+// Set worker source to the CDN URL
+GlobalWorkerOptions.workerSrc = '/pdf.worker.js'
 
 // Import Quasar framework utilities
 import { useQuasar } from 'quasar'
@@ -199,6 +225,17 @@ onMounted(() => {
         sizes.value = response.data.size.map((size) => size.size)
         slide.value = response.data.images[0].name
         changeProductCost()
+
+        // Generate pdf renderer
+        productDetails.value.product_certificates.forEach((cert, index) => {
+          const containerId = `pdf-product-certificates${index}`
+          createPdfThumbnail(cert.binary, containerId)
+        })
+
+        productDetails.value.facility_certificates.forEach((cert, index) => {
+          const containerId = `pdf-facility-certificates${index}`
+          createPdfThumbnail(cert.binary, containerId)
+        })
       }
     })
     .catch((error) => {
@@ -212,6 +249,60 @@ onMounted(() => {
       })
     })
 })
+
+// Function to create a thumbnail and make it clickable
+async function createPdfThumbnail(base64Pdf, containerId) {
+  // Convert base64 PDF to a Blob
+  const pdfBlob = base64ToBlob(base64Pdf, 'application/pdf')
+
+  // Create a URL for the Blob
+  const pdfUrl = URL.createObjectURL(pdfBlob)
+
+  // Render the first page of the PDF as a thumbnail
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+
+  // Use PDF.js to render the first page
+  const pdf = await getDocument(pdfUrl).promise
+  const page = await pdf.getPage(1)
+
+  const viewport = page.getViewport({ scale: 0.1 })
+  canvas.width = viewport.width
+  canvas.height = viewport.height
+
+  const renderContext = {
+    canvasContext: context,
+    viewport: viewport,
+  }
+
+  await page.render(renderContext).promise
+
+  // Append the canvas as a clickable thumbnail
+  const container = document.getElementById(containerId)
+  const thumbnailLink = document.createElement('a')
+  thumbnailLink.href = pdfUrl
+  thumbnailLink.target = '_blank' // Open the PDF in a new tab
+  thumbnailLink.appendChild(canvas)
+  container.appendChild(thumbnailLink)
+}
+
+// Function to convert base64 to a Blob
+function base64ToBlob(base64, contentType = '', sliceSize = 512) {
+  const byteCharacters = atob(base64)
+  const byteArrays = []
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize)
+    const byteNumbers = new Array(slice.length)
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i)
+    }
+    const byteArray = new Uint8Array(byteNumbers)
+    byteArrays.push(byteArray)
+  }
+
+  return new Blob(byteArrays, { type: contentType })
+}
 </script>
 
 <style lang="scss">
