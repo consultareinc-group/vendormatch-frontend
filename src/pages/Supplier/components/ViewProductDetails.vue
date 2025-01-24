@@ -20,7 +20,7 @@
                 <q-carousel-slide
                   v-for="image in productDetails.images"
                   :key="image"
-                  name="style"
+                  :name="image.name"
                   class="column flex-center"
                 >
                   <q-img :src="`data:image/jpeg;base64,${image.binary}`" alt="Product Image" />
@@ -197,6 +197,7 @@ onMounted(() => {
         // Assign a default value
         size_option.value = response.data.size[0].size
         sizes.value = response.data.size.map((size) => size.size)
+        slide.value = response.data.images[0].name
         changeProductCost()
       }
     })
