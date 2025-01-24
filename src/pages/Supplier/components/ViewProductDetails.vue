@@ -62,12 +62,27 @@
                 </div>
               </div>
               <div class="text-bold q-mt-md">Landed Cost:</div>
-              <div v-for="cost in size.landed_cost" :key="cost" class="row q-mt-xs">
-                <div class="col-8">
-                  {{ cost.country }}
-                </div>
-                <div class="col-4">${{ cost.amount }}</div>
-              </div>
+              <q-select
+                v-model="landed_cost_option"
+                dense
+                :options="landed_costs"
+                borderless
+                option-label="country"
+                option-value="amount"
+                class="q-pa-none"
+              >
+                <template v-slot:append>
+                  <div class="text-black text-body2">${{ landed_cost_option.amount }}</div>
+                </template>
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps" :clickable="false">
+                    <div class="flex justify-between items-center full-width">
+                      <div>{{ scope.opt.country }}</div>
+                      <div>${{ scope.opt.amount }}</div>
+                    </div>
+                  </q-item>
+                </template>
+              </q-select>
             </div>
             <hr class="q-mt-md" />
             <q-skeleton v-if="!size.size" square height="21px" class="q-mb-sm"></q-skeleton>
@@ -190,6 +205,9 @@ const triggerStore = useTriggerStore()
 
 const slide = ref('style')
 
+const landed_cost_option = ref('')
+const landed_costs = ref([])
+
 const size_option = ref('')
 const sizes = ref([])
 
@@ -209,6 +227,8 @@ const changeProductCost = () => {
   productDetails.value.size.forEach((product_size) => {
     if (size_option.value === product_size.size) {
       size.value = product_size
+      landed_cost_option.value = product_size.landed_cost[0]
+      landed_costs.value = product_size.landed_cost
     }
   })
 }
@@ -221,6 +241,9 @@ onMounted(() => {
       if (response.status === 'success') {
         productDetails.value = response.data
         // Assign a default value
+        landed_cost_option.value = response.data.size[0].landed_cost[0]
+        landed_costs.value = response.data.size[0].landed_cost
+        console.log('landed_cost_option.value  ', landed_cost_option.value)
         size_option.value = response.data.size[0].size
         sizes.value = response.data.size.map((size) => size.size)
         slide.value = response.data.images[0].name
