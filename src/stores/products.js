@@ -9,7 +9,7 @@ export const useProductStore = defineStore('product', {
   }),
   actions: {
     // Action to fetch products from the API with pagination support
-    async GetProducts(request) {
+    GetProducts(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch products based on the offset
         api.get(`vendor-match/product?offset="${request.offset}"`).then((response) => {
