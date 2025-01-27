@@ -6,7 +6,7 @@
         <q-card class="stats-card">
           <q-card-section>
             <div class="text-h6">Total Products</div>
-            <div class="text-h4">{{ totalProducts }}</div>
+            <div class="text-h4">{{ dashboardStore.Products.length }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -14,7 +14,7 @@
         <q-card class="stats-card">
           <q-card-section>
             <div class="text-h6">Publish Listings</div>
-            <div class="text-h4">{{ activeListings }}</div>
+            <div class="text-h4">{{ publishListingCount }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -49,7 +49,7 @@
             narrow-indicator
           >
             <q-tab name="products" label="My Products" />
-            <q-tab name="services" label="My Services" />
+            <!-- <q-tab name="services" label="My Services" /> -->
           </q-tabs>
 
           <q-separator />
@@ -205,7 +205,7 @@
 
 <script setup>
 // Import Vue's reactive and lifecycle utilities
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 // Import the store for dashboard-related state management
 import { useDashboardStore } from 'src/stores/dashboard'
@@ -231,11 +231,10 @@ const triggerStore = useTriggerStore()
 // Reactive reference to control the visibility of the "Add Product" dialog
 const addProductDialog = ref(false)
 
-// Reactive reference to track the total number of products
-const totalProducts = ref(0)
-
 // Reactive reference to track the number of active product listings
-const activeListings = ref(0)
+const publishListingCount = computed(() => {
+  return dashboardStore.Products.filter((product) => product.status === 'Publish').length // count publish listing products
+})
 
 // Reactive reference to track the number of views from retailers
 const retailerViews = ref(0)
