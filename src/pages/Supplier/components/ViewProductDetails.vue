@@ -23,7 +23,11 @@
                   :name="image.name"
                   class="column flex-center"
                 >
-                  <q-img :src="`data:image/jpeg;base64,${image.binary}`" alt="Product Image" />
+                  <q-img
+                    class="full-width"
+                    :src="`data:image/jpeg;base64,${image.binary}`"
+                    alt="Product Image"
+                  />
                 </q-carousel-slide>
               </q-carousel>
             </div>
@@ -116,7 +120,9 @@
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
               <div>
-                <pre style="font-family: sans-serif">{{ productDetails.description }}</pre>
+                <pre style="font-family: sans-serif; overflow: overlay">{{
+                  productDetails.description
+                }}</pre>
               </div>
             </div>
             <q-skeleton
@@ -128,7 +134,7 @@
               <label class="text-bold">Product Certificate:</label>
               <div class="flex justify-start">
                 <div v-for="(cert, index) in productDetails.product_certificates" :key="cert">
-                  <div :id="`pdf-product-certificates${index}`"></div>
+                  <div :id="`pdf-product-certificates${index}`" class="q-mr-xs"></div>
                 </div>
               </div>
             </div>
@@ -137,7 +143,7 @@
               <label class="text-bold">Facility/Process Certificate:</label>
               <div class="flex justify-start">
                 <div v-for="(cert, index) in productDetails.facility_certificates" :key="cert">
-                  <div :id="`pdf-facility-certificates${index}`"></div>
+                  <div :id="`pdf-facility-certificates${index}`" class="q-mr-xs"></div>
                 </div>
               </div>
             </div>
@@ -340,5 +346,10 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
   .q-field--dense .q-field__marginal {
     height: 30px;
   }
+
+  // .q-carousel__slide {
+  //   background-size: 100% 100%;
+  //   background-repeat: no-repeat;
+  // }
 }
 </style>
