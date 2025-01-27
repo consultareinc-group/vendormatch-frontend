@@ -5,19 +5,17 @@
       <div class="col-12">
         <div class="row q-col-gutter-sm">
           <div
-            v-for="product in filteredProducts"
+            v-for="product in productStore.Products"
             :key="product.id"
             class="col-12 col-sm-6 col-md-3"
           >
             <q-card class="product-card">
-              <q-img :src="product.images[0].__key" :ratio="1" class="product-image" />
+              <q-img :src="'../../png.png'" :ratio="1" class="product-image" />
 
               <q-card-section>
-                <div class="text-h6">{{ product.name }}</div>
-                <div class="text-subtitle2">{{ product.category }}</div>
-                <div class="text-body2 q-mt-sm">
-                  <span class="text-grey">Cost:</span> ${{ product.cost }}
-                </div>
+                <div class="text-h6">Name</div>
+                <div class="text-subtitle2">Category</div>
+                <div class="text-body2 q-mt-sm"><span class="text-grey">Cost:</span> $</div>
               </q-card-section>
 
               <q-card-actions align="right">
@@ -37,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
@@ -52,25 +50,6 @@ onMounted(() => {
 })
 onBeforeRouteLeave(() => {
   triggerStore.RightDrawerOpen = false
-})
-
-const searchQuery = ref('')
-const selectedCategories = ref([])
-const costRange = ref({ min: 0, max: 1000 })
-
-const filteredProducts = computed(() => {
-  return productStore.products.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.value.toLowerCase())
-
-    const matchesCategory =
-      selectedCategories.value.length === 0 || selectedCategories.value.includes(product.category)
-
-    const matchesCost = product.cost >= costRange.value.min && product.cost <= costRange.value.max
-
-    return matchesSearch && matchesCategory && matchesCost
-  })
 })
 </script>
 

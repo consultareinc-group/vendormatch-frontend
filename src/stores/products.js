@@ -1,66 +1,86 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { defineStore } from 'pinia'; // Import Pinia's defineStore to create a state management store
+import { api } from 'boot/axios'; // Import the axios instance for API requests
 
-export const useProductStore = defineStore('products', () => {
-  const products = ref([
-    {
-      category: "Food",
-      description: "Description",
-      id: "1736875333123",
-      images: [new File([], "file1")], // Replace "file1" with the actual file name
-      name: "Product1",
-      cost: 20,
-      status: "draft",
-      supplierId: "current-user-id"
+// Define a Pinia store named 'counter' for managing products-related data
+export const useProductStore = defineStore('product', {
+  state: () => ({
+    Products: [],
+    ProductDetails: {}
+  }),
+  actions: {
+    // Action to fetch products from the API with pagination support
+    async GetProducts(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch products based on the offset
+        api.get(`vendor-match/product?offset="${request.offset}"`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((error) => {
+          reject(error); // Reject the promise with the error response data
+        });
+      });
     },
-    {
-      category: "Food",
-      description: "Description",
-      id: "1736875340693",
-      images: [new File([], "file2")], // Replace "file2" with the actual file name
-      name: "Product2",
-      cost: 20,
-      status: "draft",
-      supplierId: "current-user-id"
+    // Action to fetch specific products from the API
+    GetProduct(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch products based on the offset
+        api.get(`vendor-match/product/${request.id}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
     },
-    {
-      category: "Food",
-      description: "Description",
-      id: "1736875344782",
-      images: [new File([], "file3")], // Replace "file3" with the actual file name
-      name: "Product3",
-      cost: 20,
-      status: "draft",
-      supplierId: "current-user-id"
+    // Action to search for products using a keyword
+    SearchProducts(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch products matching the search keyword
+        api.get(`vendor-match/product?search_keyword="${request.keyword}"`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
     },
-    {
-      category: "Non-Food",
-      description: "Description",
-      id: "1736875462097",
-      images: [new File([], "file4")], // Replace "file4" with the actual file name
-      name: "Product4",
-      cost: 20,
-      status: "draft",
-      supplierId: "current-user-id"
-    }
-  ]);
-  const loading = ref(false);
+    // Action to insert products
+    InsertProduct(request) {
+      return new Promise((resolve, reject) => {
+        // Define headers with Content-Type
+        const headers = {
+          'Content-Type': 'multipart/form-data'
+        };
 
-  function addProduct(product) {
-    products.value.push(product);
-  }
-
-  function updateProduct(id, updates) {
-    const index = products.value.findIndex(p => p.id === id);
-    if (index !== -1) {
-      products.value[index] = { ...products.value[index], ...updates };
-    }
-  }
-
-  return {
-    products,
-    loading,
-    addProduct,
-    updateProduct
-  };
-});
+        // Make a POST request to insert products in the database products table
+        api
+          .post(`vendor-match/product`, request, { headers })
+          .then((response) => {
+            resolve(response.data); // Resolve the promise with the API response data
+          })
+          .catch((error) => {
+            reject(error); // Reject the promise if the API request fails
+          });
+      });
+    },
+    // Action to insert products
+    UpdateProduct(request) {
+      return new Promise((resolve, reject) => {
+        // Make a POST request to insert products in the database products table
+        api.put(`vendor-match/product/${request.id}`, request).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
+    },
+    // Action to delete product
+    DeleteProduct(request) {
+      return new Promise((resolve, reject) => {
+        // Make a DELETE request to delete product in the database products table
+        api.delete(`vendor-match/product/${request.id}`, { data: request }).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
+    },
+  },
+})
