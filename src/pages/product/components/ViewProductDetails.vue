@@ -116,7 +116,9 @@
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
               <div>
-                <pre style="font-family: sans-serif">{{ productDetails.description }}</pre>
+                <pre style="font-family: sans-serif; overflow: overlay">{{
+                  productDetails.description
+                }}</pre>
               </div>
             </div>
             <q-skeleton
@@ -128,7 +130,7 @@
               <label class="text-bold">Product Certificate:</label>
               <div class="flex justify-start">
                 <div v-for="(cert, index) in productDetails.product_certificates" :key="cert">
-                  <div :id="`pdf-product-certificates${index}`"></div>
+                  <div :id="`pdf-product-certificates${index}`" class="q-mr-xs"></div>
                 </div>
               </div>
             </div>
@@ -137,7 +139,7 @@
               <label class="text-bold">Facility/Process Certificate:</label>
               <div class="flex justify-start">
                 <div v-for="(cert, index) in productDetails.facility_certificates" :key="cert">
-                  <div :id="`pdf-facility-certificates${index}`"></div>
+                  <div :id="`pdf-facility-certificates${index}`" class="q-mr-xs"></div>
                 </div>
               </div>
             </div>
@@ -147,7 +149,7 @@
 
       <q-card-actions align="right">
         <q-btn flat label="Close" color="primary" no-caps v-close-popup />
-        <!-- <q-btn flat label="Connect to Vendor" no-caps color="primary bg-secondary text-white" /> -->
+        <q-btn flat label="Connect to Vendor" no-caps color="primary bg-secondary text-white" />
       </q-card-actions>
     </q-card>
 
