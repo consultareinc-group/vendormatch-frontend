@@ -1,6 +1,6 @@
 <template>
   <q-dialog class="vendor-view-product-details" v-model="triggerStore.ViewProductDetailsDialog">
-    <q-card style="width: 700px; max-width: 80vw">
+    <q-card style="width: 800px; max-width: 80vw">
       <q-card-section>
         <div class="row">
           <div class="col-6">
@@ -149,7 +149,7 @@
 
       <q-card-actions align="right">
         <q-btn flat label="Close" color="primary" no-caps v-close-popup />
-        <q-btn flat label="Connect to Vendor" no-caps color="primary bg-secondary text-white" />
+        <!-- <q-btn flat label="Connect to Vendor" no-caps color="primary bg-secondary text-white" /> -->
       </q-card-actions>
     </q-card>
 
