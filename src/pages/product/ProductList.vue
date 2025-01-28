@@ -83,7 +83,7 @@ const cardLoadingState = ref(true)
 onMounted(() => {
   triggerStore.RightDrawerOpen = true
   productStore
-    .GetProducts({ offset: productStore.Products.length })
+    .GetProducts(`offset="${productStore.Products.length}&include_image=1"`)
     .then((response) => {
       if (response.status === 'success') {
         productStore.Products = response.data
