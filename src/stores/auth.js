@@ -28,7 +28,7 @@ export const useUserStore = defineStore('login', {
           .post(`vendor-match/login`, request)
           .then((response) => {
             if (response.data.data.status === 'success') {
-              SetBearerToken(response.data.data.message.bearer_toker)
+              // SetBearerToken(response.data.data.message.bearer_toker)
             }
             resolve(response.data); // Resolve the promise with the API response data
           })
@@ -43,7 +43,7 @@ export const useUserStore = defineStore('login', {
       } else {
         LocalStorage.remove('Bearer');
       }
-    };
+    }
 
   },
 })
