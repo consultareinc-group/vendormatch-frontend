@@ -73,7 +73,7 @@
                 :rows="productStore.Products"
                 :columns="productColumns"
                 row-key="id"
-                :loading="tableLoadingState"
+                :loading="!productStore.Products.length"
                 class="sticky-table-header"
                 color="primary"
               >
@@ -310,14 +310,10 @@ const getProducts = () => {
         html: true, // Enable HTML content
       })
     })
-    .finally(() => {
-      tableLoadingState.value = false
-    })
 }
 
 // Execute when the component is mounted
 onMounted(() => {
-  tableLoadingState.value = true // Set the table loading state to true to show a loading indicator
   getProducts() // Fetch the list of products
 })
 
