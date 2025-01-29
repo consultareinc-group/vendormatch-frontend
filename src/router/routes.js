@@ -36,10 +36,11 @@ const routes = [
       // },
     ]
   },
-  // {
-  //     path: '/login',
-  //     component: () => import('pages/Login.vue')
-  //   },
+  {
+    path: '/signin',
+    component: () => import('src/pages/SignIn.vue')
+  },
+
 
   // Always leave this as last one,
   // but you can also remove it
