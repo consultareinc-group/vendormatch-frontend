@@ -5,13 +5,15 @@ const routes = [
     children: [
       {
         path: 'dashboard/vendor',
+        name: 'vendor',
         component: () => import('src/pages/supplier/SupplierDashboard.vue'),
-        meta: { requiresAuth: true, role: 'supplier' }
+        meta: { role: 'vendor' }
       },
       {
         path: 'dashboard/buyer',
+        name: 'buyer',
         component: () => import('src/pages/buyer/BuyerDashboard.vue'),
-        meta: { requiresAuth: true, role: 'retailer' }
+        meta: { role: 'buyer' }
       },
     ]
   },
