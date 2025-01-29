@@ -416,6 +416,7 @@ const sendMessage = () => {
         .then((response) => {
           if (response.status === 'success') {
             messages.value.push(response.data)
+            message.value = ''
           }
         })
         .catch((error) => {
