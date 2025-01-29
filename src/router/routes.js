@@ -13,13 +13,15 @@ const routes = [
       },
       {
         path: 'dashboard/vendor',
-        component: () => import('pages/SupplierDashboard.vue'),
-        meta: { requiresAuth: true, role: 'supplier' }
+        name: 'vendor',
+        component: () => import('src/pages/supplier/SupplierDashboard.vue'),
+        meta: { role: 'vendor' }
       },
       {
         path: 'dashboard/buyer',
-        component: () => import('pages/RetailerDashboard.vue'),
-        meta: { requiresAuth: true, role: 'retailer' }
+        name: 'buyer',
+        component: () => import('src/pages/buyer/BuyerDashboard.vue'),
+        meta: { role: 'buyer' }
       },
       // {
       //   path: 'login',
