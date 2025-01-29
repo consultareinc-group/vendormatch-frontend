@@ -2,17 +2,17 @@ import { defineStore } from 'pinia'; // Import Pinia's defineStore to create a s
 import { api } from 'boot/axios'; // Import the axios instance for API requests
 
 // Define a Pinia store named 'counter' for managing products-related data
-export const useDashboardStore = defineStore('dashboard', {
+export const useProductStore = defineStore('product', {
   state: () => ({
     Products: [],
     ProductDetails: {}
   }),
   actions: {
     // Action to fetch products from the API with pagination support
-    async GetProducts(request) {
+    GetProducts(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch products based on the offset
-        api.get(`vendor-match/product?offset="${request.offset}"`).then((response) => {
+        api.get(`vendor-match/product?${request}`).then((response) => {
           resolve(response.data); // Resolve the promise with the API response data
         }).catch((error) => {
           reject(error); // Reject the promise with the error response data
@@ -34,7 +34,7 @@ export const useDashboardStore = defineStore('dashboard', {
     SearchProducts(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch products matching the search keyword
-        api.get(`vendor-match/product?search_keyword="${request.keyword}"`).then((response) => {
+        api.get(`vendor-match/product?${request}`).then((response) => {
           resolve(response.data); // Resolve the promise with the API response data
         }).catch((response) => {
           reject(response.data); // Reject the promise if the API request fails

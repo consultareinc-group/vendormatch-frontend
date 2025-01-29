@@ -190,7 +190,7 @@
 import { onMounted, ref } from 'vue'
 
 // Import the store for dashboard-related state management
-import { useDashboardStore } from 'src/stores/dashboard'
+import { useProductStore } from 'src/stores/product'
 import { useTriggerStore } from 'src/stores/triggers'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
 
@@ -204,7 +204,7 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
 // Initialize the dashboard store for state and actions related to the dashboard
-const dashboardStore = useDashboardStore()
+const productStore = useProductStore()
 
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
@@ -241,8 +241,8 @@ const changeProductCost = () => {
 
 onMounted(() => {
   productDetails.value = { images: [] }
-  dashboardStore
-    .GetProduct({ id: dashboardStore.ProductDetails.id })
+  productStore
+    .GetProduct({ id: productStore.ProductDetails.id })
     .then((response) => {
       if (response.status === 'success') {
         productDetails.value = response.data

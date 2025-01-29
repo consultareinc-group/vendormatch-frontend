@@ -411,7 +411,7 @@
 import { ref, onMounted } from 'vue'
 
 // Import the store for dashboard-related state management
-import { useDashboardStore } from 'src/stores/dashboard'
+import { useProductStore } from 'src/stores/product'
 import { useTriggerStore } from 'src/stores/triggers'
 
 // Import Quasar framework utilities
@@ -421,7 +421,7 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
 // Initialize the dashboard store for state and actions related to the dashboard
-const dashboardStore = useDashboardStore()
+const productStore = useProductStore()
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
 
@@ -471,8 +471,8 @@ const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
 const statuses = ['Draft', 'Publish']
 
 onMounted(() => {
-  dashboardStore
-    .GetProduct({ id: dashboardStore.ProductDetails.id })
+  productStore
+    .GetProduct({ id: productStore.ProductDetails.id })
     .then((response) => {
       if (response.status === 'success') {
         productForm.value = response.data

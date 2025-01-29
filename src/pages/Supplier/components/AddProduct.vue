@@ -409,7 +409,7 @@
 import { ref } from 'vue'
 
 // Import the store for dashboard-related state management
-import { useDashboardStore } from 'src/stores/dashboard'
+import { useProductStore } from 'src/stores/product'
 import { useTriggerStore } from 'src/stores/triggers'
 
 // Import Quasar framework utilities
@@ -419,7 +419,7 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
 // Initialize the dashboard store for state and actions related to the dashboard
-const dashboardStore = useDashboardStore()
+const productStore = useProductStore()
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
 
@@ -656,7 +656,7 @@ const saveProduct = () => {
       })
 
       // Call the API to insert the product
-      dashboardStore
+      productStore
         .InsertProduct(formData)
         .then((response) => {
           let status = Boolean(response.status === 'success') // Determine the status of the response
@@ -670,7 +670,7 @@ const saveProduct = () => {
 
           // Add the new product to the table if successful
           if (status) {
-            dashboardStore.Products.unshift({
+            productStore.Products.unshift({
               id: response.data.id,
               name: productForm.value.name,
               size: productForm.value.size,

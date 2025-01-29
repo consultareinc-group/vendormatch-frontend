@@ -6,7 +6,7 @@
         <q-card class="stats-card">
           <q-card-section>
             <div class="text-h6">Total Products</div>
-            <div class="text-h4">{{ dashboardStore.Products.length }}</div>
+            <div class="text-h4">{{ productStore.Products.length }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -70,7 +70,7 @@
               </div>
 
               <q-table
-                :rows="dashboardStore.Products"
+                :rows="productStore.Products"
                 :columns="productColumns"
                 row-key="id"
                 :loading="tableLoadingState"
@@ -208,7 +208,7 @@
 import { ref, onMounted, computed } from 'vue'
 
 // Import the store for dashboard-related state management
-import { useDashboardStore } from 'src/stores/dashboard'
+import { useProductStore } from 'src/stores/product'
 import { useTriggerStore } from 'src/stores/triggers'
 
 // Import Quasar framework utilities
@@ -223,7 +223,7 @@ import DeleteProduct from './components/DeleteProduct.vue'
 const $q = useQuasar()
 
 // Initialize the dashboard store for state and actions related to the dashboard
-const dashboardStore = useDashboardStore()
+const productStore = useProductStore()
 
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
@@ -233,7 +233,7 @@ const addProductDialog = ref(false)
 
 // Reactive reference to track the number of active product listings
 const publishListingCount = computed(() => {
-  return dashboardStore.Products.filter((product) => product.status === 'Publish').length // count publish listing products
+  return productStore.Products.filter((product) => product.status === 'Publish').length // count publish listing products
 })
 
 // Reactive reference to track the number of views from retailers
@@ -287,12 +287,12 @@ const productColumns = [
 
 // Function to fetch the list of products, recursively fetching until all are loaded
 const getProducts = () => {
-  dashboardStore
-    .GetProducts({ offset: dashboardStore.Products.length })
+  productStore
+    .GetProducts(`offset=${productStore.Products.length}&include_image=1`)
     .then((response) => {
       if (response.status === 'success') {
         response.data.forEach((data) => {
-          dashboardStore.Products.push(data)
+          productStore.Products.push(data)
         })
 
         if (response.data.length) {
@@ -328,18 +328,18 @@ const services = ref([])
 const serviceColumns = []
 
 const showEditProductDialog = (product_details) => {
-  dashboardStore.ProductDetails = product_details
+  productStore.ProductDetails = product_details
   triggerStore.EditProductDialog = true
 }
 
 const showProductDetailsDialog = (product_details) => {
-  dashboardStore.ProductDetails = product_details
+  productStore.ProductDetails = product_details
   triggerStore.ViewProductDetailsDialog = true
 }
 
 const showDeleteDialog = (product_details) => {
   triggerStore.DeleteProductDialog = true
-  dashboardStore.ProductDetails = product_details
+  productStore.ProductDetails = product_details
 }
 </script>
 

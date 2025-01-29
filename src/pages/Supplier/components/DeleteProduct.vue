@@ -6,7 +6,7 @@
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        Are you sure you want to delete <b>{{ dashboardStore.ProductDetails.name }}?</b>
+        Are you sure you want to delete <b>{{ productStore.ProductDetails.name }}?</b>
       </q-card-section>
 
       <q-card-actions align="right">
@@ -28,7 +28,7 @@
 import { ref } from 'vue'
 
 // Import the store for dashboard-related state management
-import { useDashboardStore } from 'src/stores/dashboard'
+import { useProductStore } from 'src/stores/product'
 import { useTriggerStore } from 'src/stores/triggers'
 
 // Import Quasar framework utilities
@@ -38,7 +38,7 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
 // Initialize the dashboard store for state and actions related to the dashboard
-const dashboardStore = useDashboardStore()
+const productStore = useProductStore()
 
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
@@ -49,8 +49,8 @@ const btnDeleteLoadingState = ref(false)
 const deleteProduct = () => {
   btnDeleteLoadingState.value = true
   // Handle product deletion
-  dashboardStore
-    .DeleteProduct({ id: dashboardStore.ProductDetails.id })
+  productStore
+    .DeleteProduct({ id: productStore.ProductDetails.id })
     .then((response) => {
       let status = Boolean(response.status === 'success') // Determine the status of the response
       $q.notify({
@@ -62,11 +62,11 @@ const deleteProduct = () => {
       })
 
       if (status) {
-        const index = dashboardStore.Products.findIndex(
-          (product) => product.id === dashboardStore.ProductDetails.id,
+        const index = productStore.Products.findIndex(
+          (product) => product.id === productStore.ProductDetails.id,
         )
         if (index !== -1) {
-          dashboardStore.Products.splice(index, 1) // Remove the product at the found index
+          productStore.Products.splice(index, 1) // Remove the product at the found index
         }
         deleteProductDialog.value = false
       }
