@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useTriggerStore = defineStore('triggers', {
   state: () => ({
-    RightDrawerOpen: true,
+    RightDrawerOpen: false,
     AddProductDialog: false,
     EditProductDialog: false,
     ViewProductDetailsDialog: false,
