@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useTriggerStore } from 'src/stores/triggers'
 import { useProductStore } from 'src/stores/products'
 import { useQuasar } from 'quasar'
@@ -62,10 +62,6 @@ import { useQuasar } from 'quasar'
 const productStore = useProductStore()
 const triggerStore = useTriggerStore()
 const $q = useQuasar()
-
-onMounted(() => {
-  triggerStore.RightDrawerOpen = false
-})
 
 const searchQuery = ref('')
 const selectedCategories = ref([])
