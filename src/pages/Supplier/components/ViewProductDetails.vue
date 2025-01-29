@@ -190,7 +190,7 @@
 import { onMounted, ref } from 'vue'
 
 // Import the store for dashboard-related state management
-import { useProductStore } from 'src/stores/product'
+import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
 
