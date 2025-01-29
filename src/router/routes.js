@@ -9,7 +9,7 @@ const routes = [
       {
         path: 'products',
         name: 'products',
-        component: () => import('pages/ProductList.vue')
+        component: () => import('src/pages/product/ProductList.vue')
       },
       {
         path: 'dashboard/vendor',
