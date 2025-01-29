@@ -41,8 +41,8 @@
           </q-input>
 
           <div class="row items-center justify-between">
-            <q-checkbox v-model="rememberMe" label="Remember me" />
-            <q-btn flat color="primary" label="Forgot Password?" />
+            <q-checkbox color="secondary" v-model="rememberMe" label="Remember me" />
+            <q-btn flat color="primary" no-caps label="Forgot Password?" />
           </div>
 
           <q-btn
@@ -70,11 +70,11 @@
 <script setup>
 import { ref } from 'vue'
 // import { useRouter } from 'vue-router'
-// import { useAuthStore } from 'src/stores/auth'
+import { useAuthStore } from 'src/stores/auth'
 // import { useQuasar } from 'quasar'
 
 // const router = useRouter()
-// const authStore = useAuthStore()
+const authStore = useAuthStore()
 // const $q = useQuasar()
 
 const form = ref({
@@ -86,8 +86,18 @@ const isPwd = ref(true)
 const rememberMe = ref(false)
 const btnLoadingState = ref(false)
 
-const onSubmit = async () => {
+const onSubmit = () => {
   btnLoadingState.value = true
+  authStore
+    .LoginUser(form.value)
+    .then((response) => {
+      if (response.data.status === 'success') {
+        console.log(response.data)
+      }
+    })
+    .finally(() => {
+      btnLoadingState.value = false
+    })
 }
 </script>
 

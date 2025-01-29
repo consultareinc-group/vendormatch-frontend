@@ -3,7 +3,7 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 import { LocalStorage } from 'quasar';
 
 // Define a Pinia store named 'counter' for managing users-related data
-export const useUserStore = defineStore('login', {
+export const useAuthStore = defineStore('signin', {
   state: () => ({
     UserInformation: {}
   }),
@@ -12,7 +12,7 @@ export const useUserStore = defineStore('login', {
     GetUser(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch users based on the offset
-        api.get(`vendor-match/login/${request.id}`).then((response) => {
+        api.get(`login/${request.id}`).then((response) => {
           resolve(response.data); // Resolve the promise with the API response data
         }).catch((response) => {
           reject(response.data); // Reject the promise if the API request fails
@@ -25,10 +25,11 @@ export const useUserStore = defineStore('login', {
       return new Promise((resolve, reject) => {
         // Make a POST request to insert users in the database users table
         api
-          .post(`vendor-match/login`, request)
+          .post(`login`, request)
           .then((response) => {
-            if (response.data.data.status === 'success') {
-              // SetBearerToken(response.data.data.message.bearer_toker)
+            if (response.data.status === 'success') {
+              this.UserInformation = response.data.data
+              this.SetBearerToken(response.data.data.bearer_token)
             }
             resolve(response.data); // Resolve the promise with the API response data
           })
@@ -37,6 +38,18 @@ export const useUserStore = defineStore('login', {
           });
       });
     },
+
+    ValidateToken(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch users based on the offset
+        api.get(`login/${request.id}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
+    },
+
     SetBearerToken(token) {
       if (token !== null) {
         LocalStorage.set('Bearer', token);
