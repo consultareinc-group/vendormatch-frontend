@@ -9,18 +9,14 @@ import { LocalStorage } from 'quasar';
 // "export default () => {}" function below (which runs individually
 // for each client)
 
-let axiosConfig = {
+const api = axios.create({
   baseURL: 'http://127.0.0.1:8000/api/',
-  withCredentials: true,
+  withCredentials: false, // Required for Sanctum authentication
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${LocalStorage.getItem('Bearer') || ''}`,
   },
-  xsrfCookieName: 'access_token',
-  data: {},
-};
-
-const api = axios.create(axiosConfig)
+})
 
 export default defineBoot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
