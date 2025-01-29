@@ -27,6 +27,48 @@
                 </q-carousel-slide>
               </q-carousel>
             </div>
+            <div>
+              <div class="text-bold q-mt-md">Send Inquiry</div>
+              <q-skeleton v-if="!messages.length" height="300px"></q-skeleton>
+              <div v-else class="q-mt-md row justify-center scroll">
+                <div
+                  ref="chatContainer"
+                  class="q-pa-md full-width"
+                  style="border: 1px solid #dfdfdf; max-height: 400px; overflow-y: scroll"
+                >
+                  <q-chat-message
+                    v-for="message in messages"
+                    :key="message"
+                    :bg-color="message.sent_by === 2 ? 'accent' : 'grey-4'"
+                    :name="message.sent_by === 2 ? 'You' : 'Nutrivana Foods'"
+                    :text="[message.message]"
+                    :sent="message.sent_by === 2"
+                    :stamp="timeAgo(message.date_time)"
+                  />
+                </div>
+              </div>
+              <q-form ref="messageForm" greedy>
+                <div class="full-width q-mt-sm">
+                  <q-input
+                    v-model="message"
+                    :rules="[(val) => !!val || '']"
+                    lazy-rules
+                    placeholder="Please type your message here"
+                    outlined
+                    type="textarea"
+                  />
+                </div>
+                <div class="flex justify-end full-width q-mt-sm">
+                  <q-btn
+                    @click="sendMessage()"
+                    :loading="btnMessageLoadingState"
+                    label="Send Message"
+                    no-caps
+                    color="secondary"
+                  ></q-btn>
+                </div>
+              </q-form>
+            </div>
           </div>
           <div class="col-6 q-px-md">
             <q-skeleton
@@ -115,7 +157,7 @@
             ></q-skeleton>
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
-              <div>
+              <div class="scroll">
                 <pre style="font-family: sans-serif; overflow: overlay">{{
                   productDetails.description
                 }}</pre>
@@ -183,11 +225,12 @@
 
 <script setup>
 // Import Vue's reactive and lifecycle utilities
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, nextTick, watch } from 'vue'
 
 // Import the store for dashboard-related state management
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
+import { useMessageStore } from 'src/stores/chat'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
 
 // Set worker source to the CDN URL
@@ -327,6 +370,94 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
 
   return new Blob(byteArrays, { type: contentType })
 }
+
+const messages = ref([])
+onMounted(() => {
+  messageStore.GetMessages(`product_id=${80}&buyer_id=${2}&vendor_id=${1}`).then((response) => {
+    if (response.status === 'success') {
+      messages.value = response.data
+    }
+  })
+})
+
+const chatContainer = ref(null)
+
+const scrollToBottom = () => {
+  if (chatContainer.value) {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+  }
+}
+// Watch for changes in messages and scroll to bottom when updated
+watch(
+  messages,
+  async () => {
+    await nextTick()
+    scrollToBottom()
+  },
+  { deep: true },
+)
+
+const messageStore = useMessageStore()
+const message = ref('')
+const btnMessageLoadingState = ref(false)
+const messageForm = ref('')
+const sendMessage = () => {
+  messageForm.value.validate().then((success) => {
+    if (success) {
+      console.log('productStore ', productDetails.value)
+      btnMessageLoadingState.value = true
+      const payload = {
+        product_id: productStore.ProductDetails.id,
+        vendor_id: productDetails.value.vendor_id,
+        message: message.value,
+      }
+      messageStore
+        .InsertMessage(payload)
+        .then((response) => {
+          if (response.status === 'success') {
+            messages.value.push(response.data)
+          }
+        })
+        .catch((error) => {
+          // Notify user of the error
+          $q.notify({
+            message: `<p class='q-mb-none'>${error.message}</p>`,
+            color: `red-2`,
+            position: 'top-right',
+            textColor: `red`,
+            html: true,
+          })
+        })
+        .finally(() => {
+          btnMessageLoadingState.value = false
+        })
+    }
+  })
+}
+
+const timeAgo = (timestamp) => {
+  const now = new Date()
+  const past = new Date(timestamp)
+  const diffInSeconds = Math.floor((now - past) / 1000)
+
+  const intervals = [
+    { label: 'year', seconds: 31536000 },
+    { label: 'month', seconds: 2592000 },
+    { label: 'week', seconds: 604800 },
+    { label: 'day', seconds: 86400 },
+    { label: 'hour', seconds: 3600 },
+    { label: 'minute', seconds: 60 },
+    { label: 'second', seconds: 1 },
+  ]
+
+  for (const interval of intervals) {
+    const count = Math.floor(diffInSeconds / interval.seconds)
+    if (count >= 1) {
+      return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`
+    }
+  }
+  return 'just now'
+}
 </script>
 
 <style lang="scss">
@@ -340,6 +471,68 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
   }
   .q-field--dense .q-field__marginal {
     height: 30px;
+  }
+
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: $secondary;
+  }
+
+  /* Firefox */
+  scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  scrollbar-thumb {
+    background: $secondary;
+  }
+
+  .scroll {
+    /* Webkit browsers (Chrome, Safari, Edge) */
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: $secondary;
+    }
+
+    /* Firefox */
+    scrollbar {
+      width: 2px;
+    }
+
+    /* Track */
+    scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    scrollbar-thumb {
+      background: $secondary;
+    }
   }
 }
 </style>
