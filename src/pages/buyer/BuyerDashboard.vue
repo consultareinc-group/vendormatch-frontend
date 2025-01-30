@@ -29,8 +29,8 @@
       <div class="col-12 col-sm-6 col-md-3">
         <q-card class="stats-card">
           <q-card-section>
-            <div class="text-h6">Connected Suppliers</div>
-            <div class="text-h4">{{ connectedSuppliers }}</div>
+            <div class="text-h6">Connected vendors</div>
+            <div class="text-h4">{{ connectedvendors }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -70,7 +70,7 @@
 
                 <q-item-section>
                   <q-item-label>{{ product.name }}</q-item-label>
-                  <q-item-label caption>{{ product.supplier }}</q-item-label>
+                  <q-item-label caption>{{ product.vendor }}</q-item-label>
                 </q-item-section>
 
                 <q-item-section side>
@@ -79,7 +79,7 @@
                     round
                     color="secondary"
                     icon="message"
-                    @click="contactSupplier(product)"
+                    @click="contactvendor(product)"
                   />
                 </q-item-section>
               </q-item>
@@ -103,7 +103,7 @@
                   <q-img :src="product.image" :ratio="1" />
                   <q-card-section>
                     <div class="text-subtitle1">{{ product.name }}</div>
-                    <div class="text-caption">{{ product.supplier }}</div>
+                    <div class="text-caption">{{ product.vendor }}</div>
                   </q-card-section>
                   <q-card-actions align="right">
                     <q-btn flat round color="grey" icon="favorite_border" />
@@ -129,7 +129,7 @@ const $q = useQuasar()
 const viewedProducts = ref(45)
 const savedProducts = ref(12)
 const activeInquiries = ref(3)
-const connectedSuppliers = ref(8)
+const connectedvendors = ref(8)
 
 // Recent Activity
 const recentActivity = ref([
@@ -161,19 +161,19 @@ const savedProductsList = ref([
   {
     id: 1,
     name: 'Organic Coffee Beans',
-    supplier: 'Green Mountain Coffee',
+    vendor: 'Green Mountain Coffee',
     image: 'src/assets/vinegar.jpg',
   },
   {
     id: 2,
     name: 'Bamboo Cutlery Set',
-    supplier: 'Eco Essentials',
+    vendor: 'Eco Essentials',
     image: 'src/assets/vinegar.jpg',
   },
   {
     id: 3,
     name: 'Natural Honey',
-    supplier: 'Beekeepers Co',
+    vendor: 'Beekeepers Co',
     image: 'src/assets/vinegar.jpg',
   },
 ])
@@ -183,32 +183,32 @@ const recommendedProducts = ref([
   {
     id: 1,
     name: 'Vinegar',
-    supplier: 'Tea Masters Inc',
+    vendor: 'Tea Masters Inc',
     image: 'src/assets/vinegar.jpg',
   },
   {
     id: 2,
     name: 'Vinegar',
-    supplier: 'Green Living',
+    vendor: 'Green Living',
     image: 'src/assets/vinegar.jpg',
   },
   {
     id: 3,
     name: 'Vinegar',
-    supplier: 'Natural Foods Co',
+    vendor: 'Natural Foods Co',
     image: 'src/assets/vinegar.jpg',
   },
   {
     id: 4,
     name: 'Vinegar',
-    supplier: 'Wellness Foods',
+    vendor: 'Wellness Foods',
     image: 'src/assets/vinegar.jpg',
   },
 ])
 
-const contactSupplier = (product) => {
+const contactvendor = (product) => {
   $q.notify({
-    message: `Opening chat with ${product.supplier}`,
+    message: `Opening chat with ${product.vendor}`,
     color: 'positive',
   })
 }

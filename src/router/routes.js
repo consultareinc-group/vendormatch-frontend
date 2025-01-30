@@ -6,13 +6,13 @@ const routes = [
       {
         path: 'dashboard/vendor',
         name: 'vendor',
-        component: () => import('src/pages/suppliers/SupplierDashboard.vue'),
+        component: () => import('src/pages/vendor/VendorDashboard.vue'),
         meta: { role: 'vendor' }
       },
       {
         path: 'dashboard/buyer',
         name: 'buyer',
-        component: () => import('src/pages/buyers/BuyerDashboard.vue'),
+        component: () => import('src/pages/buyer/BuyerDashboard.vue'),
         meta: { role: 'buyer' }
       },
     ]
