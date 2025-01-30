@@ -14,7 +14,7 @@ const routes = [
       {
         path: 'dashboard/vendor',
         name: 'vendor',
-        component: () => import('src/pages/supplier/SupplierDashboard.vue'),
+        component: () => import('src/pages/vendor/VendorDashboard.vue'),
         meta: { role: 'vendor' }
       },
       {
