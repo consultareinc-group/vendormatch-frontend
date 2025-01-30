@@ -69,17 +69,17 @@
 
 <script setup>
 import { ref } from 'vue'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
 // import { useQuasar } from 'quasar'
 
-// const router = useRouter()
+const router = useRouter()
 const authStore = useAuthStore()
 // const $q = useQuasar()
 
 const form = ref({
-  email: '',
-  password: '',
+  email: 'john.miller.doe@company.com',
+  password: '12345',
 })
 
 const isPwd = ref(true)
@@ -91,8 +91,8 @@ const onSubmit = () => {
   authStore
     .LoginUser(form.value)
     .then((response) => {
-      if (response.data.status === 'success') {
-        console.log(response.data)
+      if (response.status === 'success') {
+        router.push('/products')
       }
     })
     .finally(() => {
