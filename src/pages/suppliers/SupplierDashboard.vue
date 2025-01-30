@@ -214,10 +214,10 @@ import { useTriggerStore } from 'src/stores/triggers'
 // Import Quasar framework utilities
 import { useQuasar } from 'quasar'
 
-import AddProduct from './components/AddProduct.vue'
-import EditProduct from './components/EditProduct.vue'
-import ViewProductDetails from './components/ViewProductDetails.vue'
-import DeleteProduct from './components/DeleteProduct.vue'
+import AddProduct from '../Supplier/components/AddProduct.vue'
+import EditProduct from '../Supplier/components/EditProduct.vue'
+import ViewProductDetails from '../Supplier/components/ViewProductDetails.vue'
+import DeleteProduct from '../Supplier/components/DeleteProduct.vue'
 
 // Initialize Quasar for UI utilities
 const $q = useQuasar()
