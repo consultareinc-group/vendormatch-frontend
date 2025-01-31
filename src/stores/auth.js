@@ -3,7 +3,7 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 import { LocalStorage } from 'quasar';
 
 // Define a Pinia store named 'counter' for managing users-related data
-export const useAuthStore = defineStore('signin', {
+export const useAuthStore = defineStore('auth', {
   state: () => ({
     UserInformation: {}
   }),
