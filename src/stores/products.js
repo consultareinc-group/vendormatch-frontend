@@ -82,5 +82,20 @@ export const useProductStore = defineStore('product', {
         });
       });
     },
+
+    // Action to insert products
+    NotifyVendor(request) {
+      return new Promise((resolve, reject) => {
+        // Make a POST request to insert products in the database products table
+        api
+          .post(`vendor-match/notify`, request)
+          .then((response) => {
+            resolve(response.data); // Resolve the promise with the API response data
+          })
+          .catch((error) => {
+            reject(error); // Reject the promise if the API request fails
+          });
+      });
+    },
   },
 })

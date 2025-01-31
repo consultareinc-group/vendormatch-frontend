@@ -231,6 +231,7 @@ import { onMounted, ref, nextTick, watch } from 'vue'
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
 import { useMessageStore } from 'src/stores/chat'
+import { useAuthStore } from 'src/stores/auth'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
 
 // Set worker source to the CDN URL
@@ -248,6 +249,8 @@ const productStore = useProductStore()
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
 
+const authStore = useAuthStore()
+
 const slide = ref('style')
 
 const landed_cost_option = ref('')
@@ -264,6 +267,7 @@ const size = ref({
   landed_cost: [],
 })
 
+const messages = ref([])
 const productDetails = ref({
   images: [],
 })
@@ -303,6 +307,16 @@ onMounted(() => {
           const containerId = `pdf-facility-certificates${index}`
           createPdfThumbnail(cert.binary, containerId)
         })
+
+        messageStore
+          .GetMessages(
+            `product_id=${productDetails.value.id}&buyer_id=${authStore.UserInformation.id}&vendor_id=${productDetails.value.vendor_id}`,
+          )
+          .then((response) => {
+            if (response.status === 'success') {
+              messages.value = response.data
+            }
+          })
       }
     })
     .catch((error) => {
@@ -371,15 +385,6 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
   return new Blob(byteArrays, { type: contentType })
 }
 
-const messages = ref([])
-onMounted(() => {
-  messageStore.GetMessages(`product_id=${80}&buyer_id=${2}&vendor_id=${1}`).then((response) => {
-    if (response.status === 'success') {
-      messages.value = response.data
-    }
-  })
-})
-
 const chatContainer = ref(null)
 
 const scrollToBottom = () => {
@@ -404,7 +409,6 @@ const messageForm = ref('')
 const sendMessage = () => {
   messageForm.value.validate().then((success) => {
     if (success) {
-      console.log('productStore ', productDetails.value)
       btnMessageLoadingState.value = true
       const payload = {
         product_id: productStore.ProductDetails.id,
@@ -416,6 +420,14 @@ const sendMessage = () => {
         .then((response) => {
           if (response.status === 'success') {
             messages.value.push(response.data)
+
+            const payload = {
+              product_name: productDetails.value.name,
+              vendor_id: productDetails.value.vendor_id,
+              message: message.value,
+            }
+            productStore.NotifyVendor(payload)
+
             message.value = ''
           }
         })
