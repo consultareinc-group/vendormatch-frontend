@@ -10,12 +10,11 @@
           </q-item-section>
 
           <q-item-section>
-            <q-skeleton type="square" />
-            <q-skeleton type="square" />
+            <q-skeleton height="40px" />
           </q-item-section>
 
           <q-item-section side>
-            <q-skeleton type="square" width="30px" height="30px" />
+            <q-skeleton width="30px" height="30px" />
           </q-item-section>
         </q-item>
       </q-list>
