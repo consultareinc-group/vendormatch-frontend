@@ -60,30 +60,7 @@
         <q-card>
           <q-card-section>
             <div class="text-h6">Saved Products</div>
-            <q-list separator>
-              <q-item v-for="product in savedProductsList" :key="product.id" clickable v-ripple>
-                <q-item-section avatar>
-                  <q-avatar>
-                    <img :src="product.image" />
-                  </q-avatar>
-                </q-item-section>
-
-                <q-item-section>
-                  <q-item-label>{{ product.name }}</q-item-label>
-                  <q-item-label caption>{{ product.vendor }}</q-item-label>
-                </q-item-section>
-
-                <q-item-section side>
-                  <q-btn
-                    flat
-                    round
-                    color="secondary"
-                    icon="message"
-                    @click="contactvendor(product)"
-                  />
-                </q-item-section>
-              </q-item>
-            </q-list>
+            <SavedProducts />
           </q-card-section>
         </q-card>
       </div>
@@ -94,23 +71,63 @@
           <q-card-section>
             <div class="text-h6">Recommended Products</div>
             <div class="row q-col-gutter-md q-mt-md">
-              <div
-                v-for="product in recommendedProducts"
-                :key="product.id"
-                class="col-12 col-sm-6 col-md-3"
-              >
-                <q-card class="product-card">
-                  <q-img :src="product.image" :ratio="1" />
-                  <q-card-section>
-                    <div class="text-subtitle1">{{ product.name }}</div>
-                    <div class="text-caption">{{ product.vendor }}</div>
-                  </q-card-section>
-                  <q-card-actions align="right">
-                    <q-btn flat round color="grey" icon="favorite_border" />
-                    <q-btn flat color="primary" no-caps label="Connect to Vendor" />
-                  </q-card-actions>
-                </q-card>
+              <!-- Products Grid -->
+              <div v-if="!recommendedProducts.length" class="col-12">
+                <div class="row q-col-gutter-sm">
+                  <div v-for="n in 8" :key="n" class="col-12 col-sm-6 col-md-3">
+                    <q-card class="product-card">
+                      <q-skeleton height="192px" width="190px" class="full-width"></q-skeleton>
+
+                      <q-card-section class="q-pa-none q-pl-sm q-mt-sm q-pr-sm">
+                        <q-skeleton square></q-skeleton>
+                        <q-skeleton square></q-skeleton>
+                        <q-skeleton square></q-skeleton>
+                      </q-card-section>
+
+                      <q-card-actions align="right" class="q-pa-none q-mt-sm q-pb-sm q-pr-sm">
+                        <q-skeleton square width="158px" height="24px"></q-skeleton>
+                      </q-card-actions>
+                    </q-card>
+                  </div>
+                </div>
               </div>
+              <div v-else class="col-12">
+                <div class="row q-col-gutter-sm">
+                  <div
+                    @click="showProductDetailsDialog(product)"
+                    v-for="product in recommendedProducts"
+                    :key="product.id"
+                    class="col-12 col-sm-6 col-md-3 cursor-pointer"
+                  >
+                    <q-card class="product-card">
+                      <q-img
+                        :src="`data:image/jpeg;base64,${product?.image[0]?.binary ?? ''}`"
+                        :ratio="1"
+                        alt="Product Image"
+                      />
+
+                      <q-card-section>
+                        <div class="text-weight-medium product-name">{{ product?.name }}</div>
+                        <div class="text-subtitle2">{{ product?.category }}</div>
+                        <div class="text-body2 q-mt-sm">
+                          <span class="text-grey">Cost:</span> ${{ product?.size[0]?.cost ?? 0 }}
+                        </div>
+                      </q-card-section>
+
+                      <q-card-actions class="flex justify-between items-center cursor-pointer">
+                        <q-icon name="favorite_border" color="secondary" size="sm" />
+                        <q-btn flat color="primary" no-caps label="Connect to Vendor" />
+                        <!-- <q-btn
+                  v-if="authStore.user?.role === 'retailer'"
+                  color="primary"
+                  label="Contact Supplier"
+                /> -->
+                      </q-card-actions>
+                    </q-card>
+                  </div>
+                </div>
+              </div>
+              <ViewProductDetails v-if="triggerStore.ViewProductDetailsDialog" />
             </div>
           </q-card-section>
         </q-card>
@@ -120,16 +137,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useProductStore } from 'src/stores/products'
+import { useTriggerStore } from 'src/stores/triggers'
+// import { useAuthStore } from 'src/stores/auth'
+// Import Quasar framework utilities
 import { useQuasar } from 'quasar'
+import ViewProductDetails from '../product/components/ViewProductDetails.vue'
+import SavedProducts from './components/SavedProducts.vue'
 
+const productStore = useProductStore()
+const triggerStore = useTriggerStore()
+// Initialize Quasar for UI utilities
 const $q = useQuasar()
 
 // Statistics
-const viewedProducts = ref(45)
-const savedProducts = ref(12)
-const activeInquiries = ref(3)
-const connectedvendors = ref(8)
+const viewedProducts = ref(0)
+const savedProducts = ref(0)
+const activeInquiries = ref(0)
+const connectedvendors = ref(0)
 
 // Recent Activity
 const recentActivity = ref([
@@ -140,77 +166,50 @@ const recentActivity = ref([
     icon: 'visibility',
     description: 'You viewed Organic Coffee Beans from Green Mountain Coffee',
   },
-  {
-    id: 2,
-    title: 'Message Sent',
-    date: '1 day ago',
-    icon: 'message',
-    description: 'You sent a message to Natural Foods Co. about their Quinoa product',
-  },
-  {
-    id: 3,
-    title: 'Product Saved',
-    date: '2 days ago',
-    icon: 'favorite',
-    description: 'You saved Bamboo Cutlery Set to your favorites',
-  },
-])
-
-// Saved Products
-const savedProductsList = ref([
-  {
-    id: 1,
-    name: 'Organic Coffee Beans',
-    vendor: 'Green Mountain Coffee',
-    image: 'src/assets/vinegar.jpg',
-  },
-  {
-    id: 2,
-    name: 'Bamboo Cutlery Set',
-    vendor: 'Eco Essentials',
-    image: 'src/assets/vinegar.jpg',
-  },
-  {
-    id: 3,
-    name: 'Natural Honey',
-    vendor: 'Beekeepers Co',
-    image: 'src/assets/vinegar.jpg',
-  },
+  // {
+  //   id: 2,
+  //   title: 'Message Sent',
+  //   date: '1 day ago',
+  //   icon: 'message',
+  //   description: 'You sent a message to Natural Foods Co. about their Quinoa product',
+  // },
+  // {
+  //   id: 3,
+  //   title: 'Product Saved',
+  //   date: '2 days ago',
+  //   icon: 'favorite',
+  //   description: 'You saved Bamboo Cutlery Set to your favorites',
+  // },
 ])
 
 // Recommended Products
-const recommendedProducts = ref([
-  {
-    id: 1,
-    name: 'Vinegar',
-    vendor: 'Tea Masters Inc',
-    image: 'src/assets/vinegar.jpg',
-  },
-  {
-    id: 2,
-    name: 'Vinegar',
-    vendor: 'Green Living',
-    image: 'src/assets/vinegar.jpg',
-  },
-  {
-    id: 3,
-    name: 'Vinegar',
-    vendor: 'Natural Foods Co',
-    image: 'src/assets/vinegar.jpg',
-  },
-  {
-    id: 4,
-    name: 'Vinegar',
-    vendor: 'Wellness Foods',
-    image: 'src/assets/vinegar.jpg',
-  },
-])
+const recommendedProducts = ref([])
 
-const contactvendor = (product) => {
-  $q.notify({
-    message: `Opening chat with ${product.vendor}`,
-    color: 'positive',
-  })
+onMounted(() => {
+  productStore
+    .GetProducts(`offset=${productStore.Products.length}&include_image=1`)
+    .then((response) => {
+      if (response.status === 'success') {
+        response.data.forEach((product) => {
+          recommendedProducts.value.push(product)
+        })
+      }
+    })
+    .catch((error) => {
+      // Show a notification based on the response status
+      $q.notify({
+        message: `<p class='q-mb-none'>${error.message}</p>`,
+        color: `red-2`, // Set notification color
+        position: 'top-right', // Notification position
+        textColor: `red`, // Set text color
+        html: true, // Enable HTML content
+      })
+    })
+})
+
+const showProductDetailsDialog = (product_details) => {
+  triggerStore.ViewProductDetailsDialog = true
+  productStore.ProductDetails = product_details
 }
 </script>
 
