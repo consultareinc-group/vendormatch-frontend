@@ -75,7 +75,7 @@ import { useTriggerStore } from 'src/stores/triggers'
 // import { useAuthStore } from 'src/stores/auth'
 // Import Quasar framework utilities
 import { useQuasar } from 'quasar'
-import ViewProductDetails from './components/ViewProductDetails.vue'
+import ViewProductDetails from '../../components/ViewProductDetails.vue'
 
 const productStore = useProductStore()
 const triggerStore = useTriggerStore()
