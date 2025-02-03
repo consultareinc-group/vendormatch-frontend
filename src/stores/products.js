@@ -5,7 +5,8 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 export const useProductStore = defineStore('product', {
   state: () => ({
     Products: [],
-    ProductDetails: {}
+    ProductDetails: {},
+    SavedProducts: []
   }),
   actions: {
     // Action to fetch products from the API with pagination support
@@ -89,6 +90,33 @@ export const useProductStore = defineStore('product', {
         // Make a POST request to insert products in the database products table
         api
           .post(`vendor-match/notify`, request)
+          .then((response) => {
+            resolve(response.data); // Resolve the promise with the API response data
+          })
+          .catch((error) => {
+            reject(error); // Reject the promise if the API request fails
+          });
+      });
+    },
+
+    // Action to fetch products from the API with pagination support
+    GetFavoriteProducts(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch products based on the offset
+        api.get(`vendor-match/favorite?${request}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((error) => {
+          reject(error); // Reject the promise with the error response data
+        });
+      });
+    },
+
+    // Action to insert products
+    AddProductToFavorites(request) {
+      return new Promise((resolve, reject) => {
+        // Make a POST request to add products in the database favorite table
+        api
+          .post(`vendor-match/favorite`, request)
           .then((response) => {
             resolve(response.data); // Resolve the promise with the API response data
           })

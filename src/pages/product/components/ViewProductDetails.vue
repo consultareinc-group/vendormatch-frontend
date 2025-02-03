@@ -29,7 +29,7 @@
             </div>
             <div>
               <div class="text-bold q-mt-md">Send Inquiry</div>
-              <q-skeleton v-if="!messages.length" height="300px"></q-skeleton>
+              <q-skeleton v-if="messageLoadingState" height="300px"></q-skeleton>
               <div v-else class="q-mt-md row justify-center scroll">
                 <div
                   ref="chatContainer"
@@ -267,6 +267,7 @@ const size = ref({
   landed_cost: [],
 })
 
+const messageLoadingState = ref(false)
 const messages = ref([])
 const productDetails = ref({
   images: [],
@@ -284,6 +285,7 @@ const changeProductCost = () => {
 
 onMounted(() => {
   productDetails.value = { images: [] }
+  messageLoadingState.value = true
   productStore
     .GetProduct({ id: productStore.ProductDetails.id })
     .then((response) => {
@@ -316,6 +318,9 @@ onMounted(() => {
             if (response.status === 'success') {
               messages.value = response.data
             }
+          })
+          .finally(() => {
+            messageLoadingState.value = false
           })
       }
     })

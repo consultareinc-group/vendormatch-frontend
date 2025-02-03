@@ -45,7 +45,12 @@
               </q-card-section>
 
               <q-card-actions class="flex justify-between items-center cursor-pointer">
-                <q-icon name="favorite_border" color="secondary" size="sm" />
+                <q-icon
+                  @click.stop="addToFavorite()"
+                  name="favorite_border"
+                  color="secondary"
+                  size="sm"
+                />
                 <q-btn flat color="primary" no-caps label="Connect to Vendor" />
                 <!-- <q-btn
                   v-if="authStore.user?.role === 'retailer'"
@@ -107,6 +112,10 @@ onBeforeRouteLeave(() => {
 const showProductDetailsDialog = (product_details) => {
   triggerStore.ViewProductDetailsDialog = true
   productStore.ProductDetails = product_details
+}
+
+const addToFavorite = () => {
+  console.log('add to favorite')
 }
 </script>
 
