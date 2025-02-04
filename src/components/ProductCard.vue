@@ -130,6 +130,14 @@ onMounted(() => {
     .finally(() => {
       cardLoadingState.value = false // Reset loading state after API call is completed
     })
+
+  if (!productStore.SavedProducts.length) {
+    productStore.GetFavoriteProducts(`offset=0&limit=3`).then((response) => {
+      if (response.status === 'success') {
+        productStore.SavedProducts = response.data // Add each product to the saved product store
+      }
+    })
+  }
 })
 
 // Function to show product details in a dialog
