@@ -73,7 +73,7 @@
                 :rows="productStore.Products"
                 :columns="productColumns"
                 row-key="id"
-                :loading="!productStore.Products.length"
+                :loading="productTableLoadingState"
                 class="sticky-table-header"
                 color="primary"
               >
@@ -151,7 +151,7 @@
                 :rows="services"
                 :columns="serviceColumns"
                 row-key="id"
-                :loading="tableLoadingState"
+                :loading="productTableLoadingState"
                 class="sticky-table-header"
                 color="primary"
               >
@@ -246,7 +246,7 @@ const inquiries = ref(0)
 const tab = ref('products')
 
 // Reactive reference to manage the loading state of the product table
-const tableLoadingState = ref(false)
+const productTableLoadingState = ref(false)
 
 const productColumns = [
   { name: 'name', label: 'Product Name', field: 'name', sortable: true, align: 'left' },
@@ -287,6 +287,10 @@ const productColumns = [
 
 // Function to fetch the list of products, recursively fetching until all are loaded
 const getProducts = () => {
+  productTableLoadingState.value = true
+  if (productStore.Products.length) {
+    productTableLoadingState.value = false
+  }
   productStore
     .GetProducts(`offset=${productStore.Products.length}&include_image=1`)
     .then((response) => {
