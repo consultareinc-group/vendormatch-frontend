@@ -5,6 +5,7 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 export const useProductStore = defineStore('product', {
   state: () => ({
     Products: [],
+    SearchedProducts: [],
     ProductDetails: {},
     SavedProducts: []
   }),
