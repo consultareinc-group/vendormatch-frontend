@@ -21,7 +21,13 @@
     </div>
 
     <q-list v-else separator>
-      <q-item v-for="product in productStore.SavedProducts" :key="product.id" clickable v-ripple>
+      <q-item
+        @click="showProductDetailsDialog(product)"
+        v-for="product in productStore.SavedProducts"
+        :key="product.id"
+        clickable
+        v-ripple
+      >
         <q-item-section avatar>
           <q-avatar>
             <img :src="`data:image/jpeg;base64,${product.image[0].binary}`" />
@@ -29,12 +35,12 @@
         </q-item-section>
 
         <q-item-section>
-          <q-item-label class="ellipsis">{{ product.product_name }}</q-item-label>
+          <q-item-label class="ellipsis">{{ product.product_name ?? product.name }}</q-item-label>
           <q-item-label caption>{{ product.enterprise_name }}</q-item-label>
         </q-item-section>
 
         <q-item-section side>
-          <q-btn flat round color="secondary" icon="message" @click="contactvendor(product)" />
+          <q-btn flat round color="secondary" icon="message" />
         </q-item-section>
       </q-item>
     </q-list>
@@ -44,7 +50,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useProductStore } from 'src/stores/products'
+import { useTriggerStore } from 'src/stores/triggers' // Import trigger store for managing UI triggers
+// Import component for viewing product details
+
+// Initialize product and trigger stores
 const productStore = useProductStore()
+const triggerStore = useTriggerStore()
 
 productStore.SavedProducts = [
   {
@@ -55,13 +66,11 @@ productStore.SavedProducts = [
   },
 ]
 
-const contactvendor = () => {}
-
 const savedProductsLoadingState = ref(false)
 onMounted(() => {
   savedProductsLoadingState.value = true
   productStore
-    .GetFavoriteProducts(`limit=5`)
+    .GetFavoriteProducts(`offset=0&limit=3`)
     .then((response) => {
       if (response.status === 'success') {
         productStore.SavedProducts = response.data
@@ -71,4 +80,11 @@ onMounted(() => {
       savedProductsLoadingState.value = false
     })
 })
+
+// Function to show product details in a dialog
+const showProductDetailsDialog = (product_details) => {
+  triggerStore.ViewProductDetailsDialog = true // Open the product details dialog
+  product_details.id = product_details.product_id
+  productStore.ProductDetails = product_details // Set the selected product details in the store
+}
 </script>
