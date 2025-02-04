@@ -28,8 +28,8 @@ export const useAuthStore = defineStore('auth', {
           .post(`login`, request)
           .then((response) => {
             if (response.data.status === 'success') {
-              this.UserInformation = response.data.data
-              this.SetBearerToken(response.data.data.bearer_token)
+              this.UserInformation = response.data.data[0]
+              this.SetBearerToken(response.data.data[0].bearer_token)
             }
             resolve(response.data); // Resolve the promise with the API response data
           })
