@@ -1,7 +1,7 @@
 <template>
   <div class="row q-col-gutter-md">
     <!-- Products Grid -->
-    <div v-if="productStore.Products.length" class="col-12">
+    <div v-if="cardLoadingState" class="col-12">
       <div class="row q-col-gutter-sm">
         <div v-for="n in 8" :key="n" class="col-12 col-sm-6 col-md-3">
           <q-card class="product-card">
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
 // import { useAuthStore } from 'src/stores/auth'
@@ -79,8 +79,9 @@ const triggerStore = useTriggerStore()
 // Initialize Quasar for UI utilities
 const $q = useQuasar()
 // const authStore = useAuthStore()
-
+const cardLoadingState = ref(false)
 onMounted(() => {
+  cardLoadingState.value = true
   productStore
     .GetProducts(`offset=${productStore.Products.length}&include_image=1`)
     .then((response) => {
@@ -99,6 +100,9 @@ onMounted(() => {
         textColor: `red`, // Set text color
         html: true, // Enable HTML content
       })
+    })
+    .finally(() => {
+      cardLoadingState.value = false
     })
 })
 
