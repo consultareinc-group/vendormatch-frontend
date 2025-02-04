@@ -80,7 +80,7 @@ const filterProducts = () => {
     .then((response) => {
       let status = Boolean(response.status === 'success') // Determine the status of the response
       if (status) {
-        productStore.Products = response.data
+        productStore.SearchedProducts = response.data
       }
 
       $q.notify({

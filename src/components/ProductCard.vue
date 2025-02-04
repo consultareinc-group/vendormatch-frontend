@@ -24,7 +24,7 @@
       <div class="row q-col-gutter-sm">
         <div
           @click="showProductDetailsDialog(product)"
-          v-for="product in productStore.Products"
+          v-for="product in products"
           :key="product.id"
           class="col-12 col-sm-6 col-md-3 cursor-pointer"
         >
@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue' // Import Vue's ref and onMounted for reactivity and lifecycle handling
+import { ref, onMounted, computed } from 'vue' // Import Vue's ref and onMounted for reactivity and lifecycle handling
 import { useProductStore } from 'src/stores/products' // Import product store for managing product-related state
 import { useTriggerStore } from 'src/stores/triggers' // Import trigger store for managing UI triggers
 // import { useAuthStore } from 'src/stores/auth' // Import auth store (commented out, possibly unused)
@@ -86,10 +86,22 @@ const $q = useQuasar()
 // Reactive variable to track loading state of the card
 const cardLoadingState = ref(false)
 
+const products = computed(() => {
+  if (productStore.SearchedProducts.length) {
+    return productStore.SearchedProducts
+  } else {
+    return productStore.Products
+  }
+})
+
 // Fetch products when the component is mounted
 onMounted(() => {
   cardLoadingState.value = true // Set loading state to true while fetching data
-
+  if (productStore.Products.length) {
+    cardLoadingState.value = false
+  }
+  // set search products to empty on page load
+  productStore.SearchedProducts = []
   productStore
     .GetProducts(`offset=${productStore.Products.length}&include_image=1`) // Fetch products with offset and include images
     .then((response) => {
@@ -139,7 +151,9 @@ const addToFavorite = (product) => {
         if (response.status === 'success') {
           // Check if API call was successful
           product.product_id = product.id // Assign product ID to the object
-          productStore.SavedProducts.push(product) // Add product to saved products list
+          if (productStore.SavedProducts.length !== 3) {
+            productStore.SavedProducts.push(product) // Add product to saved products list
+          }
         }
       })
       .finally(() => {
@@ -150,7 +164,8 @@ const addToFavorite = (product) => {
       .DeleteFavoriteProduct({ id: product.id })
       .then((response) => {
         if (response.status === 'success') {
-          let index = productStore.SavedProducts.findIndex((sp) => sp.id === product.id)
+          let index = productStore.SavedProducts.findIndex((sp) => sp.product_id === product.id)
+
           if (index !== -1) {
             productStore.SavedProducts.splice(index, 1)
           }
