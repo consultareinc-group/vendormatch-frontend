@@ -30,7 +30,7 @@
       >
         <q-item-section avatar>
           <q-avatar>
-            <img :src="`data:image/jpeg;base64,${product.image[0].binary}`" />
+            <img :src="`data:image/jpeg;base64,${product.image[0].binary ?? ''}`" />
           </q-avatar>
         </q-item-section>
 
@@ -57,23 +57,17 @@ import { useTriggerStore } from 'src/stores/triggers' // Import trigger store fo
 const productStore = useProductStore()
 const triggerStore = useTriggerStore()
 
-productStore.SavedProducts = [
-  {
-    id: '',
-    name: '',
-    vendor: '',
-    image: [{ name: '', binary: '' }],
-  },
-]
-
 const savedProductsLoadingState = ref(false)
 onMounted(() => {
   savedProductsLoadingState.value = true
+  if (productStore.SavedProducts.length) {
+    savedProductsLoadingState.value = false
+  }
   productStore
     .GetFavoriteProducts(`offset=0&limit=3`)
     .then((response) => {
       if (response.status === 'success') {
-        productStore.SavedProducts = response.data
+        productStore.SavedProducts = response.data // Add each product to the saved product store
       }
     })
     .finally(() => {
