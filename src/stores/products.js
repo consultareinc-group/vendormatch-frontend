@@ -99,7 +99,7 @@ export const useProductStore = defineStore('product', {
       });
     },
 
-    // Action to fetch products from the API with pagination support
+    // Action to fetch favorite products from the API
     GetFavoriteProducts(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch products based on the offset
@@ -111,7 +111,7 @@ export const useProductStore = defineStore('product', {
       });
     },
 
-    // Action to insert products
+    // Action to add product in favorites
     AddProductToFavorites(request) {
       return new Promise((resolve, reject) => {
         // Make a POST request to add products in the database favorite table
@@ -123,6 +123,18 @@ export const useProductStore = defineStore('product', {
           .catch((error) => {
             reject(error); // Reject the promise if the API request fails
           });
+      });
+    },
+
+    // Action to delete the favorite product
+    DeleteFavoriteProduct(request) {
+      return new Promise((resolve, reject) => {
+        // Make a DELETE request to delete product in the database products table
+        api.delete(`vendor-match/favorite/${request.id}`, { data: request }).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
       });
     },
   },

@@ -288,13 +288,13 @@ onMounted(() => {
     .GetProduct({ id: productStore.ProductDetails.id })
     .then((response) => {
       if (response.status === 'success') {
-        productDetails.value = response.data
+        productDetails.value = response.data[0]
         // Assign a default value
-        landed_cost_option.value = response.data.size[0].landed_cost[0]
-        landed_costs.value = response.data.size[0].landed_cost
-        size_option.value = response.data.size[0].size
-        sizes.value = response.data.size.map((size) => size.size)
-        slide.value = response.data.images[0].name
+        landed_cost_option.value = response.data[0].size[0].landed_cost[0]
+        landed_costs.value = response.data[0].size[0].landed_cost
+        size_option.value = response.data[0].size[0].size
+        sizes.value = response.data[0].size.map((size) => size.size)
+        slide.value = response.data[0].images[0].name
         changeProductCost()
 
         // Generate pdf renderer
@@ -314,7 +314,7 @@ onMounted(() => {
           )
           .then((response) => {
             if (response.status === 'success') {
-              messages.value = response.data
+              messages.value = response.data[0]
             }
           })
           .finally(() => {
@@ -422,7 +422,7 @@ const sendMessage = () => {
         .InsertMessage(payload)
         .then((response) => {
           if (response.status === 'success') {
-            messages.value.push(response.data)
+            messages.value.push(response.data[0])
 
             const payload = {
               product_name: productDetails.value.name,
