@@ -1,19 +1,19 @@
 <template>
   <div class="row q-col-gutter-md">
     <!-- Products Grid -->
-    <div v-if="!productStore.Products.length" class="col-12">
+    <div v-if="productStore.Products.length" class="col-12">
       <div class="row q-col-gutter-sm">
         <div v-for="n in 8" :key="n" class="col-12 col-sm-6 col-md-3">
-          <q-card class="product-card q-pr-sm">
-            <q-skeleton height="192px" width="190px"></q-skeleton>
+          <q-card class="product-card">
+            <q-skeleton height="192px" width="100%"></q-skeleton>
 
-            <q-card-section class="q-pa-none q-pl-sm q-mt-sm">
+            <q-card-section class="q-pa-none q-pl-sm q-mt-sm q-pr-sm">
               <q-skeleton square></q-skeleton>
               <q-skeleton square></q-skeleton>
               <q-skeleton square></q-skeleton>
             </q-card-section>
 
-            <q-card-actions align="right" class="q-pa-none q-mt-sm q-mb-sm">
+            <q-card-actions align="right" class="q-pa-none q-mt-sm q-mb-sm q-pr-sm">
               <q-skeleton square width="158px" height="24px"></q-skeleton>
             </q-card-actions>
           </q-card>
@@ -67,7 +67,6 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { onBeforeRouteLeave } from 'vue-router'
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
 // import { useAuthStore } from 'src/stores/auth'
@@ -82,7 +81,6 @@ const $q = useQuasar()
 // const authStore = useAuthStore()
 
 onMounted(() => {
-  triggerStore.RightDrawerOpen = true
   productStore
     .GetProducts(`offset=${productStore.Products.length}&include_image=1`)
     .then((response) => {
@@ -102,9 +100,6 @@ onMounted(() => {
         html: true, // Enable HTML content
       })
     })
-})
-onBeforeRouteLeave(() => {
-  triggerStore.RightDrawerOpen = false
 })
 
 const showProductDetailsDialog = (product_details) => {
