@@ -13,7 +13,7 @@
               name="workspace_premium"
               size="lg"
               color="yellow-14"
-              class="absolute-top-right q-ma-sm"
+              class="absolute-top-right q-ma-sm hidden"
             />
           </div>
         </q-card>
@@ -29,7 +29,7 @@
               name="workspace_premium"
               size="lg"
               color="yellow-14"
-              class="absolute-top-right q-ma-sm"
+              class="absolute-top-right q-ma-sm hidden"
             />
           </div>
         </q-card>
@@ -45,7 +45,7 @@
               name="workspace_premium"
               size="lg"
               color="yellow-14"
-              class="absolute-top-right q-ma-sm"
+              class="absolute-top-right q-ma-sm hidden"
             />
           </div>
         </q-card>
@@ -61,7 +61,7 @@
               name="workspace_premium"
               size="lg"
               color="yellow-14"
-              class="absolute-top-right q-ma-sm"
+              class="absolute-top-right q-ma-sm hidden"
             />
           </div>
         </q-card>
@@ -89,7 +89,7 @@
               name="workspace_premium"
               size="lg"
               color="yellow-14"
-              class="absolute-top-right q-ma-sm"
+              class="absolute-top-right q-ma-sm hidden"
             />
           </div>
         </q-card>
