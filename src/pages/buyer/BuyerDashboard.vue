@@ -8,6 +8,14 @@
             <div class="text-h6">Viewed Products</div>
             <div class="text-h4">{{ viewedProducts }}</div>
           </q-card-section>
+          <div class="fit absolute-center blur">
+            <q-icon
+              name="workspace_premium"
+              size="lg"
+              color="yellow-14"
+              class="absolute-top-right q-ma-sm"
+            />
+          </div>
         </q-card>
       </div>
       <div class="col-12 col-sm-6 col-md-3">
@@ -16,6 +24,14 @@
             <div class="text-h6">Saved Products</div>
             <div class="text-h4">{{ savedProducts }}</div>
           </q-card-section>
+          <div class="fit absolute-center blur">
+            <q-icon
+              name="workspace_premium"
+              size="lg"
+              color="yellow-14"
+              class="absolute-top-right q-ma-sm"
+            />
+          </div>
         </q-card>
       </div>
       <div class="col-12 col-sm-6 col-md-3">
@@ -24,6 +40,14 @@
             <div class="text-h6">Active Inquiries</div>
             <div class="text-h4">{{ activeInquiries }}</div>
           </q-card-section>
+          <div class="fit absolute-center blur">
+            <q-icon
+              name="workspace_premium"
+              size="lg"
+              color="yellow-14"
+              class="absolute-top-right q-ma-sm"
+            />
+          </div>
         </q-card>
       </div>
       <div class="col-12 col-sm-6 col-md-3">
@@ -32,12 +56,20 @@
             <div class="text-h6">Connected vendors</div>
             <div class="text-h4">{{ connectedvendors }}</div>
           </q-card-section>
+          <div class="fit absolute-center blur">
+            <q-icon
+              name="workspace_premium"
+              size="lg"
+              color="yellow-14"
+              class="absolute-top-right q-ma-sm"
+            />
+          </div>
         </q-card>
       </div>
 
       <!-- Recent Activity -->
       <div class="col-12 col-md-8">
-        <q-card>
+        <q-card class="q-pa-sm">
           <q-card-section>
             <div class="text-h6">Recent Activity</div>
             <q-timeline color="secondary">
@@ -52,6 +84,14 @@
               </q-timeline-entry>
             </q-timeline>
           </q-card-section>
+          <div class="fit absolute-center blur">
+            <q-icon
+              name="workspace_premium"
+              size="lg"
+              color="yellow-14"
+              class="absolute-top-right q-ma-sm"
+            />
+          </div>
         </q-card>
       </div>
 
@@ -158,5 +198,8 @@ onMounted(() => {
   &:hover {
     transform: translateY(-4px);
   }
+}
+.blur {
+  backdrop-filter: blur(5px);
 }
 </style>
