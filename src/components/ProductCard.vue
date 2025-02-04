@@ -36,7 +36,12 @@
             />
 
             <q-card-section>
-              <div class="text-weight-medium product-name">{{ product?.name }}</div>
+              <div class="text-weight-medium ellipsis">
+                {{ product?.name }}
+                <q-tooltip>
+                  {{ product?.name }}
+                </q-tooltip>
+              </div>
               <div class="text-subtitle2">{{ product?.category }}</div>
               <div class="text-body2 q-mt-sm">
                 <span class="text-grey">Cost:</span> ${{ product?.size[0]?.cost ?? 0 }}
