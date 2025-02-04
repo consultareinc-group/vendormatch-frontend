@@ -269,9 +269,7 @@ const size = ref({
 
 const messageLoadingState = ref(false)
 const messages = ref([])
-const productDetails = ref({
-  images: [],
-})
+const productDetails = ref({})
 
 const changeProductCost = () => {
   productDetails.value.size.forEach((product_size) => {
