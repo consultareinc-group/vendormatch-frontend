@@ -40,6 +40,7 @@ const routes = [
   },
   {
     path: '/signin',
+    name: 'signin',
     component: () => import('src/pages/SignIn.vue')
   },
 
