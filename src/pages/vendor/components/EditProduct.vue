@@ -6,7 +6,13 @@
       </q-card-section>
 
       <q-card-section>
-        <q-form @submit="saveProduct" greedy ref="productQForm">
+        <div v-if="formLoadingState">
+          <q-skeleton type="QInput" class="q-mb-md" />
+          <q-skeleton height="150px" class="q-mb-md" />
+          <q-skeleton type="QInput" class="q-mb-md" />
+          <q-skeleton height="300px" class="q-mb-md" />
+        </div>
+        <q-form v-else @submit="saveProduct" greedy ref="productQForm">
           <q-input
             v-model="productForm.name"
             dense
@@ -398,7 +404,7 @@
 
           <div class="row justify-end q-mt-md">
             <q-btn flat label="Close" color="negative" v-close-popup class="q-mr-sm" />
-            <q-btn type="submit" label="Save" color="primary" :loading="formLoadingState" />
+            <q-btn type="submit" label="Update" color="primary" :loading="btnLoadingState" />
           </div>
         </q-form>
       </q-card-section>
@@ -427,6 +433,7 @@ const triggerStore = useTriggerStore()
 
 // Reactive object to manage the product form data
 const productForm = ref({
+  id: '',
   name: '', // Name of the product
   description: '', // Description of the product
   category: [], // Categories associated with the product
@@ -470,7 +477,9 @@ const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
 // Array of predefined product statuses
 const statuses = ['Draft', 'Publish']
 
+const formLoadingState = ref(false)
 onMounted(() => {
+  formLoadingState.value = true
   productStore
     .GetProduct({ id: productStore.ProductDetails.id })
     .then((response) => {
@@ -502,6 +511,9 @@ onMounted(() => {
         textColor: `red`, // Set text color
         html: true, // Enable HTML content
       })
+    })
+    .finally(() => {
+      formLoadingState.value = false
     })
 })
 
@@ -644,23 +656,148 @@ const addLandedCost = (index) => {
 }
 
 // Reactive state to track loading status of the form
-const formLoadingState = ref(false)
+const btnLoadingState = ref(false)
 // Reference for the Quasar product form component
 const productQForm = ref(null)
 // Function to handle product saving
 const saveProduct = () => {
-  // Create a FormData object to prepare the data for submission
-  const formData = new FormData()
+  // Validate the product form
+  productQForm.value.validate().then((success) => {
+    if (success) {
+      // Check if at least one image is uploaded
+      if (!productForm.value.images.length) {
+        $q.notify({
+          message: `<p class='q-mb-none'>Product image is required.</p>`,
+          color: `red-2`,
+          position: 'bottom',
+          textColor: `red`,
+          html: true,
+        })
+        return // Exit if no image is uploaded
+      }
 
-  // Append product images to FormData
-  productForm.value.images.forEach((file) => {
-    formData.append('images[]', file)
+      // Initialize error flag for certificate validation
+      let error = false
+
+      // Validate product certificates
+      productForm.value.product_certificates.forEach((cert) => {
+        if (!cert.file.length) {
+          $q.notify({
+            message: `<p class='q-mb-none'>Product certificate is required.</p>`,
+            color: `red-2`,
+            position: 'bottom',
+            textColor: `red`,
+            html: true,
+          })
+          error = true // Set error flag to true if validation fails
+        }
+      })
+
+      // Validate facility certificates
+      productForm.value.facility_certificates.forEach((cert) => {
+        if (!cert.file.length) {
+          $q.notify({
+            message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
+            color: `red-2`,
+            position: 'bottom',
+            textColor: `red`,
+            html: true,
+          })
+          error = true // Set error flag to true if validation fails
+        }
+      })
+
+      // Exit if any certificate validation failed
+      if (error) {
+        return
+      }
+
+      btnLoadingState.value = true // Set loading state to true
+
+      // Create a FormData object to prepare the data for submission
+      const formData = new FormData()
+
+      // Append product details to FormData
+      formData.append('id', productForm.value.id)
+      formData.append('name', productForm.value.name)
+      formData.append('description', productForm.value.description)
+      formData.append('category', productForm.value.category.join(', '))
+      formData.append('status', productForm.value.status)
+
+      // Append product images to FormData
+      productForm.value.images.forEach((file) => {
+        formData.append('images[]', file)
+      })
+
+      // Append product certificates to FormData
+      productForm.value.product_certificates.forEach((cert, index) => {
+        formData.append(`product_certificates[${index}][file]`, cert.file[0]) // Add file
+        formData.append(`product_certificates[${index}][description]`, cert.description) // Add document name
+        formData.append(`product_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
+        formData.append(`product_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
+      })
+
+      // Append facility certificates to FormData
+      productForm.value.facility_certificates.forEach((cert, index) => {
+        formData.append(`facility_certificates[${index}][file]`, cert.file[0]) // Add file
+        formData.append(`facility_certificates[${index}][description]`, cert.description) // Add document name
+        formData.append(`facility_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
+        formData.append(`facility_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
+      })
+
+      // Append sizes to FormData
+      // Append sizes to FormData
+      productForm.value.size.forEach((size, size_index) => {
+        formData.append(`size[${size_index}][size]`, size.size) // Add size
+        formData.append(`size[${size_index}][upc]`, size.upc) // Add upc
+        formData.append(`size[${size_index}][cost]`, size.cost) // Add cost
+        formData.append(`size[${size_index}][srp]`, size.srp) // Add cost
+
+        size.landed_cost.forEach((cost, cost_index) => {
+          formData.append(`size[${size_index}][landed_cost][${cost_index}][country]`, cost.country) // Add country
+          formData.append(`size[${size_index}][landed_cost][${cost_index}][amount]`, cost.amount) // Add amount
+        })
+      })
+
+      // Call the API to insert the product
+      productStore
+        .UpdateProduct({ id: productForm.value.id, form: formData })
+        .then((response) => {
+          let status = Boolean(response.status === 'success') // Determine the status of the response
+          $q.notify({
+            message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the product ${status ? 'has been' : 'was not'} updated.</p>`,
+            color: `${status ? 'green' : 'red'}-2`,
+            position: 'top-right',
+            textColor: `${status ? 'green' : 'red'}`,
+            html: true,
+          })
+
+          // Add the new product to the table if successful
+          if (status) {
+            let index = productStore.Products.findIndex(
+              (product) => product.id === productForm.value.id,
+            )
+            productStore.Products[index].id = response.data.id
+            productStore.Products[index].name = productForm.value.name
+            productStore.Products[index].size = productForm.value.size
+            productStore.Products[index].category = productForm.value.category.join(', ')
+            productStore.Products[index].status = productForm.value.status
+          }
+        })
+        .catch((error) => {
+          // Notify user of the error
+          $q.notify({
+            message: `<p class='q-mb-none'>${error.message}</p>`,
+            color: `red-2`,
+            position: 'top-right',
+            textColor: `red`,
+            html: true,
+          })
+        })
+        .finally(() => {
+          btnLoadingState.value = false // Reset loading state
+        })
+    }
   })
-
-  console.log('productForm.value.images ', productForm.value.images)
-
-  // Call the API to insert the product
-  //   }
-  // })
 }
 </script>
