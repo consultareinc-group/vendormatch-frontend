@@ -62,15 +62,23 @@ export const useProductStore = defineStore('product', {
           });
       });
     },
-    // Action to insert products
+    // Action to update products
     UpdateProduct(request) {
       return new Promise((resolve, reject) => {
+        // Define headers with Content-Type
+        const headers = {
+          'Content-Type': 'multipart/form-data'
+        };
+
         // Make a POST request to insert products in the database products table
-        api.put(`vendor-match/product/${request.id}`, request).then((response) => {
-          resolve(response.data); // Resolve the promise with the API response data
-        }).catch((response) => {
-          reject(response.data); // Reject the promise if the API request fails
-        });
+        api
+          .post(`vendor-match/product/${request.id}`, request.form, { headers })
+          .then((response) => {
+            resolve(response.data); // Resolve the promise with the API response data
+          })
+          .catch((error) => {
+            reject(error); // Reject the promise if the API request fails
+          });
       });
     },
     // Action to delete product
