@@ -13,7 +13,7 @@
         <q-form @submit="onSubmit" class="q-gutter-y-md" greedy>
           <q-input
             dense
-            v-model="form.email"
+            v-model="form.username"
             type="email"
             label="Email"
             :rules="[
@@ -78,7 +78,7 @@ const authStore = useAuthStore()
 // const $q = useQuasar()
 
 const form = ref({
-  email: 'john.miller.doe@company.com',
+  username: 'john.miller.doe@company.com',
   password: '12345',
 })
 
