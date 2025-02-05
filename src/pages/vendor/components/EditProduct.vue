@@ -12,7 +12,7 @@
           <q-skeleton type="QInput" class="q-mb-md" />
           <q-skeleton height="300px" class="q-mb-md" />
         </div>
-        <q-form v-else @submit="saveProduct" greedy ref="productQForm">
+        <q-form v-show="!formLoadingState" @submit="saveProduct" greedy ref="productQForm">
           <q-input
             v-model="productForm.name"
             dense
@@ -775,8 +775,9 @@ const saveProduct = () => {
           // Add the new product to the table if successful
           if (status) {
             let index = productStore.Products.findIndex(
-              (product) => product.id === productForm.value.id,
+              (product) => product.id == productForm.value.id,
             )
+
             productStore.Products[index].id = response.data.id
             productStore.Products[index].name = productForm.value.name
             productStore.Products[index].size = productForm.value.size
