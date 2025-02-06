@@ -28,8 +28,8 @@ export const useAuthStore = defineStore('auth', {
           .post(`login`, request)
           .then((response) => {
             if (response.data.status === 'success') {
-              this.UserInformation = response.data.data[0]
-              this.SetBearerToken(response.data.data[0].bearer_token)
+              this.UserInformation = response.data.data
+              this.SetBearerToken(response.data.data.bearer_token)
             }
             resolve(response.data); // Resolve the promise with the API response data
           })
@@ -39,14 +39,18 @@ export const useAuthStore = defineStore('auth', {
       });
     },
 
-    ValidateToken(request) {
+    ValidateToken() {
       return new Promise((resolve, reject) => {
-        // Make a GET request to fetch users based on the offset
-        api.get(`login/${request.id}`).then((response) => {
-          resolve(response.data); // Resolve the promise with the API response data
-        }).catch((response) => {
-          reject(response.data); // Reject the promise if the API request fails
-        });
+        api.get(`validate-token`)
+          .then((response) => {
+            if (response.data.status === 'success') {
+              this.UserInformation = response.data.data
+            }
+            resolve(response.data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
       });
     },
 
