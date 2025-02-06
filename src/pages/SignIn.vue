@@ -92,7 +92,11 @@ const onSubmit = () => {
     .LoginUser(form.value)
     .then((response) => {
       if (response.status === 'success') {
-        router.push('/products')
+        if (response.data.role === 0) {
+          router.push({ name: 'vendor' })
+        } else {
+          router.push({ name: 'products' })
+        }
       }
     })
     .finally(() => {
