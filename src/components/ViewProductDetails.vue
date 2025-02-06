@@ -39,10 +39,14 @@
                   <q-chat-message
                     v-for="message in messages"
                     :key="message"
-                    :bg-color="message.sent_by === 2 ? 'accent' : 'grey-4'"
-                    :name="message.sent_by === 2 ? 'You' : 'Nutrivana Foods'"
+                    :bg-color="message.sent_by === message.buyer_id ? 'accent' : 'grey-4'"
+                    :name="
+                      message.sent_by === message.buyer_id
+                        ? (message.enterprise_name ?? 'You')
+                        : message.enterprise_name
+                    "
                     :text="[message.message]"
-                    :sent="message.sent_by === 2"
+                    :sent="message.sent_by === message.buyer_id"
                     :stamp="timeAgo(message.date_time)"
                   />
                 </div>
@@ -185,6 +189,14 @@
                 </div>
               </div>
             </div>
+
+            <div class="flex justify-start items-center">
+              <div class="text-bold q-mr-sm text-primary">{{ productDetails.enterprise_name }}</div>
+              <div style="border: 1px solid #dfdfdf" class="q-pa-xs">
+                <q-icon name="storefront" size="sm" color="secondary" />
+                <span class="text-secondary q-ml-xs">Vendor</span>
+              </div>
+            </div>
           </div>
         </div>
       </q-card-section>
@@ -231,7 +243,7 @@ import { onMounted, ref, nextTick, watch } from 'vue'
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
 import { useMessageStore } from 'src/stores/chat'
-import { useAuthStore } from 'src/stores/auth'
+// import { useAuthStore } from 'src/stores/auth'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
 
 // Set worker source to the CDN URL
@@ -249,7 +261,7 @@ const productStore = useProductStore()
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
 
-const authStore = useAuthStore()
+// const authStore = useAuthStore()
 
 const slide = ref('style')
 
@@ -309,9 +321,7 @@ onMounted(() => {
         })
 
         messageStore
-          .GetMessages(
-            `product_id=${productDetails.value.id}&buyer_id=${authStore.UserInformation.id}&vendor_id=${productDetails.value.vendor_id}`,
-          )
+          .GetMessages(`product_id=${productDetails.value.id}`)
           .then((response) => {
             if (response.status === 'success') {
               messages.value = response.data
@@ -415,7 +425,6 @@ const sendMessage = () => {
       btnMessageLoadingState.value = true
       const payload = {
         product_id: productStore.ProductDetails.id,
-        vendor_id: productDetails.value.vendor_id,
         message: message.value,
       }
       messageStore
@@ -426,7 +435,7 @@ const sendMessage = () => {
 
             const payload = {
               product_name: productDetails.value.name,
-              vendor_id: productDetails.value.vendor_id,
+              enterprise_id: productDetails.value.enterprise_id,
               message: message.value,
             }
             productStore.NotifyVendor(payload)
