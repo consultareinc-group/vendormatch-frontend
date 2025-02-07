@@ -292,7 +292,7 @@ const getProducts = () => {
     productTableLoadingState.value = false
   }
   productStore
-    .GetProducts(`offset=${productStore.VendorProducts.length}`)
+    .GetProducts(`offset=${productStore.VendorProducts.length}&status=2`)
     .then((response) => {
       if (response.status === 'success') {
         response.data.forEach((data) => {
