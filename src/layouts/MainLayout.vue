@@ -13,9 +13,9 @@
           <q-btn flat round dense icon="person" class="q-mr-sm">
             <q-menu>
               <q-list style="min-width: 200px">
-                <q-item clickable v-close-popup @click="navigateToProfile">
+                <!-- <q-item clickable v-close-popup @click="navigateToProfile">
                   <q-item-section>Profile</q-item-section>
-                </q-item>
+                </q-item> -->
                 <q-separator />
                 <q-item clickable v-close-popup @click="logout">
                   <q-item-section>Logout</q-item-section>
@@ -33,7 +33,11 @@
           <q-img src="../assets/vendormatch-logo.png" width="200px"></q-img>
         </q-item-label>
 
-        <q-item clickable v-ripple>
+        <q-item
+          clickable
+          v-ripple
+          :to="{ name: authStore.UserInformation.role === 0 ? 'vendor' : 'buyer' }"
+        >
           <q-item-section avatar>
             <q-icon name="dashboard" />
           </q-item-section>
@@ -65,12 +69,12 @@ const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-const navigateToProfile = () => {
-  router.push('/profile')
-}
+// const navigateToProfile = () => {
+//   router.push('/profile')
+// }
 
 const logout = () => {
-  authStore.logout()
-  router.push('/login')
+  authStore.LogoutUser()
+  router.push('/signin')
 }
 </script>
