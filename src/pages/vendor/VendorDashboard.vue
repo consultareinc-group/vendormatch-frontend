@@ -70,7 +70,7 @@
               </div>
 
               <q-table
-                :rows="productStore.Products"
+                :rows="productStore.VendorProducts"
                 :columns="productColumns"
                 row-key="id"
                 :loading="productTableLoadingState"
@@ -288,15 +288,15 @@ const productColumns = [
 // Function to fetch the list of products, recursively fetching until all are loaded
 const getProducts = () => {
   productTableLoadingState.value = true
-  if (productStore.Products.length) {
+  if (productStore.VendorProducts.length) {
     productTableLoadingState.value = false
   }
   productStore
-    .GetProducts(`offset=${productStore.Products.length}&include_image=1`)
+    .GetProducts(`offset=${productStore.VendorProducts.length}`)
     .then((response) => {
       if (response.status === 'success') {
         response.data.forEach((data) => {
-          productStore.Products.push(data)
+          productStore.VendorProducts.push(data)
         })
 
         if (response.data.length) {
