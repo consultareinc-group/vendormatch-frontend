@@ -78,8 +78,8 @@ const authStore = useAuthStore()
 // const $q = useQuasar()
 
 const form = ref({
-  username: 'john.miller.doe@company.com',
-  password: '12345',
+  username: '',
+  password: '',
 })
 
 const isPwd = ref(true)
