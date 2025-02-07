@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', {
       });
     },
 
-    // Action to insert users
+    // Action to login users
     LoginUser(request) {
       return new Promise((resolve, reject) => {
         // Make a POST request to insert users in the database users table
@@ -37,6 +37,10 @@ export const useAuthStore = defineStore('auth', {
             reject(error); // Reject the promise if the API request fails
           });
       });
+    },
+
+    LogoutUser() {
+      LocalStorage.remove('Bearer');
     },
 
     ValidateToken() {
