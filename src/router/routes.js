@@ -2,7 +2,7 @@ const routes = [
   {
     path: '/',
     redirect: {
-      name: 'products'
+      name: 'signin'
     },
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -23,19 +23,6 @@ const routes = [
         component: () => import('src/pages/buyer/BuyerDashboard.vue'),
         meta: { role: 'buyer' }
       },
-      // {
-      //   path: 'login',
-      //   component: () => import('pages/Login.vue')
-      // },
-      // {
-      //   path: 'register',
-      //   component: () => import('pages/Register.vue')
-      // },
-      // {
-      //   path: 'profile',
-      //   component: () => import('pages/Profile.vue'),
-      //   meta: { requiresAuth: true }
-      // },
     ]
   },
   {
