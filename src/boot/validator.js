@@ -12,7 +12,17 @@ export default boot(async ({ router }) => {
   if (token) {
     try {
       const response = await authStore.ValidateToken();
-      if (response.status !== 'success') {
+      if (response.status === 'success') {
+
+        router.isReady().then(() => {
+          if (response.data.role === 0) {
+            router.push({ name: 'vendor' });
+          } else {
+            router.push({ name: 'buyer' });
+          }
+        });
+
+      } else {
         router.isReady().then(() => {
           router.push({ name: 'signin' });
         });
