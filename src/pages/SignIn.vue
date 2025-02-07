@@ -95,7 +95,7 @@ const onSubmit = () => {
         if (response.data.role === 0) {
           router.push({ name: 'vendor' })
         } else {
-          router.push({ name: 'products' })
+          router.push({ name: 'buyer' })
         }
       }
     })
