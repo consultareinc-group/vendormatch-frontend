@@ -132,11 +132,17 @@ onMounted(() => {
     })
 
   if (!productStore.SavedProducts.length) {
-    productStore.GetFavoriteProducts(`offset=0&limit=3`).then((response) => {
-      if (response.status === 'success') {
-        productStore.SavedProducts = response.data // Add each product to the saved product store
-      }
-    })
+    triggerStore.SavedProductsLoadingState = true
+    productStore
+      .GetFavoriteProducts(`offset=0&limit=3`)
+      .then((response) => {
+        if (response.status === 'success') {
+          productStore.SavedProducts = response.data // Add each product to the saved product store
+        }
+      })
+      .finally(() => {
+        triggerStore.SavedProductsLoadingState = false
+      })
   }
 })
 
