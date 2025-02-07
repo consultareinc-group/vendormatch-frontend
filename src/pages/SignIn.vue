@@ -92,6 +92,7 @@ const onSubmit = () => {
   authStore
     .LoginUser(form.value)
     .then((response) => {
+      console.log('response ', response)
       let status = Boolean(response.status === 'success') // Determine the status of the response
       if (status) {
         if (response.data.role === 0) {
@@ -99,13 +100,22 @@ const onSubmit = () => {
         } else {
           router.push({ name: 'buyer' })
         }
-      }
 
+        $q.notify({
+          message: `<p class='q-mb-none'><b>Welcome back!</b> You have successfully logged in.</p>`,
+          color: 'green-2',
+          position: 'top',
+          textColor: 'green',
+          html: true,
+        })
+      }
+    })
+    .catch((error) => {
       $q.notify({
-        message: `<p class='q-mb-none'><b>${status ? 'Welcome back!' : 'Login Failed!'}!</b> ${status ? 'You have successfully logged in.' : 'Incorrect username or password. Please try again.'}</p>`,
-        color: `${status ? 'green' : 'red'}-2`,
-        position: 'bottom',
-        textColor: `${status ? 'green' : 'red'}`,
+        message: `<p class='q-mb-none'><b>Login Failed!</b> ${error.response.data.message}. Please try again.</p>`,
+        color: 'red-2',
+        position: 'top',
+        textColor: 'red',
         html: true,
       })
     })
