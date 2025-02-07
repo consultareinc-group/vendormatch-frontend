@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="savedProductsLoadingState">
+    <div v-if="triggerStore.SavedProductsLoadingState">
       <q-list v-for="n in 3" :key="n" separator>
         <q-item v-ripple>
           <q-item-section avatar>
@@ -48,7 +48,6 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers' // Import trigger store for managing UI triggers
 // Import component for viewing product details
@@ -56,24 +55,6 @@ import { useTriggerStore } from 'src/stores/triggers' // Import trigger store fo
 // Initialize product and trigger stores
 const productStore = useProductStore()
 const triggerStore = useTriggerStore()
-
-const savedProductsLoadingState = ref(false)
-onMounted(() => {
-  savedProductsLoadingState.value = true
-  if (productStore.SavedProducts.length) {
-    savedProductsLoadingState.value = false
-  }
-  productStore
-    .GetFavoriteProducts(`offset=0&limit=3`)
-    .then((response) => {
-      if (response.status === 'success') {
-        productStore.SavedProducts = response.data // Add each product to the saved product store
-      }
-    })
-    .finally(() => {
-      savedProductsLoadingState.value = false
-    })
-})
 
 // Function to show product details in a dialog
 const showProductDetailsDialog = (product_details) => {

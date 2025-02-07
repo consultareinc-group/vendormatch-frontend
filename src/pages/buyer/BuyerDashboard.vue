@@ -119,17 +119,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useProductStore } from 'src/stores/products'
-// import { useAuthStore } from 'src/stores/auth'
+import { ref } from 'vue'
 // Import Quasar framework utilities
-import { useQuasar } from 'quasar'
 import ProductCard from '../../components/ProductCard.vue'
 import SavedProducts from './components/SavedProducts.vue'
-
-const productStore = useProductStore()
-// Initialize Quasar for UI utilities
-const $q = useQuasar()
 
 // Statistics
 const viewedProducts = ref(0)
@@ -161,31 +154,6 @@ const recentActivity = ref([
   //   description: 'You saved Bamboo Cutlery Set to your favorites',
   // },
 ])
-
-// Recommended Products
-const recommendedProducts = ref([])
-
-onMounted(() => {
-  productStore
-    .GetProducts(`offset=${productStore.Products.length}&include_image=1`)
-    .then((response) => {
-      if (response.status === 'success') {
-        response.data.forEach((product) => {
-          recommendedProducts.value.push(product)
-        })
-      }
-    })
-    .catch((error) => {
-      // Show a notification based on the response status
-      $q.notify({
-        message: `<p class='q-mb-none'>${error.message}</p>`,
-        color: `red-2`, // Set notification color
-        position: 'top-right', // Notification position
-        textColor: `red`, // Set text color
-        html: true, // Enable HTML content
-      })
-    })
-})
 </script>
 
 <style lang="scss" scoped>
