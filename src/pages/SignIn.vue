@@ -3,7 +3,7 @@
     <q-card class="login-card">
       <q-card-section class="text-center">
         <div class="logo-container q-mb-lg">
-          <q-img src="src/assets/vendormatch-logo.png" width="250px" />
+          <q-img src="../assets/vendormatch-logo.png" width="250px" />
         </div>
         <div class="text-h6">Welcome Back</div>
         <div class="text-grey-6">Sign in to your account</div>
