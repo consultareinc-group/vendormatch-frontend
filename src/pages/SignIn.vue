@@ -20,6 +20,7 @@
               (val) => !!val || 'Email is required',
               (val) => /.+@.+\..+/.test(val) || 'Please enter a valid email',
             ]"
+            lazy-rules
             outlined
           />
 
@@ -71,11 +72,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
-// import { useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 
 const router = useRouter()
 const authStore = useAuthStore()
-// const $q = useQuasar()
+const $q = useQuasar()
 
 const form = ref({
   username: '',
@@ -91,13 +92,22 @@ const onSubmit = () => {
   authStore
     .LoginUser(form.value)
     .then((response) => {
-      if (response.status === 'success') {
+      let status = Boolean(response.status === 'success') // Determine the status of the response
+      if (status) {
         if (response.data.role === 0) {
           router.push({ name: 'vendor' })
         } else {
           router.push({ name: 'buyer' })
         }
       }
+
+      $q.notify({
+        message: `<p class='q-mb-none'><b>${status ? 'Welcome back!' : 'Login Failed!'}!</b> ${status ? 'You have successfully logged in.' : 'Incorrect username or password. Please try again.'}</p>`,
+        color: `${status ? 'green' : 'red'}-2`,
+        position: 'bottom',
+        textColor: `${status ? 'green' : 'red'}`,
+        html: true,
+      })
     })
     .finally(() => {
       btnLoadingState.value = false
