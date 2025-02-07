@@ -20,6 +20,7 @@
               (val) => !!val || 'Email is required',
               (val) => /.+@.+\..+/.test(val) || 'Please enter a valid email',
             ]"
+            lazy-rules
             outlined
           />
 
