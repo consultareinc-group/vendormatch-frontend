@@ -30,7 +30,7 @@
         >
           <q-card class="product-card">
             <q-img
-              :src="`data:image/jpeg;base64,${product?.image[0]?.binary ?? ''}`"
+              :src="`data:image/jpeg;base64,${product?.image?.[0]?.binary}`"
               :ratio="1"
               alt="Product Image"
             />
@@ -44,7 +44,7 @@
               </div>
               <div class="text-subtitle2">{{ product?.category }}</div>
               <div class="text-body2 q-mt-sm">
-                <span class="text-grey">Cost:</span> ${{ product?.size[0]?.cost ?? 0 }}
+                <span class="text-grey">Cost:</span> ${{ product?.size?.[0]?.cost }}
               </div>
             </q-card-section>
 
