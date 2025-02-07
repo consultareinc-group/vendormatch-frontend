@@ -3,7 +3,7 @@ name: Deploy Vendor Match Frontend to cPanel
 on:
   push:
     branches:
-      - staging  # Trigger on push to the main branch (or your default branch)
+      - staging  # Trigger on push to the staging branch
 
 jobs:
   deploy:
@@ -18,21 +18,27 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '20.x' # Use an appropriate version of Node.js (>=18)
+        node-version: '20.x' # Use an appropriate version of Node.js
         
     - name: Install npm
       run: |
-        sudo apt-get update -y # Update apt repository (with sudo for permissions)
+        sudo apt-get update -y # Update apt repository
         curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash - # Install Node.js & npm
         sudo apt-get install -y nodejs # Install npm and nodejs
         node -v # Verify node installation
         npm -v  # Verify npm installation
+    
     # Install dependencies
     - name: Install Dependencies
       run: |
         npm install -g npm@11.0.0
         npm install -g @quasar/cli
         npm install
+
+    # Update API URL in axios.js
+    - name: Update API URL in axios.js
+      run: |
+        sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.API_URL }}'|" src/boot/axios.js
 
     # Build the Quasar app
     - name: Build Quasar App
@@ -57,13 +63,12 @@ jobs:
         ssh -o StrictHostKeyChecking=no -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
 
         # Remove only specific files and folders from the cPanel web root
-        ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST << 'EOF'
+        ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST << EOF
           cd $CPANEL_WEBROOT
           rm -rf assets icons favicon.ico index.html
         EOF
 
         # Upload the build files to the cPanel server
-        # Note: --delete is not used, so only the files that are new or modified will be uploaded.
         rsync -avz -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
 
         echo "Deployment to cPanel completed."
