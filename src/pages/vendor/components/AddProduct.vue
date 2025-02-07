@@ -670,7 +670,7 @@ const saveProduct = () => {
 
           // Add the new product to the table if successful
           if (status) {
-            productStore.Products.unshift({
+            productStore.VendorProducts.unshift({
               id: response.data.id,
               name: productForm.value.name,
               size: productForm.value.size,

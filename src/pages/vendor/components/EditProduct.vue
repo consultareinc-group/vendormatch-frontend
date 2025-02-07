@@ -774,15 +774,15 @@ const saveProduct = () => {
 
           // Add the new product to the table if successful
           if (status) {
-            let index = productStore.Products.findIndex(
+            let index = productStore.VendorProducts.findIndex(
               (product) => product.id == productForm.value.id,
             )
 
-            productStore.Products[index].id = response.data.id
-            productStore.Products[index].name = productForm.value.name
-            productStore.Products[index].size = productForm.value.size
-            productStore.Products[index].category = productForm.value.category.join(', ')
-            productStore.Products[index].status = productForm.value.status
+            productStore.VendorProducts[index].id = response.data.id
+            productStore.VendorProducts[index].name = productForm.value.name
+            productStore.VendorProducts[index].size = productForm.value.size
+            productStore.VendorProducts[index].category = productForm.value.category.join(', ')
+            productStore.VendorProducts[index].status = productForm.value.status
           }
         })
         .catch((error) => {

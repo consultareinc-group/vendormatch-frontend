@@ -62,11 +62,11 @@ const deleteProduct = () => {
       })
 
       if (status) {
-        const index = productStore.Products.findIndex(
+        const index = productStore.VendorProducts.findIndex(
           (product) => product.id === productStore.ProductDetails.id,
         )
         if (index !== -1) {
-          productStore.Products.splice(index, 1) // Remove the product at the found index
+          productStore.VendorProducts.splice(index, 1) // Remove the product at the found index
         }
         deleteProductDialog.value = false
       }
