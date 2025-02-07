@@ -314,6 +314,9 @@ const getProducts = () => {
         html: true, // Enable HTML content
       })
     })
+    .finally(() => {
+      productTableLoadingState.value = false
+    })
 }
 
 // Execute when the component is mounted
