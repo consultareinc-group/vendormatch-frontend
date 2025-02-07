@@ -3,7 +3,7 @@ name: Deploy Vendor Match Frontend to cPanel
 on:
   push:
     branches:
-      - staging  # Trigger on push to the main branch (or your default branch)
+      - staging  # Trigger on push to the main branch (or your default branch) 
 
 jobs:
   deploy:
