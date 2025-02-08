@@ -50,7 +50,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
           CPANEL_USER: ${{ secrets.CPANEL_USER }}
-          CPANEL_WEBROOT: ${{ secrets.CPANEL_WEBROOT }}
           SSH_PORT: ${{ secrets.CPANEL_PORT }}
         run: |
           # Start SSH agent
@@ -64,11 +63,11 @@ jobs:
 
           # Remove only specific files and folders from the cPanel web root
           ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST << EOF
-            cd $CPANEL_WEBROOT
+            cd ~/public_html
             rm -rf assets icons favicon.ico index.html
           EOF
 
           # Upload the build files to the cPanel server
-          rsync -avz -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
+          rsync -avz -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:public_html/
 
           echo "Deployment to cPanel completed."
