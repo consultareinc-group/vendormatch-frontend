@@ -1,4 +1,4 @@
-name: Deploy Vendor Match Frontend to cPanel
+name: Deploy Vendor Match Staging Frontend to cPanel
 
 on:
   push:
