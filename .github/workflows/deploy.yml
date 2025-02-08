@@ -3,72 +3,72 @@ name: Deploy Vendor Match Frontend to cPanel
 on:
   push:
     branches:
-      - staging  # Trigger on push to the staging branch
+      - staging # Trigger on push to the staging branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    # Set up Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20.x' # Use an appropriate version of Node.js
-        
-    - name: Install npm
-      run: |
-        sudo apt-get update -y # Update apt repository
-        curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash - # Install Node.js & npm
-        sudo apt-get install -y nodejs # Install npm and nodejs
-        node -v # Verify node installation
-        npm -v  # Verify npm installation
-    
-    # Install dependencies
-    - name: Install Dependencies
-      run: |
-        npm install -g npm@11.0.0
-        npm install -g @quasar/cli
-        npm install
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.x' # Use an appropriate version of Node.js
 
-    # Update API URL in axios.js
-    - name: Update API URL in axios.js
-      run: |
-        sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.API_URL }}'|" src/boot/axios.js
+      - name: Install npm
+        run: |
+          sudo apt-get update -y # Update apt repository
+          curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash - # Install Node.js & npm
+          sudo apt-get install -y nodejs # Install npm and nodejs
+          node -v # Verify node installation
+          npm -v  # Verify npm installation
 
-    # Build the Quasar app
-    - name: Build Quasar App
-      run: quasar build
+      # Install dependencies
+      - name: Install Dependencies
+        run: |
+          npm install -g npm@11.0.0
+          npm install -g @quasar/cli
+          npm install
 
-    # Deploy to cPanel using SSH
-    - name: Deploy to cPanel
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
-        CPANEL_USER: ${{ secrets.CPANEL_USER }}
-        CPANEL_WEBROOT: ${{ secrets.CPANEL_WEBROOT }}
-        SSH_PORT: ${{ secrets.CPANEL_PORT }}
-      run: |
-        # Start SSH agent
-        eval "$(ssh-agent -s)"
-        
-        # Add SSH private key to the agent
-        echo "$SSH_PRIVATE_KEY" | ssh-add -
+      # Update API URL in axios.js
+      - name: Update API URL in axios.js
+        run: |
+          sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.STAGING_API_URL }}'|" src/boot/axios.js
 
-        # Test SSH connection
-        ssh -o StrictHostKeyChecking=no -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
+      # Build the Quasar app
+      - name: Build Quasar App
+        run: quasar build
 
-        # Remove only specific files and folders from the cPanel web root
-        ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST << EOF
-          cd $CPANEL_WEBROOT
-          rm -rf assets icons favicon.ico index.html
-        EOF
+      # Deploy to cPanel using SSH
+      - name: Deploy to cPanel
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_WEBROOT: ${{ secrets.CPANEL_WEBROOT }}
+          SSH_PORT: ${{ secrets.CPANEL_PORT }}
+        run: |
+          # Start SSH agent
+          eval "$(ssh-agent -s)"
 
-        # Upload the build files to the cPanel server
-        rsync -avz -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
+          # Add SSH private key to the agent
+          echo "$SSH_PRIVATE_KEY" | ssh-add -
 
-        echo "Deployment to cPanel completed."
+          # Test SSH connection
+          ssh -o StrictHostKeyChecking=no -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST "echo 'SSH connection successful!'"
+
+          # Remove only specific files and folders from the cPanel web root
+          ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST << EOF
+            cd $CPANEL_WEBROOT
+            rm -rf assets icons favicon.ico index.html
+          EOF
+
+          # Upload the build files to the cPanel server
+          rsync -avz -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:$CPANEL_WEBROOT/
+
+          echo "Deployment to cPanel completed."
