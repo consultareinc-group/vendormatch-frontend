@@ -92,7 +92,6 @@ const onSubmit = () => {
   authStore
     .LoginUser(form.value)
     .then((response) => {
-      console.log('response ', response)
       let status = Boolean(response.status === 'success') // Determine the status of the response
       if (status) {
         if (response.data.role === 0) {
