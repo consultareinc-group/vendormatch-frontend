@@ -249,7 +249,6 @@ onMounted(() => {
         // Assign a default value
         landed_cost_option.value = response.data.size[0].landed_cost[0]
         landed_costs.value = response.data.size[0].landed_cost
-        console.log('landed_cost_option.value  ', landed_cost_option.value)
         size_option.value = response.data.size[0].size
         sizes.value = response.data.size.map((size) => size.size)
         slide.value = response.data.images[0].name
