@@ -166,6 +166,8 @@
           <q-uploader
             ref="imageUploadRef"
             @vue:updated="productForm.images = imageUploadRef.files"
+            max-file-size="2097152"
+            @rejected="onRejected"
             hide-upload-btn
             multiple
             accept=".jpg,.png,.jpeg"
@@ -192,6 +194,8 @@
                 <q-uploader
                   :ref="(el) => (refs[`productCertificateUploadRef${index}`] = el)"
                   @vue:updated="() => updateCertificateFile(index, 'product')"
+                  max-file-size="2097152"
+                  @rejected="onRejected"
                   hide-upload-btn
                   accept=".pdf"
                   label="Upload file"
@@ -301,6 +305,8 @@
               <q-uploader
                 :ref="(el) => (refs[`facilityCertificateUploadRef${index}`] = el)"
                 @vue:updated="() => updateCertificateFile(index, 'facility')"
+                max-file-size="2097152"
+                @rejected="onRejected"
                 hide-upload-btn
                 accept=".pdf"
                 label="Upload file"
@@ -799,6 +805,12 @@ const saveProduct = () => {
           btnLoadingState.value = false // Reset loading state
         })
     }
+  })
+}
+const onRejected = (rejectedEntries) => {
+  $q.notify({
+    type: 'negative',
+    message: `${rejectedEntries.length} file(s) did not pass validation constraints. Maximum file size 2MB`,
   })
 }
 </script>
