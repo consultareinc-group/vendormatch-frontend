@@ -6,7 +6,7 @@
         <q-card class="stats-card">
           <q-card-section>
             <div class="text-h6">Total Products</div>
-            <div class="text-h4">{{ productStore.Products.length }}</div>
+            <div class="text-h4">{{ productStore.VendorProducts.length }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -233,7 +233,7 @@ const addProductDialog = ref(false)
 
 // Reactive reference to track the number of active product listings
 const publishListingCount = computed(() => {
-  return productStore.Products.filter((product) => product.status === 'Publish').length // count publish listing products
+  return productStore.VendorProducts.filter((product) => product.status === 'Publish').length // count publish listing products
 })
 
 // Reactive reference to track the number of views from retailers

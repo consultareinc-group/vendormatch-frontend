@@ -47,7 +47,12 @@
               class="q-mb-sm"
             ></q-skeleton>
             <div class="">{{ productDetails.category }}</div>
-            <q-skeleton v-if="!size.size" square height="167px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="167px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else>
               <div class="row q-mt-md">
                 <div class="col-6">
@@ -89,7 +94,12 @@
               </q-select>
             </div>
             <hr class="q-mt-md" />
-            <q-skeleton v-if="!size.size" square height="21px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="21px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else class="flex justify-start items-center q-mt-md">
               <div class="text-bold q-mr-md">Size:</div>
               <div>
@@ -103,7 +113,12 @@
                 />
               </div>
             </div>
-            <q-skeleton v-if="!size.upc" square height="21px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="21px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else class="flex justify-start items-center q-mt-md">
               <div class="text-bold q-mr-md">UPC:</div>
               <div>
@@ -112,7 +127,7 @@
             </div>
             <hr class="q-mt-md" />
             <q-skeleton
-              v-if="!productDetails.description"
+              v-if="productDetailsLoadingState"
               square
               height="98px"
               class="q-mb-sm"
@@ -238,8 +253,9 @@ const changeProductCost = () => {
     }
   })
 }
-
+const productDetailsLoadingState = ref(false)
 onMounted(() => {
+  productDetailsLoadingState.value = true
   productDetails.value = { images: [] }
   productStore
     .GetProduct({ id: productStore.ProductDetails.id })
@@ -275,6 +291,9 @@ onMounted(() => {
         textColor: `red`, // Set text color
         html: true, // Enable HTML content
       })
+    })
+    .finally(() => {
+      productDetailsLoadingState.value = false
     })
 })
 
