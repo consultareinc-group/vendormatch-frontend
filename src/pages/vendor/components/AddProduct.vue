@@ -74,9 +74,12 @@
                 lazy-rules
                 class="q-mb-md"
               />
+
+              <q-toggle v-model="size.is_cost_negotiable" label="Negotiable Cost" class="q-mb-md" />
               <q-input
-                outlined
+                :disable="size.is_cost_negotiable"
                 v-model.number="size.cost"
+                outlined
                 dense
                 type="number"
                 label="Cost"
@@ -94,6 +97,7 @@
               />
 
               <q-input
+                :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.srp"
                 dense
@@ -140,6 +144,7 @@
                   />
                   <q-input
                     outlined
+                    :disable="size.is_cost_negotiable"
                     v-model.number="cost.amount"
                     dense
                     type="number"
@@ -500,6 +505,7 @@ const productForm = ref({
           amount: '',
         },
       ], // Landed cost of the product
+      is_cost_negotiable: false,
     },
   ],
   status: 'Draft', // Status of the product (e.g., Draft or Publish)
@@ -602,6 +608,7 @@ const addProductSize = () => {
         amount: '',
       },
     ],
+    is_cost_negotiable: false,
   })
 }
 
