@@ -59,6 +59,7 @@
                     lazy-rules
                     placeholder="Please type your message here"
                     outlined
+                    autogrow
                     type="textarea"
                   />
                 </div>
@@ -162,9 +163,7 @@
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
               <div class="scroll">
-                <pre style="font-family: sans-serif; overflow: overlay">{{
-                  productDetails.description
-                }}</pre>
+                <pre>{{ productDetails.description }}</pre>
               </div>
             </div>
             <q-skeleton
@@ -558,6 +557,13 @@ const timeAgo = (timestamp) => {
     scrollbar-thumb {
       background: $secondary;
     }
+  }
+
+  pre {
+    font-family: sans-serif;
+    overflow: overlay;
+    text-wrap: auto;
+    max-height: 200px;
   }
 }
 </style>
