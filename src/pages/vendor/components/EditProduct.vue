@@ -592,7 +592,9 @@ onMounted(() => {
 
         productForm.value.size.forEach((size) => {
           // set default file value
-          !size.cost || (size.cost === '0.00' && (size.is_cost_negotiable = true))
+          if (!size.cost || size.cost === '0.00') {
+            size.is_cost_negotiable = true
+          }
         })
       }
     })
