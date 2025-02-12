@@ -594,6 +594,8 @@ onMounted(() => {
           // set default file value
           if (!size.cost || size.cost === '0.00') {
             size.is_cost_negotiable = true
+          } else {
+            size.is_cost_negotiable = false
           }
         })
       }
