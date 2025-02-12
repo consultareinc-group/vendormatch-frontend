@@ -29,6 +29,7 @@
             label="Description"
             :rules="[(val) => !!val || 'Description is required']"
             lazy-rules
+            autogrow
             class="q-mb-md"
           />
 
