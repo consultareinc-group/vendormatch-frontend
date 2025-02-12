@@ -73,7 +73,12 @@
                 class="q-mb-md"
               />
 
-              <q-toggle v-model="size.is_cost_negotiable" label="Negotiable Cost" class="q-mb-md" />
+              <q-toggle
+                @click="checkProductStatus()"
+                v-model="size.is_cost_negotiable"
+                label="Negotiable Cost"
+                class="q-mb-md"
+              />
               <q-input
                 :disable="size.is_cost_negotiable"
                 v-model.number="size.cost"
@@ -469,7 +474,7 @@
 
 <script setup lang="ts">
 // Import Vue's reactive and lifecycle utilities
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 // Import the store for dashboard-related state management
 import { useProductStore } from 'src/stores/products'
@@ -615,6 +620,49 @@ const addLandedCost = (index) => {
     country: '',
     amount: '',
   })
+}
+
+// Watch for changes in the productForm object
+watch(
+  productForm,
+  () => {
+    // Require cost, SRP, and landed cost if the status is "Publish"
+    if (productForm.value.status === 'Publish') {
+      // Loop through each size in the productForm and set is_cost_negotiable to false
+      productForm.value.size.forEach((size) => {
+        size.is_cost_negotiable = false
+      })
+    } else {
+      // If the status is not "Publish", check if cost negotiation is enabled
+      productForm.value.size.forEach((size) => {
+        if (size.is_cost_negotiable) {
+          // Reset cost and SRP to null when cost is negotiable
+          size.cost = null
+          size.srp = null
+
+          // Loop through each landed_cost and reset its amount to null
+          size.landed_cost.forEach((cost) => {
+            cost.amount = null
+          })
+        }
+      })
+    }
+  },
+  { deep: true }, // Deep watch to track changes in nested properties
+)
+
+// Function to check product status and display a notification if status is "Publish"
+const checkProductStatus = () => {
+  if (productForm.value.status === 'Publish') {
+    // Show a notification to the user that enabling a negotiable cost is not allowed
+    $q.notify({
+      message: `<p class='q-mb-none'>Enabling a negotiable cost is not allowed when the product status is set to "Publish."</p>`,
+      color: `red-2`, // Set the notification background color
+      position: 'bottom', // Display the notification at the bottom
+      textColor: `red`, // Set the notification text color
+      html: true, // Allow HTML in the notification message
+    })
+  }
 }
 
 // Reactive state to track loading status of the form
