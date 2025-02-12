@@ -11,7 +11,7 @@
             v-model="productForm.name"
             dense
             label="Product Name"
-            :rules="[(val) => !!val || 'Name is required']"
+            :rules="[(val) => !!val || 'Product Name is required']"
             lazy-rules
             class="q-mb-md"
           />
@@ -55,7 +55,9 @@
                 v-model="size.size"
                 dense
                 label="Size"
-                :rules="[(val) => !!val || 'Size is required']"
+                :rules="
+                  productForm.status === 'Publish' ? [(val) => !!val || 'Size is required'] : []
+                "
                 lazy-rules
                 class="q-mb-md"
               />
@@ -64,36 +66,50 @@
                 v-model="size.upc"
                 dense
                 label="UPC"
-                :rules="[(val) => !!val || 'UPC is required']"
+                :rules="
+                  productForm.status === 'Publish' ? [(val) => !!val || 'UPC is required'] : []
+                "
                 lazy-rules
                 class="q-mb-md"
               />
+
+              <q-toggle v-model="size.is_cost_negotiable" label="Negotiable Cost" class="q-mb-md" />
               <q-input
-                outlined
+                :disable="size.is_cost_negotiable"
                 v-model.number="size.cost"
+                outlined
                 dense
                 type="number"
                 label="Cost"
                 prefix="$"
-                :rules="[
-                  (val) => !!val || 'Cost is required',
-                  (val) => val > 0 || 'Cost must be greater than 0',
-                ]"
+                :rules="
+                  productForm.status === 'Publish'
+                    ? [
+                        (val) => !!val || 'Cost is required',
+                        (val) => val > 0 || 'Cost must be greater than 0',
+                      ]
+                    : []
+                "
                 lazy-rules
                 class="q-mb-md"
               />
 
               <q-input
+                :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.srp"
                 dense
                 type="number"
                 label="SRP"
                 prefix="$"
-                :rules="[
-                  (val) => !!val || 'SRP is required',
-                  (val) => val > 0 || 'SRP must be greater than 0',
-                ]"
+                :rules="
+                  productForm.status === 'Publish'
+                    ? [
+                        (val) => !!val || 'SRP is required',
+                        (val) => val > 0 || 'SRP must be greater than 0',
+                      ]
+                    : []
+                "
                 lazy-rules
                 class="q-mb-md"
               />
@@ -116,21 +132,30 @@
                     v-model.number="cost.country"
                     dense
                     label="Destination/Country"
-                    :rules="[(val) => !!val || 'Destination/Country is required']"
+                    :rules="
+                      productForm.status === 'Publish'
+                        ? [(val) => !!val || 'Destination/Country is required']
+                        : []
+                    "
                     lazy-rules
                     class="q-mb-md"
                   />
                   <q-input
                     outlined
+                    :disable="size.is_cost_negotiable"
                     v-model.number="cost.amount"
                     dense
                     type="number"
                     label="Landed Cost"
                     prefix="$"
-                    :rules="[
-                      (val) => !!val || 'Landed cost is required',
-                      (val) => val > 0 || 'Landed cost must be greater than 0',
-                    ]"
+                    :rules="
+                      productForm.status === 'Publish'
+                        ? [
+                            (val) => !!val || 'Landed cost is required',
+                            (val) => val > 0 || 'Landed cost must be greater than 0',
+                          ]
+                        : []
+                    "
                     lazy-rules
                   />
                 </div>
@@ -139,7 +164,7 @@
                   icon="add"
                   dense
                   label="Add Destination/Country"
-                  class="q-px-sm"
+                  class="q-px-sm q-mt-md"
                   no-caps
                   @click="addLandedCost(size_index)"
                 />
@@ -165,7 +190,7 @@
             accept=".jpg,.png,.jpeg"
             max-file-size="2097152"
             @rejected="onRejected"
-            label="Upload file"
+            label="Upload image file"
             color="secondary"
             class="q-mb-md full-width"
           />
@@ -191,82 +216,98 @@
                 @rejected="onRejected"
                 hide-upload-btn
                 accept=".pdf"
-                label="Upload file"
+                label="Upload pdf file"
                 color="secondary"
                 class="q-mb-md full-width"
               />
+              <div v-if="certificate.file.length">
+                <q-input
+                  outlined
+                  v-model="certificate.description"
+                  label="Document Name"
+                  :rules="
+                    productForm.status === 'Publish'
+                      ? [(val) => !!val || 'Document name is required']
+                      : []
+                  "
+                  lazy-rules
+                  dense
+                  class="q-mb-md"
+                />
+                <q-input
+                  outlined
+                  v-model="certificate.issue_date"
+                  lazy-rules
+                  label="Issuance Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="
+                    productForm.status === 'Publish'
+                      ? [
+                          (val) => !!val || 'Field is required', // Ensure the field is not empty
+                          (val) =>
+                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                        ]
+                      : []
+                  "
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`productCertificateIssuanceDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.issue_date"
+                          @update:model-value="
+                            () => refs[`productCertificateIssuanceDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+                <q-input
+                  outlined
+                  v-model="certificate.expiry_date"
+                  lazy-rules
+                  label="Expiry Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="
+                    productForm.status === 'Publish'
+                      ? [
+                          (val) => !!val || 'Field is required', // Ensure the field is not empty
+                          (val) =>
+                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                        ]
+                      : []
+                  "
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`productCertificateExpiryDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.expiry_date"
+                          @update:model-value="
+                            () => refs[`productCertificateExpiryDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
 
-              <q-input
-                outlined
-                v-model="certificate.description"
-                label="Document Name"
-                :rules="[(val) => !!val || 'Document name is required']"
-                lazy-rules
-                dense
-                class="q-mb-md"
-              />
-              <q-input
-                outlined
-                v-model="certificate.issue_date"
-                lazy-rules
-                label="Issuance Date"
-                dense
-                class="q-mt-sm q-mb-md"
-                :rules="[
-                  (val) => !!val || 'Field is required', // Ensure the field is not empty
-                  (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                ]"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      :ref="(el) => (refs[`productCertificateIssuanceDate${index}`] = el)"
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        minimal
-                        v-model="certificate.issue_date"
-                        @update:model-value="
-                          () => refs[`productCertificateIssuanceDate${index}`]?.hide()
-                        "
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-              <q-input
-                outlined
-                v-model="certificate.expiry_date"
-                lazy-rules
-                label="Expiry Date"
-                dense
-                class="q-mt-sm q-mb-md"
-                :rules="[
-                  (val) => !!val || 'Field is required', // Ensure the field is not empty
-                  (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                ]"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      :ref="(el) => (refs[`productCertificateExpiryDate${index}`] = el)"
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        minimal
-                        v-model="certificate.expiry_date"
-                        @update:model-value="
-                          () => refs[`productCertificateExpiryDate${index}`]?.hide()
-                        "
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
               <div v-if="index !== productForm.product_certificates.length - 1" class="q-pb-sm">
                 <hr class="q-mb-lg q-pb-xs bg-primary" />
               </div>
@@ -301,82 +342,98 @@
                 @rejected="onRejected"
                 hide-upload-btn
                 accept=".pdf"
-                label="Upload file"
+                label="Upload pdf file"
                 color="secondary"
                 class="q-mb-md full-width"
               />
 
-              <q-input
-                outlined
-                v-model="certificate.description"
-                label="Document Name"
-                :rules="[(val) => !!val || 'Document name is required']"
-                lazy-rules
-                dense
-                class="q-mb-md"
-              />
-              <q-input
-                outlined
-                v-model="certificate.issue_date"
-                lazy-rules
-                label="Issuance Date"
-                dense
-                class="q-mt-sm q-mb-md"
-                :rules="[
-                  (val) => !!val || 'Field is required', // Ensure the field is not empty
-                  (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                ]"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      :ref="(el) => (refs[`facilityCertificateIssuanceDate${index}`] = el)"
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        minimal
-                        v-model="certificate.issue_date"
-                        @update:model-value="
-                          () => refs[`facilityCertificateIssuanceDate${index}`]?.hide()
-                        "
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-              <q-input
-                outlined
-                v-model="certificate.expiry_date"
-                lazy-rules
-                label="Expiry Date"
-                dense
-                class="q-mt-sm q-mb-md"
-                :rules="[
-                  (val) => !!val || 'Field is required', // Ensure the field is not empty
-                  (val) => /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                ]"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      :ref="(el) => (refs[`facilityCertificateExpiryDate${index}`] = el)"
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        minimal
-                        v-model="certificate.expiry_date"
-                        @update:model-value="
-                          () => refs[`facilityCertificateExpiryDate${index}`]?.hide()
-                        "
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
+              <div v-if="certificate.file.length">
+                <q-input
+                  outlined
+                  v-model="certificate.description"
+                  label="Document Name"
+                  :rules="
+                    productForm.status === 'Publish'
+                      ? [(val) => !!val || 'Document name is required']
+                      : []
+                  "
+                  lazy-rules
+                  dense
+                  class="q-mb-md"
+                />
+                <q-input
+                  outlined
+                  v-model="certificate.issue_date"
+                  lazy-rules
+                  label="Issuance Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="
+                    productForm.status === 'Publish'
+                      ? [
+                          (val) => !!val || 'Field is required', // Ensure the field is not empty
+                          (val) =>
+                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                        ]
+                      : []
+                  "
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`facilityCertificateIssuanceDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.issue_date"
+                          @update:model-value="
+                            () => refs[`facilityCertificateIssuanceDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+                <q-input
+                  outlined
+                  v-model="certificate.expiry_date"
+                  lazy-rules
+                  label="Expiry Date"
+                  dense
+                  class="q-mt-sm q-mb-md"
+                  :rules="
+                    productForm.status === 'Publish'
+                      ? [
+                          (val) => !!val || 'Field is required', // Ensure the field is not empty
+                          (val) =>
+                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
+                        ]
+                      : []
+                  "
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy
+                        :ref="(el) => (refs[`facilityCertificateExpiryDate${index}`] = el)"
+                        transition-show="scale"
+                        transition-hide="scale"
+                      >
+                        <q-date
+                          minimal
+                          v-model="certificate.expiry_date"
+                          @update:model-value="
+                            () => refs[`facilityCertificateExpiryDate${index}`]?.hide()
+                          "
+                          mask="YYYY-MM-DD"
+                        />
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+              </div>
               <div v-if="index !== productForm.facility_certificates.length - 1" class="q-pb-sm">
                 <hr class="q-mb-lg q-pb-xs bg-primary" />
               </div>
@@ -446,9 +503,10 @@ const productForm = ref({
           amount: '',
         },
       ], // Landed cost of the product
+      is_cost_negotiable: false,
     },
   ],
-  status: '', // Status of the product (e.g., Draft or Publish)
+  status: 'Draft', // Status of the product (e.g., Draft or Publish)
   images: [], // Array to store uploaded product images
   product_certificates: [
     {
@@ -548,6 +606,7 @@ const addProductSize = () => {
         amount: '',
       },
     ],
+    is_cost_negotiable: false,
   })
 }
 
@@ -564,6 +623,12 @@ const formLoadingState = ref(false)
 const productQForm = ref(null)
 // Function to handle product saving
 const saveProduct = () => {
+  // require cost, srp, and landed cost if the status is Publish
+  if (productForm.value.status === 'Publish') {
+    productForm.value.size.forEach((size) => {
+      size.is_cost_negotiable = false
+    })
+  }
   // Validate the product form
   productQForm.value.validate().then((success) => {
     if (success) {
@@ -584,7 +649,7 @@ const saveProduct = () => {
 
       // Validate product certificates
       productForm.value.product_certificates.forEach((cert) => {
-        if (!cert.file.length) {
+        if (!cert.file.length && productForm.value.status === 'Publish') {
           $q.notify({
             message: `<p class='q-mb-none'>Product certificate is required.</p>`,
             color: `red-2`,
@@ -598,7 +663,7 @@ const saveProduct = () => {
 
       // Validate facility certificates
       productForm.value.facility_certificates.forEach((cert) => {
-        if (!cert.file.length) {
+        if (!cert.file.length && productForm.value.status === 'Publish') {
           $q.notify({
             message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
             color: `red-2`,
@@ -631,9 +696,13 @@ const saveProduct = () => {
         formData.append('images[]', file)
       })
 
+      if (!productForm.value.images.length) {
+        formData.append('images[]', null)
+      }
+
       // Append product certificates to FormData
       productForm.value.product_certificates.forEach((cert, index) => {
-        formData.append(`product_certificates[${index}][file]`, cert.file[0]) // Add file
+        formData.append(`product_certificates[${index}][file]`, cert.file[0] ?? null) // Add file
         formData.append(`product_certificates[${index}][description]`, cert.description) // Add document name
         formData.append(`product_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
         formData.append(`product_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
@@ -641,7 +710,7 @@ const saveProduct = () => {
 
       // Append facility certificates to FormData
       productForm.value.facility_certificates.forEach((cert, index) => {
-        formData.append(`facility_certificates[${index}][file]`, cert.file[0]) // Add file
+        formData.append(`facility_certificates[${index}][file]`, cert.file[0] ?? null) // Add file
         formData.append(`facility_certificates[${index}][description]`, cert.description) // Add document name
         formData.append(`facility_certificates[${index}][issue_date]`, cert.issue_date) // Add issue date
         formData.append(`facility_certificates[${index}][expiry_date]`, cert.expiry_date) // Add expiry date
@@ -750,10 +819,10 @@ const saveProduct = () => {
   })
 }
 
-const onRejected = (rejectedEntries) => {
+const onRejected = () => {
   $q.notify({
     type: 'negative',
-    message: `${rejectedEntries.length} file(s) did not pass validation constraints. Maximum file size 2MB`,
+    message: `Upload failed: The file size exceeds 2MB or the file type is invalid.`,
   })
 }
 </script>

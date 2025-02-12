@@ -47,13 +47,19 @@
               class="q-mb-sm"
             ></q-skeleton>
             <div class="">{{ productDetails.category }}</div>
-            <q-skeleton v-if="!size.size" square height="167px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="167px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else>
               <div class="row q-mt-md">
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">Cost:</div>
-                    <h5 class="q-ma-none text-bold">${{ size.cost }}</h5>
+                    <div v-if="!size.cost || size.cost === '0.00'">Negotiable</div>
+                    <h5 v-else class="q-ma-none text-bold">${{ size.cost }}</h5>
                   </div>
                 </div>
               </div>
@@ -61,7 +67,8 @@
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">SRP:</div>
-                    <h5 class="q-ma-none text-bold">${{ size.srp }}</h5>
+                    <div v-if="!size.srp || size.srp === '0.00'">TBD</div>
+                    <h5 v-else class="q-ma-none text-bold">${{ size.srp }}</h5>
                   </div>
                 </div>
               </div>
@@ -76,20 +83,34 @@
                 class="q-pa-none"
               >
                 <template v-slot:append>
-                  <div class="text-black text-body2">${{ landed_cost_option.amount }}</div>
+                  <div
+                    v-if="!landed_cost_option.amount || landed_cost_option.amount === '0.00'"
+                    class="text-black text-body2"
+                  >
+                    TBD
+                  </div>
+                  <div v-else class="text-black text-body2">${{ landed_cost_option.amount }}</div>
                 </template>
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps" :clickable="false">
                     <div class="flex justify-between items-center full-width">
                       <div>{{ scope.opt.country }}</div>
-                      <div>${{ scope.opt.amount }}</div>
+                      <div>
+                        <div v-if="!scope.opt.amount || scope.opt.amount === '0.00'">TBD</div>
+                        <div v-else>${{ scope.opt.amount }}</div>
+                      </div>
                     </div>
                   </q-item>
                 </template>
               </q-select>
             </div>
             <hr class="q-mt-md" />
-            <q-skeleton v-if="!size.size" square height="21px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="21px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else class="flex justify-start items-center q-mt-md">
               <div class="text-bold q-mr-md">Size:</div>
               <div>
@@ -103,7 +124,12 @@
                 />
               </div>
             </div>
-            <q-skeleton v-if="!size.upc" square height="21px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="21px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else class="flex justify-start items-center q-mt-md">
               <div class="text-bold q-mr-md">UPC:</div>
               <div>
@@ -112,14 +138,14 @@
             </div>
             <hr class="q-mt-md" />
             <q-skeleton
-              v-if="!productDetails.description"
+              v-if="productDetailsLoadingState"
               square
               height="98px"
               class="q-mb-sm"
             ></q-skeleton>
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
-              <div>
+              <div class="scroll">
                 <pre style="font-family: sans-serif; overflow: overlay">{{
                   productDetails.description
                 }}</pre>
@@ -238,8 +264,9 @@ const changeProductCost = () => {
     }
   })
 }
-
+const productDetailsLoadingState = ref(false)
 onMounted(() => {
+  productDetailsLoadingState.value = true
   productDetails.value = { images: [] }
   productStore
     .GetProduct({ id: productStore.ProductDetails.id })
@@ -275,6 +302,9 @@ onMounted(() => {
         textColor: `red`, // Set text color
         html: true, // Enable HTML content
       })
+    })
+    .finally(() => {
+      productDetailsLoadingState.value = false
     })
 })
 
@@ -346,9 +376,66 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
     height: 30px;
   }
 
-  // .q-carousel__slide {
-  //   background-size: 100% 100%;
-  //   background-repeat: no-repeat;
-  // }
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: $secondary;
+  }
+
+  /* Firefox */
+  scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  scrollbar-thumb {
+    background: $secondary;
+  }
+
+  .scroll {
+    /* Webkit browsers (Chrome, Safari, Edge) */
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: $secondary;
+    }
+
+    /* Firefox */
+    scrollbar {
+      width: 2px;
+    }
+
+    /* Track */
+    scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    scrollbar-thumb {
+      background: $secondary;
+    }
+  }
 }
 </style>
