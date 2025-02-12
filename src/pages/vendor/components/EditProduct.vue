@@ -27,9 +27,7 @@
             dense
             type="textarea"
             label="Description"
-            :rules="
-              productForm.status === 'Publish' ? [(val) => !!val || 'Description is required'] : []
-            "
+            :rules="[(val) => !!val || 'Description is required']"
             lazy-rules
             class="q-mb-md"
           />
@@ -80,7 +78,9 @@
                 lazy-rules
                 class="q-mb-md"
               />
+              <q-toggle v-model="size.is_cost_negotiable" label="Negotiable Cost" class="q-mb-md" />
               <q-input
+                :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.cost"
                 dense
@@ -100,6 +100,7 @@
               />
 
               <q-input
+                :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.srp"
                 dense
@@ -146,6 +147,7 @@
                   />
                   <q-input
                     outlined
+                    :disable="size.is_cost_negotiable"
                     v-model.number="cost.amount"
                     dense
                     type="number"
@@ -507,6 +509,7 @@ const productForm = ref({
           amount: '',
         },
       ], // Landed cost of the product
+      is_cost_negotiable: false,
     },
   ],
   status: 'Draft', // Status of the product (e.g., Draft or Publish)
@@ -586,6 +589,11 @@ onMounted(() => {
             },
           ]
         }
+
+        productForm.value.size.forEach((size) => {
+          // set default file value
+          size.cost === '0.00' && (size.is_cost_negotiable = true)
+        })
       }
     })
     .catch((error) => {
@@ -731,6 +739,7 @@ const addProductSize = () => {
         amount: '',
       },
     ],
+    is_cost_negotiable: false,
   })
 }
 
@@ -747,11 +756,17 @@ const btnLoadingState = ref(false)
 const productQForm = ref(null)
 // Function to handle product saving
 const saveProduct = () => {
+  // require cost, srp, and landed cost if the status is Publish
+  if (productForm.value.status === 'Publish') {
+    productForm.value.size.forEach((size) => {
+      size.is_cost_negotiable = false
+    })
+  }
   // Validate the product form
   productQForm.value.validate().then((success) => {
     if (success) {
       // Check if at least one image is uploaded
-      if (!productForm.value.images.length && productForm.value.status === 'Publish') {
+      if (!productForm.value.images.length) {
         $q.notify({
           message: `<p class='q-mb-none'>Product image is required.</p>`,
           color: `red-2`,

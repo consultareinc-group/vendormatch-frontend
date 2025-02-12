@@ -21,9 +21,7 @@
             dense
             type="textarea"
             label="Description"
-            :rules="
-              productForm.status === 'Publish' ? [(val) => !!val || 'Description is required'] : []
-            "
+            :rules="[(val) => !!val || 'Description is required']"
             lazy-rules
             class="q-mb-md"
           />
@@ -625,6 +623,12 @@ const formLoadingState = ref(false)
 const productQForm = ref(null)
 // Function to handle product saving
 const saveProduct = () => {
+  // require cost, srp, and landed cost if the status is Publish
+  if (productForm.value.status === 'Publish') {
+    productForm.value.size.forEach((size) => {
+      size.is_cost_negotiable = false
+    })
+  }
   // Validate the product form
   productQForm.value.validate().then((success) => {
     if (success) {
