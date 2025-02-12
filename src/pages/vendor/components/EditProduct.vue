@@ -809,7 +809,6 @@ const productQForm = ref(null)
 // Function to handle product saving
 const updateProduct = () => {
   // Validate the product form
-  console.log('productQForm.value ', productQForm.value)
   productQForm.value.validate().then((success) => {
     if (success) {
       // Check if at least one image is uploaded
