@@ -145,7 +145,7 @@
             ></q-skeleton>
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
-              <div>
+              <div class="scroll">
                 <pre style="font-family: sans-serif; overflow: overlay">{{
                   productDetails.description
                 }}</pre>
@@ -376,9 +376,66 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
     height: 30px;
   }
 
-  // .q-carousel__slide {
-  //   background-size: 100% 100%;
-  //   background-repeat: no-repeat;
-  // }
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: $secondary;
+  }
+
+  /* Firefox */
+  scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  /* Handle */
+  scrollbar-thumb {
+    background: $secondary;
+  }
+
+  .scroll {
+    /* Webkit browsers (Chrome, Safari, Edge) */
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: $secondary;
+    }
+
+    /* Firefox */
+    scrollbar {
+      width: 2px;
+    }
+
+    /* Track */
+    scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    scrollbar-thumb {
+      background: $secondary;
+    }
+  }
 }
 </style>
