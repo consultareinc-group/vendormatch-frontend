@@ -159,6 +159,7 @@
               <div class="flex justify-start">
                 <div v-for="(cert, index) in productDetails.product_certificates" :key="cert">
                   <div :id="`pdf-product-certificates${index}`" class="q-mr-xs"></div>
+                  <q-tooltip class="bg-primary">Click Me</q-tooltip>
                 </div>
               </div>
             </div>
@@ -168,6 +169,7 @@
               <div class="flex justify-start">
                 <div v-for="(cert, index) in productDetails.facility_certificates" :key="cert">
                   <div :id="`pdf-facility-certificates${index}`" class="q-mr-xs"></div>
+                  <q-tooltip class="bg-primary">Click Me</q-tooltip>
                 </div>
               </div>
             </div>
