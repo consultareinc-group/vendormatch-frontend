@@ -58,7 +58,7 @@
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">Cost:</div>
-                    <div v-if="size.cost === '0.00'">Negotiable</div>
+                    <div v-if="!size.cost || size.cost === '0.00'">Negotiable</div>
                     <h5 v-else class="q-ma-none text-bold">${{ size.cost }}</h5>
                   </div>
                 </div>
@@ -67,7 +67,7 @@
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">SRP:</div>
-                    <div v-if="size.srp === '0.00'">TBD</div>
+                    <div v-if="!size.srp || size.srp === '0.00'">TBD</div>
                     <h5 v-else class="q-ma-none text-bold">${{ size.srp }}</h5>
                   </div>
                 </div>
@@ -83,7 +83,10 @@
                 class="q-pa-none"
               >
                 <template v-slot:append>
-                  <div v-if="landed_cost_option.amount === '0.00'" class="text-black text-body2">
+                  <div
+                    v-if="!landed_cost_option.amount || landed_cost_option.amount === '0.00'"
+                    class="text-black text-body2"
+                  >
                     TBD
                   </div>
                   <div v-else class="text-black text-body2">${{ landed_cost_option.amount }}</div>
@@ -93,7 +96,7 @@
                     <div class="flex justify-between items-center full-width">
                       <div>{{ scope.opt.country }}</div>
                       <div>
-                        <div v-if="scope.opt.amount === '0.00'">TBD</div>
+                        <div v-if="!scope.opt.amount || scope.opt.amount === '0.00'">TBD</div>
                         <div v-else>${{ scope.opt.amount }}</div>
                       </div>
                     </div>
