@@ -146,9 +146,7 @@
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
               <div class="scroll">
-                <pre style="font-family: sans-serif; overflow: overlay">{{
-                  productDetails.description
-                }}</pre>
+                <pre>{{ productDetails.description }}</pre>
               </div>
             </div>
             <q-skeleton
@@ -436,6 +434,13 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
     scrollbar-thumb {
       background: $secondary;
     }
+  }
+
+  pre {
+    font-family: sans-serif;
+    overflow: overlay;
+    text-wrap: auto;
+    max-height: 200px;
   }
 }
 </style>
