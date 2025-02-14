@@ -39,6 +39,20 @@
           </q-item-section>
           <q-item-section>Dashboard</q-item-section>
         </q-item>
+
+        <q-item clickable v-ripple to="/inquiries">
+          <q-item-section avatar>
+            <q-icon name="question_answer" />
+          </q-item-section>
+          <q-item-section>Inquiries</q-item-section>
+        </q-item>
+
+        <q-item clickable v-ripple to="/products">
+          <q-item-section avatar>
+            <q-icon name="inventory_2" />
+          </q-item-section>
+          <q-item-section>Products</q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
     <right-drawer v-if="triggerStore.RightDrawerOpen"></right-drawer>
