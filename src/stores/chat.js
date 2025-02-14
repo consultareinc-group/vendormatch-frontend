@@ -5,7 +5,8 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 export const useMessageStore = defineStore('message', {
   state: () => ({
     Messages: [],
-    MessageDetails: {}
+    MessageDetails: {},
+    SearchedMessages: []
   }),
   actions: {
     // Action to fetch messages from the API with pagination support
