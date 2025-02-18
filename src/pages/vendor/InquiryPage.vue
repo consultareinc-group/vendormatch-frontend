@@ -157,7 +157,9 @@ const getMessages = () => {
     .then((response) => {
       if (response.status === 'success') {
         response.data.forEach((data) => {
-          messageStore.Messages.push(data)
+          // Avoid redundant record
+          let index = messageStore.Messages.findIndex((message) => message.id === data.id)
+          index === -1 && messageStore.Messages.push(data)
         })
 
         if (response.data.length) {
