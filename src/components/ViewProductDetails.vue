@@ -27,7 +27,7 @@
                 </q-carousel-slide>
               </q-carousel>
             </div>
-            <div>
+            <div v-if="authStore.UserInformation.role === 1">
               <div class="text-bold q-mt-md">Send Inquiry</div>
               <q-skeleton v-if="messageLoadingState" height="300px"></q-skeleton>
               <div v-else class="q-mt-md row justify-center scroll">
@@ -194,8 +194,8 @@
                 </div>
               </div>
             </div>
-
-            <div class="flex justify-start items-center">
+            <q-skeleton v-if="!productDetails.enterprise_name" height="85px"></q-skeleton>
+            <div v-else class="flex justify-start items-center">
               <div class="text-bold q-mr-sm text-primary">{{ productDetails.enterprise_name }}</div>
               <div style="border: 1px solid #dfdfdf" class="q-pa-xs">
                 <q-icon name="storefront" size="sm" color="secondary" />
@@ -248,7 +248,7 @@ import { onMounted, ref, nextTick, watch } from 'vue'
 import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
 import { useMessageStore } from 'src/stores/chat'
-// import { useAuthStore } from 'src/stores/auth'
+import { useAuthStore } from 'src/stores/auth'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
 
 // Set worker source to the CDN URL
@@ -266,7 +266,7 @@ const productStore = useProductStore()
 // Initialize the trigger store for state and actions related to the triggers
 const triggerStore = useTriggerStore()
 
-// const authStore = useAuthStore()
+const authStore = useAuthStore()
 
 const slide = ref('style')
 
@@ -325,16 +325,18 @@ onMounted(() => {
           createPdfThumbnail(cert.binary, containerId)
         })
 
-        messageStore
-          .GetMessages(`product_id=${productDetails.value.id}`)
-          .then((response) => {
-            if (response.status === 'success') {
-              messages.value = response.data
-            }
-          })
-          .finally(() => {
-            messageLoadingState.value = false
-          })
+        if (authStore.UserInformation.role === 1) {
+          messageStore
+            .GetMessages(`product_id=${productDetails.value.id}`)
+            .then((response) => {
+              if (response.status === 'success') {
+                messages.value = response.data
+              }
+            })
+            .finally(() => {
+              messageLoadingState.value = false
+            })
+        }
       }
     })
     .catch((error) => {
@@ -429,9 +431,11 @@ const sendMessage = () => {
     if (success) {
       btnMessageLoadingState.value = true
       const payload = {
-        product_id: productStore.ProductDetails.id,
+        enterprise_id: productDetails.value.enterprise_id,
+        product_id: productDetails.value.id,
         message: message.value,
       }
+
       messageStore
         .InsertMessage(payload)
         .then((response) => {
