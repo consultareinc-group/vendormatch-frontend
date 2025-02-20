@@ -9,7 +9,11 @@
               <div class="col-12 col-md-3">
                 <q-select
                   v-model="filter.status"
-                  :options="['All', 'Unread', 'Read']"
+                  :options="statusOptions"
+                  option-label="name"
+                  option-value="id"
+                  emit-value
+                  map-options
                   label="Status"
                   outlined
                   dense
@@ -41,7 +45,7 @@
               </div>
               <div class="col-12 col-md-3">
                 <q-select
-                  v-model="filter.search"
+                  v-model="filter.product"
                   use-input
                   :options="productOptions"
                   @filter="filterProduct"
@@ -118,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { date } from 'quasar'
 import { useMessageStore } from 'src/stores/chat'
@@ -133,10 +137,25 @@ const productStore = useProductStore()
 const authStore = useAuthStore()
 
 const filter = ref({
-  status: 'All',
+  status: 3,
   buyer: 0,
-  search: '',
+  product: 0,
 })
+
+const statusOptions = [
+  {
+    id: 3,
+    name: 'All',
+  },
+  {
+    id: 0,
+    name: 'Unread',
+  },
+  {
+    id: 1,
+    name: 'Read',
+  },
+]
 
 const columns = [
   {
@@ -177,13 +196,7 @@ const columns = [
 ]
 
 const inquiryTableLoadingState = ref(false)
-const inquiries = computed(() => {
-  if (messageStore.SearchedMessages.length) {
-    return messageStore.SearchedMessages
-  } else {
-    return messageStore.Messages
-  }
-})
+const inquiries = ref([])
 
 const getMessages = () => {
   inquiryTableLoadingState.value = true
@@ -191,13 +204,13 @@ const getMessages = () => {
     inquiryTableLoadingState.value = false
   }
   messageStore
-    .GetMessages(`offset=${messageStore.Messages.length}`)
+    .GetMessages(`offset=${inquiries.value.length}`)
     .then((response) => {
       if (response.status === 'success') {
         response.data.forEach((data) => {
           // Avoid redundant record
-          let index = messageStore.Messages.findIndex((message) => message.id === data.id)
-          index === -1 && messageStore.Messages.push(data)
+          let index = inquiries.value.findIndex((message) => message.id === data.id)
+          index === -1 && inquiries.value.push(data)
         })
 
         if (response.data.length) {
@@ -233,10 +246,18 @@ const openChat = (inquiry) => {
 
 const applyFilters = () => {
   inquiryTableLoadingState.value = true
-  // Simulate API call with filters
-  setTimeout(() => {
-    inquiryTableLoadingState.value = false
-  }, 1000)
+  messageStore
+    .SearchMessages(
+      `status=${filter.value.status}&buyer=${filter.value.buyer}&product=${filter.value.product}`,
+    )
+    .then((response) => {
+      if (response.status === 'success') {
+        inquiries.value = response.data
+      }
+    })
+    .finally(() => {
+      inquiryTableLoadingState.value = false
+    })
 }
 const buyerOptions = ref([{ id: 0, full_name: 'All' }])
 const searchBuyerLoadingState = ref(false)
@@ -288,7 +309,7 @@ const fetchProducts = async (val, update) => {
   searchProductLoadingState.value = true
   try {
     const response = await productStore.SearchProducts(
-      `keyword=${val}&enterprise_id=${authStore.UserInformation.enterpise_id}`,
+      `keyword=${val}&enterprise_id=${authStore.UserInformation.enterprise_id}`,
     )
     if (response.status === 'success') {
       // Use a Set to avoid duplicate buyer entries
