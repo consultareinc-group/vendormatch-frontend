@@ -9,7 +9,8 @@ export const useProductStore = defineStore('product', {
     SearchedProducts: [],
     ProductDetails: {},
     SavedProducts: [],
-    RecommendedProducts: []
+    RecommendedProducts: [],
+    SearchedInquiryProducts: []
   }),
   actions: {
     // Action to fetch products from the API with pagination support
