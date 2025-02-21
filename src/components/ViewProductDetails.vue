@@ -27,8 +27,10 @@
                 </q-carousel-slide>
               </q-carousel>
             </div>
-            <div v-if="authStore.UserInformation.role === 1">
-              <div class="text-bold q-mt-md">Send Inquiry</div>
+            <div v-if="authStore.UserInformation.role === 1 || !triggerStore.HideChatSection">
+              <div class="text-bold q-mt-md">
+                {{ authStore.UserInformation.role === 0 ? 'Reply to' : 'Send' }} Inquiry
+              </div>
               <q-skeleton v-if="messageLoadingState" height="300px"></q-skeleton>
               <div v-else class="q-mt-md row justify-center scroll">
                 <div
@@ -41,12 +43,14 @@
                     :key="message"
                     :bg-color="message.sent_by === message.buyer_id ? 'accent' : 'grey-4'"
                     :name="
-                      message.sent_by === message.buyer_id
-                        ? (message.enterprise_name ?? 'You')
-                        : message.enterprise_name
+                      message.sent_by !== message.buyer_id
+                        ? message.enterprise_name
+                        : message.buyer_id == authStore.UserInformation.id
+                          ? 'You'
+                          : message.buyer_name
                     "
                     :text="[message.message]"
-                    :sent="message.sent_by === message.buyer_id"
+                    :sent="message.sent_by == authStore.UserInformation.id"
                     :stamp="timeAgo(message.date_time)"
                   />
                 </div>
@@ -325,9 +329,13 @@ onMounted(() => {
           createPdfThumbnail(cert.binary, containerId)
         })
 
-        if (authStore.UserInformation.role === 1) {
+        if (authStore.UserInformation.role === 1 || !triggerStore.HideChatSection) {
+          let payload =
+            authStore.UserInformation.role === 0
+              ? `product_id=${productDetails.value.id}&buyer_id=${productStore.ProductDetails.buyer_id}`
+              : `product_id=${productDetails.value.id}`
           messageStore
-            .GetMessages(`product_id=${productDetails.value.id}`)
+            .GetMessages(payload)
             .then((response) => {
               if (response.status === 'success') {
                 messages.value = response.data
@@ -434,6 +442,10 @@ const sendMessage = () => {
         enterprise_id: productDetails.value.enterprise_id,
         product_id: productDetails.value.id,
         message: message.value,
+      }
+
+      if (authStore.UserInformation.role === 0) {
+        payload.buyer_id = productStore.ProductDetails.buyer_id
       }
 
       messageStore
