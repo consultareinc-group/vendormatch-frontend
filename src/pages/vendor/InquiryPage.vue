@@ -118,6 +118,7 @@
         </q-card>
       </div>
     </div>
+    <ViewProductDetails v-if="triggerStore.ViewProductDetailsDialog" />
   </q-page>
 </template>
 
@@ -129,12 +130,17 @@ import { useMessageStore } from 'src/stores/chat'
 import { useBuyerStore } from 'src/stores/buyer'
 import { useProductStore } from 'src/stores/products'
 import { useAuthStore } from 'src/stores/auth'
+import { useTriggerStore } from 'src/stores/triggers' // Import trigger store for managing UI triggers
+
+// Import component for viewing product details
+import ViewProductDetails from '../../components/ViewProductDetails.vue'
 
 const $q = useQuasar()
 const messageStore = useMessageStore()
 const buyerStore = useBuyerStore()
 const productStore = useProductStore()
 const authStore = useAuthStore()
+const triggerStore = useTriggerStore()
 
 const filter = ref({
   status: 3,
@@ -196,7 +202,7 @@ const columns = [
 ]
 
 const inquiryTableLoadingState = ref(false)
-const inquiries = ref([])
+const inquiries = ref(messageStore.Messages)
 
 const getMessages = () => {
   inquiryTableLoadingState.value = true
@@ -204,13 +210,13 @@ const getMessages = () => {
     inquiryTableLoadingState.value = false
   }
   messageStore
-    .GetMessages(`offset=${inquiries.value.length}`)
+    .GetMessages(`offset=${messageStore.Messages.length}`)
     .then((response) => {
       if (response.status === 'success') {
         response.data.forEach((data) => {
           // Avoid redundant record
-          let index = inquiries.value.findIndex((message) => message.id === data.id)
-          index === -1 && inquiries.value.push(data)
+          let index = messageStore.Messages.findIndex((message) => message.id === data.id)
+          index === -1 && messageStore.Messages.push(data)
         })
 
         if (response.data.length) {
@@ -235,29 +241,43 @@ const getMessages = () => {
 
 onMounted(() => {
   getMessages()
+  if (authStore.UserInformation.role == 0) {
+    triggerStore.HideChatSection = false
+  }
 })
 
 const openChat = (inquiry) => {
-  $q.notify({
-    message: `Opening chat with ${inquiry.buyer} about ${inquiry.productName}`,
-    color: 'info',
-  })
+  productStore.ProductDetails.id = inquiry.product_id
+  productStore.ProductDetails.buyer_id = inquiry.buyer_id
+  triggerStore.ViewProductDetailsDialog = true // Open the product details dialog
 }
 
-const applyFilters = () => {
-  inquiryTableLoadingState.value = true
+const searchMessage = () => {
   messageStore
     .SearchMessages(
-      `status=${filter.value.status}&buyer=${filter.value.buyer}&product=${filter.value.product}`,
+      `offset=${inquiries.value.length}status=${filter.value.status}&buyer=${filter.value.buyer}&product=${filter.value.product}`,
     )
     .then((response) => {
       if (response.status === 'success') {
-        inquiries.value = response.data
+        response.data.forEach((data) => {
+          // Avoid redundant record
+          let index = inquiries.value.findIndex((message) => message.id === data.id)
+          index === -1 && inquiries.value.push(data)
+        })
+
+        if (response.data.length) {
+          searchMessage() // Continue fetching if more data is available
+        }
       }
     })
     .finally(() => {
       inquiryTableLoadingState.value = false
     })
+}
+const applyFilters = () => {
+  inquiryTableLoadingState.value = true
+  inquiries.value = []
+  searchMessage()
 }
 const buyerOptions = ref([{ id: 0, full_name: 'All' }])
 const searchBuyerLoadingState = ref(false)
