@@ -255,7 +255,7 @@ const openChat = (inquiry) => {
 const searchMessage = () => {
   messageStore
     .SearchMessages(
-      `offset=${inquiries.value.length}status=${filter.value.status}&buyer=${filter.value.buyer}&product=${filter.value.product}`,
+      `offset=${inquiries.value.length}&status=${filter.value.status}&buyer=${filter.value.buyer}&product=${filter.value.product}`,
     )
     .then((response) => {
       if (response.status === 'success') {
