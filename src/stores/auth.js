@@ -40,7 +40,17 @@ export const useAuthStore = defineStore('auth', {
     },
 
     LogoutUser() {
-      LocalStorage.remove('Bearer');
+      return new Promise((resolve, reject) => {
+        // Make a DELETE request to delete product in the database products table
+        api.delete(`logout`).then((response) => {
+          if (response.data.status === 'success') {
+            LocalStorage.remove('Bearer');
+          }
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
     },
 
     ValidateToken() {
