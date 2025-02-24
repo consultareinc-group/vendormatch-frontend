@@ -44,6 +44,13 @@
           <q-item-section>Dashboard</q-item-section>
         </q-item>
 
+        <q-item v-if="authStore.UserInformation.role === 0" clickable v-ripple to="/inquiries">
+          <q-item-section avatar>
+            <q-icon name="question_answer" />
+          </q-item-section>
+          <q-item-section>Inquiries</q-item-section>
+        </q-item>
+
         <q-item clickable v-ripple to="/products">
           <q-item-section avatar>
             <q-icon name="inventory_2" />

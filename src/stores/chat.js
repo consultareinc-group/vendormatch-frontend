@@ -5,7 +5,8 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 export const useMessageStore = defineStore('message', {
   state: () => ({
     Messages: [],
-    MessageDetails: {}
+    MessageDetails: {},
+    SearchedMessages: []
   }),
   actions: {
     // Action to fetch messages from the API with pagination support
@@ -32,6 +33,16 @@ export const useMessageStore = defineStore('message', {
           });
       });
     },
-
+    // Action to fetch inquiries from the products
+    SearchMessages(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch users based on the offset
+        api.get(`vendor-match/chat?${request}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((error) => {
+          reject(error); // Reject the promise if the API request fails
+        });
+      });
+    },
   },
 })

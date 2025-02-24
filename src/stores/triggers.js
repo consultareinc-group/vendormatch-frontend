@@ -7,7 +7,8 @@ export const useTriggerStore = defineStore('triggers', {
     EditProductDialog: false,
     ViewProductDetailsDialog: false,
     DeleteProductDialog: false,
-    SavedProductsLoadingState: false
+    SavedProductsLoadingState: false,
+    HideChatSection: false
   }),
 
   getters: {
