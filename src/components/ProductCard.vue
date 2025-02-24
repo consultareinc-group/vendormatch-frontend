@@ -116,8 +116,10 @@ onMounted(() => {
     .then((response) => {
       if (response.status === 'success') {
         // Check if API call was successful
-        response.data.forEach((product) => {
-          productStore.Products.push(product) // Add each product to the store
+        response.data.forEach((data) => {
+          // Avoid redundant record
+          let index = productStore.Products.findIndex((product) => product.id === data.id)
+          index === -1 && productStore.Products.push(data) // Add each product to the store
         })
       }
     })
