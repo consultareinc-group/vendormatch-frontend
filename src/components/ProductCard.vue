@@ -61,6 +61,10 @@
             </q-card-actions>
           </q-card>
         </div>
+
+        <div class="flex justify-center items-center fit" v-if="!products.length">
+          <div>No Products Found</div>
+        </div>
       </div>
     </div>
     <ViewProductDetails v-if="triggerStore.ViewProductDetailsDialog" />
