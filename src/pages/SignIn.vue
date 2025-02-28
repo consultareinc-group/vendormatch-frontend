@@ -114,7 +114,7 @@ const onSubmit = () => {
     })
     .catch((error) => {
       $q.notify({
-        message: `<p class='q-mb-none'><b>Login Failed!</b> ${error.response.data.message}. Please try again.</p>`,
+        message: `<p class='q-mb-none'><b>Login Failed!</b> ${error.response && error.response.data && error.response.data.message ? error.response.data.message : error.message}. Please try again.</p>`,
         color: 'red-2',
         position: 'top',
         textColor: 'red',
