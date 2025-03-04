@@ -327,9 +327,11 @@ const searchProductLoadingState = ref(false)
 const fetchProducts = async (val, update) => {
   searchProductLoadingState.value = true
   try {
-    const response = await productStore.SearchProducts(
-      `keyword=${val}&enterprise_id=${authStore.UserInformation.enterprise_id}`,
-    )
+    let payload =
+      authStore.UserInformation.role === 0
+        ? `keyword=${val}&enterprise_id=${authStore.UserInformation.enterprise_id}`
+        : `keyword=${val}&buyer_id=${authStore.UserInformation.id}`
+    const response = await productStore.SearchProducts(payload)
     if (response.status === 'success') {
       // Use a Set to avoid duplicate vendor entries
       const existingIds = new Set(productStore.SearchedInquiryProducts.map((vendor) => vendor.id))
