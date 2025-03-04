@@ -3,7 +3,6 @@ import { useAuthStore } from 'src/stores/auth';
 import { LocalStorage } from 'quasar';
 
 export default boot(async ({ router }) => {
-
   await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for Axios to fully initialize
 
   const authStore = useAuthStore();
@@ -13,12 +12,19 @@ export default boot(async ({ router }) => {
     try {
       const response = await authStore.ValidateToken();
       if (response.status === 'success') {
+        const userRole = response.data.role; // Get user role from API response
+
+        router.beforeEach((to, from, next) => {
+          if (to.meta?.role !== undefined && to.meta.role !== userRole) {
+            next({ name: 'signin' }); // Redirect to sign-in if role doesn't match
+          } else {
+            next(); // Allow navigation
+          }
+        });
 
         router.isReady().then(() => {
-          if (response.data.role === 0) {
-            router.push({ name: 'vendor' });
-          } else {
-            router.push({ name: 'buyer' });
+          if (router.currentRoute.value.name === 'signin') {
+            router.push(userRole === 0 ? { name: 'vendor' } : { name: 'buyer' });
           }
         });
 
@@ -28,14 +34,12 @@ export default boot(async ({ router }) => {
         });
       }
     } catch (error) {
+      console.error("Token validation failed:", error);
       router.isReady().then(() => {
         router.push({ name: 'signin' });
       });
-      console.log(error)
     }
   } else {
-    // not working here
-
     router.isReady().then(() => {
       router.push({ name: 'signin' });
     });
