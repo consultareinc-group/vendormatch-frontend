@@ -33,16 +33,17 @@
           <q-img src="../assets/vendormatch-logo.png" width="200px"></q-img>
         </q-item-label>
 
-        <q-item
-          clickable
-          v-ripple
-          :to="{ name: authStore.UserInformation.role === 0 ? 'vendor' : 'buyer' }"
-        >
-          <q-item-section avatar>
-            <q-icon name="dashboard" />
-          </q-item-section>
-          <q-item-section>Dashboard</q-item-section>
-        </q-item>
+        <q-expansion-item icon="request_quote" label="RFQ" expand-separator>
+          <q-item clickable v-ripple to="/request-for-quotation">
+            <q-item-section class="q-ml-xl q-pl-sm">Create RFQ</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple to="/request-for-quotation-list">
+            <q-item-section class="q-ml-xl q-pl-sm">RFQ List</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple to="/request-for-quotation-cards">
+            <q-item-section class="q-ml-xl q-pl-sm">RFQs</q-item-section>
+          </q-item>
+        </q-expansion-item>
       </q-list>
     </q-drawer>
     <right-drawer v-if="triggerStore.RightDrawerOpen"></right-drawer>
