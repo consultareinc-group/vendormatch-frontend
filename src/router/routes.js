@@ -27,6 +27,21 @@ const routes = [
         path: 'inquiries',
         name: 'inquiries',
         component: () => import('src/pages/vendor/InquiryPage.vue'),
+      },
+      {
+        path: 'request-for-quotation',
+        name: 'request-for-quotation',
+        component: () => import('src/pages/request-for-quotation/RequestForQuotation.vue'),
+      },
+      {
+        path: 'request-for-quotation-cards',
+        name: 'request-for-quotation-cards',
+        component: () => import('src/pages/request-for-quotation/RFQCards.vue'),
+      },
+      {
+        path: 'request-for-quotation-list',
+        name: 'request-for-quotation-list',
+        component: () => import('src/pages/request-for-quotation/RFQList.vue'),
       }
     ]
   },

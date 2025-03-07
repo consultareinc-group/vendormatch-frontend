@@ -51,6 +51,18 @@
           <q-item-section>Inquiries</q-item-section>
         </q-item>
 
+        <q-expansion-item icon="request_quote" label="RFQ" expand-separator>
+          <q-item clickable v-ripple to="/request-for-quotation">
+            <q-item-section class="q-ml-xl q-pl-sm">Create RFQ</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple to="/request-for-quotation-list">
+            <q-item-section class="q-ml-xl q-pl-sm">RFQ List</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple to="/request-for-quotation-cards">
+            <q-item-section class="q-ml-xl q-pl-sm">RFQs</q-item-section>
+          </q-item>
+        </q-expansion-item>
+
         <q-item clickable v-ripple to="/products">
           <q-item-section avatar>
             <q-icon name="inventory_2" />
