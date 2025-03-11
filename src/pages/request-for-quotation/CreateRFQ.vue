@@ -15,16 +15,17 @@
           </q-card-section>
 
           <q-card-section>
-            <q-form @submit="submitRFQ" class="q-gutter-md">
+            <q-form @submit="submitRFQ" class="q-gutter-md" greedy ref="rfqForm">
               <!-- Basic Information -->
               <div class="text-primary text-weight-medium q-mb-sm">Basic Information</div>
               <div>
                 <div class="row q-col-gutter-md">
                   <div class="col-12 col-md-6">
                     <q-input
-                      v-model="form.productName"
+                      v-model="form.product_name"
                       label="Product Name *"
                       :rules="[(val) => !!val || 'Product name is required']"
+                      lazy-rules
                       outlined
                       dense
                     />
@@ -35,6 +36,7 @@
                       :options="categories"
                       label="Category *"
                       :rules="[(val) => !!val || 'Category is required']"
+                      lazy-rules
                       outlined
                       dense
                     />
@@ -57,6 +59,7 @@
                         (val) => !!val || 'Quantity is required',
                         (val) => val > 0 || 'Quantity must be greater than 0',
                       ]"
+                      lazy-rules
                       outlined
                       dense
                     />
@@ -67,13 +70,14 @@
                       :options="units"
                       label="Unit *"
                       :rules="[(val) => !!val || 'Unit is required']"
+                      lazy-rules
                       outlined
                       dense
                     />
                   </div>
                   <div class="col-12 col-md-4">
                     <q-input
-                      v-model.number="form.targetPrice"
+                      v-model.number="form.target_price"
                       type="number"
                       label="Target Price (Optional)"
                       prefix="$"
@@ -91,6 +95,7 @@
                 type="textarea"
                 label="Product Specifications *"
                 :rules="[(val) => !!val || 'Specifications are required']"
+                lazy-rules
                 outlined
                 autogrow
                 dense
@@ -104,7 +109,7 @@
                 <div class="row q-col-gutter-md">
                   <div class="col-12 col-md-6">
                     <q-select
-                      v-model="form.certifications"
+                      v-model="form.required_certifications"
                       :options="certificationOptions"
                       label="Required Certifications"
                       multiple
@@ -114,7 +119,7 @@
                   </div>
                   <div class="col-12 col-md-6">
                     <q-select
-                      v-model="form.packaging"
+                      v-model="form.packaging_requirements"
                       :options="packagingOptions"
                       label="Packaging Requirements"
                       multiple
@@ -133,22 +138,40 @@
                 <div class="row q-col-gutter-md">
                   <div class="col-12 col-md-6">
                     <q-input
-                      v-model="form.deliveryLocation"
+                      v-model="form.delivery_location"
                       label="Delivery Location *"
                       :rules="[(val) => !!val || 'Delivery location is required']"
+                      lazy-rules
                       outlined
                       dense
                     />
                   </div>
                   <div class="col-12 col-md-6">
                     <q-input
-                      v-model="form.deliveryDate"
-                      label="Required Delivery Date *"
-                      :rules="[(val) => !!val || 'Delivery date is required']"
-                      type="date"
                       outlined
+                      v-model="form.required_delivery_date"
+                      label="Required Delivery Date *"
                       dense
-                    />
+                      :rules="[(val) => !!val || 'Delivery date is required']"
+                      lazy-rules
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy
+                            ref="required_delivery_date"
+                            transition-show="scale"
+                            transition-hide="scale"
+                          >
+                            <q-date
+                              minimal
+                              v-model="form.required_delivery_date"
+                              @update:model-value="() => $refs.required_delivery_date.hide()"
+                              mask="YYYY-MM-DD"
+                            />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input>
                   </div>
                 </div>
               </div>
@@ -156,7 +179,7 @@
               <!-- Additional Notes -->
               <div class="text-primary text-weight-medium q-mb-sm q-mt-lg">Additional Notes</div>
               <q-input
-                v-model="form.notes"
+                v-model="form.additional_notes"
                 type="textarea"
                 label="Additional Notes"
                 outlined
@@ -165,14 +188,12 @@
               />
 
               <!-- Attachments -->
-              <div class="text-primary text-weight-medium q-mb-sm q-mt-lg">Attachments</div>
+              <div class="text-primary text-weight-medium q-mb-sm q-mt-lg">Attachment</div>
               <q-file
-                v-model="form.attachments"
+                v-model="form.attachment"
                 label="Upload Documents"
-                multiple
                 outlined
-                accept=".pdf,.doc,.docx,.xls,.xlsx, .png, .jpg, .jpeg"
-                max-files="5"
+                accept=".pdf, .png, .jpg, .jpeg"
                 dense
               >
                 <template v-slot:append>
@@ -182,7 +203,12 @@
 
               <!-- Submit Button -->
               <div class="row justify-end q-mt-lg">
-                <q-btn type="submit" color="primary" label="Submit RFQ" :loading="submitting" />
+                <q-btn
+                  type="submit"
+                  color="primary"
+                  label="Submit RFQ"
+                  :loading="btnLoadingState"
+                />
               </div>
             </q-form>
           </q-card-section>
@@ -259,10 +285,12 @@
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
+import { useRFQStore } from 'src/stores/rfq'
 
 const $q = useQuasar()
 const router = useRouter()
-const submitting = ref(false)
+const rfqStore = useRFQStore()
+const btnLoadingState = ref(false)
 
 const categories = ['Food & Beverage', 'Health & Beauty', 'Home & Garden', 'Electronics', 'Apparel']
 
@@ -282,54 +310,77 @@ const certificationOptions = [
 const packagingOptions = ['Retail Ready', 'Bulk', 'Custom Packaging', 'Eco-friendly', 'Standard']
 
 const form = ref({
-  productName: '',
+  product_name: '',
   category: null,
   quantity: null,
   unit: null,
-  targetPrice: null,
+  target_price: null,
   specifications: '',
-  certifications: [],
-  packaging: [],
-  deliveryLocation: '',
-  deliveryDate: '',
-  notes: '',
-  attachments: null,
+  required_certifications: [],
+  packaging_requirements: [],
+  delivery_location: '',
+  required_delivery_date: '',
+  additional_notes: '',
+  attachment: null,
 })
 
-const submitRFQ = async () => {
-  submitting.value = true
-  try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+const rfqForm = ref(null)
+const submitRFQ = () => {
+  rfqForm.value.validate().then((success) => {
+    if (success) {
+      btnLoadingState.value = true
 
-    $q.notify({
-      type: 'positive',
-      message: 'RFQ submitted successfully',
-    })
+      // Create a FormData object to prepare the data for submission
+      const formData = new FormData()
+      Object.keys(form.value).forEach((key) => {
+        formData.append(key, form.value[key] ? form.value[key] : '')
+      })
 
-    // Reset form
-    form.value = {
-      productName: '',
-      category: null,
-      quantity: null,
-      unit: null,
-      targetPrice: null,
-      specifications: '',
-      certifications: [],
-      packaging: [],
-      deliveryLocation: '',
-      deliveryDate: '',
-      notes: '',
-      attachments: null,
+      rfqStore
+        .InsertRFQ(formData)
+        .then((response) => {
+          let status = Boolean(response.status === 'success') // Determine the status of the response
+          $q.notify({
+            message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the RFQ ${status ? 'has been' : 'was not'} submitted.</p>`,
+            color: `${status ? 'green' : 'red'}-2`,
+            position: 'top-right',
+            textColor: `${status ? 'green' : 'red'}`,
+            html: true,
+          })
+
+          if (status) {
+            // Reset form
+            form.value = {
+              product_name: '',
+              category: null,
+              quantity: null,
+              unit: null,
+              target_price: null,
+              specifications: '',
+              required_certifications: [],
+              packaging_requirements: [],
+              delivery_location: '',
+              required_delivery_date: '',
+              additional_notes: '',
+              attachment: null,
+            }
+          }
+        })
+        .catch((error) => {
+          // Notify user of the error
+          $q.notify({
+            message: `<p class='q-mb-none'>${error.message}</p>`,
+            color: `red-2`,
+            position: 'top-right',
+            textColor: `red`,
+            html: true,
+          })
+        })
+        .finally(() => {
+          btnLoadingState.value = false
+        })
     }
-  } catch (error) {
-    $q.notify({
-      type: 'negative',
-      message: `Failed to submit RFQ. ${error.message} Please try again.`,
-    })
-  } finally {
-    submitting.value = false
-  }
+  })
 }
 
 const contactSupport = () => {
