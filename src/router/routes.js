@@ -31,7 +31,7 @@ const routes = [
       {
         path: 'request-for-quotation',
         name: 'request-for-quotation',
-        component: () => import('src/pages/request-for-quotation/RequestForQuotation.vue'),
+        component: () => import('src/pages/request-for-quotation/CreateRFQ.vue'),
       },
       {
         path: 'request-for-quotation-cards',
