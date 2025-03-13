@@ -122,7 +122,7 @@
 import { ref } from 'vue'
 // Import Quasar framework utilities
 import ProductCard from '../../components/ProductCard.vue'
-import SavedProducts from './components/SavedProducts.vue'
+import SavedProducts from '../buyer/components/SavedProducts.vue'
 
 // Statistics
 const viewedProducts = ref(0)
