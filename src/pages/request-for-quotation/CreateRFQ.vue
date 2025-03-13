@@ -349,6 +349,7 @@ const submitRFQ = () => {
           })
 
           if (status) {
+            rfqStore.RFQs.push(response.data)
             // Reset form
             form.value = {
               product_name: '',
