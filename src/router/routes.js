@@ -12,7 +12,7 @@ const routes = [
       {
         path: 'dashboard/buyer',
         name: 'buyer',
-        component: () => import('src/pages/buyer/BuyerDashboard.vue'),
+        component: () => import('src/pages/dashboard/BuyerDashboard.vue'),
         meta: { role: 1 }
       },
       {
