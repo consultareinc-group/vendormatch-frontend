@@ -26,7 +26,7 @@ const routes = [
       {
         path: 'inquiries',
         name: 'inquiries',
-        component: () => import('src/pages/vendor/InquiryPage.vue'),
+        component: () => import('src/pages/inquiry/InquiryPage.vue'),
       },
       {
         path: 'request-for-quotation',
