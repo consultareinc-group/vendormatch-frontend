@@ -162,10 +162,9 @@
                   @click="viewRFQDetails(rfq)"
                 />
                 <q-btn
-                  v-if="rfq.status === 'Pending'"
                   color="primary"
                   icon="chat"
-                  label="Respond"
+                  :label="rfq.status === 'Pending' ? 'Respond' : 'Counteroffer'"
                   no-caps
                   @click="respondToRFQ(rfq)"
                 />
@@ -194,7 +193,7 @@
 
         <q-card-section v-if="selectedRFQ">
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
               <q-list>
                 <q-item>
                   <q-item-section>
@@ -219,7 +218,7 @@
               </q-list>
             </div>
 
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
               <q-list>
                 <q-item>
                   <q-item-section>
@@ -238,13 +237,15 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Delivery Date</q-item-label>
-                    <q-item-label>{{ formatDate(selectedRFQ.delivery_date) }}</q-item-label>
+                    <q-item-label>{{
+                      formatDate(selectedRFQ.required_delivery_date)
+                    }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
             </div>
 
-            <div class="col-12">
+            <div class="col-12 col-md-4">
               <q-list>
                 <q-item>
                   <q-item-section>
@@ -257,13 +258,17 @@
                   <q-item-section>
                     <q-item-label overline>Required Certifications</q-item-label>
                     <div class="q-gutter-xs">
-                      <q-chip
-                        v-for="cert in selectedRFQ.required_certifications"
-                        :key="cert"
-                        size="sm"
-                      >
-                        {{ cert }}
-                      </q-chip>
+                      <div v-if="selectedRFQ.required_certifications">
+                        <q-chip
+                          v-for="cert in selectedRFQ.required_certifications
+                            .split(',')
+                            .map((item) => item.trim())"
+                          :key="cert"
+                          size="sm"
+                        >
+                          {{ cert }}
+                        </q-chip>
+                      </div>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -272,9 +277,17 @@
                   <q-item-section>
                     <q-item-label overline>Packaging Requirements</q-item-label>
                     <div class="q-gutter-xs">
-                      <q-chip v-for="pkg in selectedRFQ.packaging" :key="pkg" size="sm">
-                        {{ pkg }}
-                      </q-chip>
+                      <div v-if="selectedRFQ.packaging_requirements">
+                        <q-chip
+                          v-for="pkg in selectedRFQ.packaging_requirements
+                            .split(',')
+                            .map((item) => item.trim())"
+                          :key="pkg"
+                          size="sm"
+                        >
+                          {{ pkg }}
+                        </q-chip>
+                      </div>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -282,7 +295,21 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Additional Notes</q-item-label>
-                    <q-item-label>{{ selectedRFQ.notes }}</q-item-label>
+                    <q-item-label>{{ selectedRFQ.additional_notes }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label overline>Attachment</q-item-label>
+                    <q-skeleton v-if="attachmentLoadingState" height="20px"></q-skeleton>
+                    <div v-else class="q-mt-sm">
+                      <div id="attachment"></div>
+                      <q-tooltip anchor="bottom left" self="bottom middle" class="bg-primary"
+                        >Click Me!</q-tooltip
+                      >
+                    </div>
+
+                    <q-item-label></q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -292,12 +319,6 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Close" color="primary" v-close-popup />
-          <q-btn
-            v-if="selectedRFQ?.status === 'Pending'"
-            color="primary"
-            label="Respond"
-            @click="respondToRFQ(selectedRFQ)"
-          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -406,9 +427,11 @@ import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
+import { useHelperStore } from 'src/stores/helper'
 
 const $q = useQuasar()
 const rfqStore = useRFQStore()
+const helperStore = useHelperStore()
 
 const showDetailsDialog = ref(false)
 const selectedRFQ = ref(null)
@@ -495,9 +518,27 @@ const applyFilters = () => {
   searchRFQs()
 }
 
+const attachment = ref({ attachment_name: '' })
+const attachmentLoadingState = ref(false)
 const viewRFQDetails = (rfq) => {
   selectedRFQ.value = rfq
   showDetailsDialog.value = true
+  attachmentLoadingState.value = true
+  attachment.value = { attachment_name: '' }
+  rfqStore
+    .GetRFQAttachment(`id=${rfq.id}&attachment=true`)
+    .then((response) => {
+      if (response.status === 'success') {
+        attachment.value = response.data
+
+        if (attachment.value.attachment_name) {
+          helperStore.createPdfThumbnail(attachment.value.binary, 'attachment')
+        }
+      }
+    })
+    .finally(() => {
+      attachmentLoadingState.value = false
+    })
 }
 
 const showResponseDialog = ref(false)

@@ -30,6 +30,17 @@ export const useRFQStore = defineStore('rfq', {
         });
       });
     },
+    // Action to fetch specific rfq attachment from the API
+    GetRFQAttachment(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch rfqs based on the offset
+        api.get(`vendor-match/rfq?${request}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
+    },
     // Action to search for rfqs using a keyword
     SearchRFQs(request) {
       return new Promise((resolve, reject) => {

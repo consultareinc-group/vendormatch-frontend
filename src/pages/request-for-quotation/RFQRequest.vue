@@ -126,7 +126,7 @@
 
         <q-card-section v-if="selectedRFQ">
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
               <q-list>
                 <q-item>
                   <q-item-section>
@@ -151,32 +151,34 @@
               </q-list>
             </div>
 
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
               <q-list>
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Target Price</q-item-label>
-                    <q-item-label>${{ selectedRFQ.targetPrice }}</q-item-label>
+                    <q-item-label>${{ selectedRFQ.target_price }}</q-item-label>
                   </q-item-section>
                 </q-item>
 
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Delivery Location</q-item-label>
-                    <q-item-label>{{ selectedRFQ.deliveryLocation }}</q-item-label>
+                    <q-item-label>{{ selectedRFQ.delivery_location }}</q-item-label>
                   </q-item-section>
                 </q-item>
 
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Delivery Date</q-item-label>
-                    <q-item-label>{{ formatDate(selectedRFQ.deliveryDate) }}</q-item-label>
+                    <q-item-label>{{
+                      formatDate(selectedRFQ.required_delivery_date)
+                    }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
             </div>
 
-            <div class="col-12">
+            <div class="col-12 col-md-4">
               <q-list>
                 <q-item>
                   <q-item-section>
@@ -189,9 +191,17 @@
                   <q-item-section>
                     <q-item-label overline>Required Certifications</q-item-label>
                     <div class="q-gutter-xs">
-                      <q-chip v-for="cert in selectedRFQ.certifications" :key="cert" size="sm">
-                        {{ cert }}
-                      </q-chip>
+                      <div v-if="selectedRFQ.required_certifications">
+                        <q-chip
+                          v-for="cert in selectedRFQ.required_certifications
+                            .split(',')
+                            .map((item) => item.trim())"
+                          :key="cert"
+                          size="sm"
+                        >
+                          {{ cert }}
+                        </q-chip>
+                      </div>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -200,9 +210,17 @@
                   <q-item-section>
                     <q-item-label overline>Packaging Requirements</q-item-label>
                     <div class="q-gutter-xs">
-                      <q-chip v-for="pkg in selectedRFQ.packaging" :key="pkg" size="sm">
-                        {{ pkg }}
-                      </q-chip>
+                      <div v-if="selectedRFQ.packaging_requirements">
+                        <q-chip
+                          v-for="pkg in selectedRFQ.packaging_requirements
+                            .split(',')
+                            .map((item) => item.trim())"
+                          :key="pkg"
+                          size="sm"
+                        >
+                          {{ pkg }}
+                        </q-chip>
+                      </div>
                     </div>
                   </q-item-section>
                 </q-item>
@@ -210,7 +228,13 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Additional Notes</q-item-label>
-                    <q-item-label>{{ selectedRFQ.notes }}</q-item-label>
+                    <q-item-label>{{ selectedRFQ.additional_notes }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label overline>Attachment</q-item-label>
+                    <q-item-label></q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -220,12 +244,6 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Close" color="primary" v-close-popup />
-          <q-btn
-            v-if="selectedRFQ?.status === 'Pending'"
-            color="primary"
-            label="Respond"
-            @click="respondToRFQ(selectedRFQ)"
-          />
         </q-card-actions>
       </q-card>
     </q-dialog>
