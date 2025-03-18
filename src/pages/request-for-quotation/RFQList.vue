@@ -60,11 +60,12 @@
           </q-card-section>
 
           <q-table
-            :rows="filteredRFQs"
+            :rows="rfq_requests"
             :columns="columns"
             row-key="id"
-            :loading="loading"
+            :loading="rfqLoadingState"
             :pagination="pagination"
+            color="primary"
           >
             <template v-slot:body-cell-status="props">
               <q-td :props="props">
@@ -74,7 +75,7 @@
               </q-td>
             </template>
 
-            <template v-slot:body-cell-date="props">
+            <template v-slot:body-cell-date_time_added="props">
               <q-td :props="props">
                 {{ formatDate(props.value) }}
               </q-td>
@@ -130,7 +131,7 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Product Name</q-item-label>
-                    <q-item-label>{{ selectedRFQ.productName }}</q-item-label>
+                    <q-item-label>{{ selectedRFQ.product_name }}</q-item-label>
                   </q-item-section>
                 </q-item>
 
@@ -232,15 +233,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { date } from 'quasar'
+import { useRFQStore } from 'src/stores/rfq'
 
 const $q = useQuasar()
 const router = useRouter()
+const rfqStore = useRFQStore()
 
-const loading = ref(false)
 const showDetailsDialog = ref(false)
 const selectedRFQ = ref(null)
 
@@ -261,16 +263,9 @@ const categories = ['Food & Beverage', 'Health & Beauty', 'Home & Garden', 'Elec
 
 const columns = [
   {
-    name: 'id',
-    label: 'RFQ ID',
-    field: 'id',
-    sortable: true,
-    align: 'left',
-  },
-  {
-    name: 'productName',
+    name: 'product_name',
     label: 'Product Name',
-    field: 'productName',
+    field: 'product_name',
     sortable: true,
     align: 'left',
   },
@@ -284,7 +279,7 @@ const columns = [
   {
     name: 'quantity',
     label: 'Quantity',
-    field: (row) => `${row.quantity} ${row.unit}`,
+    field: 'quantity',
     sortable: true,
     align: 'left',
   },
@@ -296,16 +291,9 @@ const columns = [
     align: 'left',
   },
   {
-    name: 'date',
+    name: 'date_time_added',
     label: 'Date',
-    field: 'createdAt',
-    sortable: true,
-    align: 'left',
-  },
-  {
-    name: 'time',
-    label: 'Time',
-    field: 'createdAt',
+    field: 'date_time_added',
     sortable: true,
     align: 'left',
   },
@@ -318,52 +306,32 @@ const columns = [
 ]
 
 // Sample data - replace with actual API data
-const rfqs = ref([
-  {
-    id: 'RFQ001',
-    productName: 'Organic Coffee Beans',
-    category: 'Food & Beverage',
-    quantity: 1000,
-    unit: 'Kilograms',
-    status: 'Pending',
-    targetPrice: 15.99,
-    specifications: 'Arabica beans, medium roast, fair trade certified',
-    certifications: ['Organic', 'Fair Trade'],
-    packaging: ['Bulk'],
-    deliveryLocation: 'New York, NY',
-    deliveryDate: '2024-03-01',
-    notes: 'Looking for long-term supplier relationship',
-    createdAt: '2024-01-20T10:30:00',
-  },
-  {
-    id: 'RFQ002',
-    productName: 'Natural Soap Bars',
-    category: 'Health & Beauty',
-    quantity: 5000,
-    unit: 'Pieces',
-    status: 'Responded',
-    targetPrice: 2.5,
-    specifications: 'All-natural ingredients, vegan-friendly',
-    certifications: ['Organic'],
-    packaging: ['Retail Ready', 'Eco-friendly'],
-    deliveryLocation: 'Los Angeles, CA',
-    deliveryDate: '2024-02-15',
-    notes: 'Eco-friendly packaging required',
-    createdAt: '2024-01-19T14:45:00',
-  },
-])
+const rfq_requests = ref(rfqStore.RFQRequests)
 
-const filteredRFQs = computed(() => {
-  return rfqs.value.filter((rfq) => {
-    const matchesStatus = filter.value.status === 'All' || rfq.status === filter.value.status
-    const matchesCategory =
-      filter.value.category === 'All' || rfq.category === filter.value.category
-    const matchesSearch =
-      rfq.productName.toLowerCase().includes(filter.value.search.toLowerCase()) ||
-      rfq.id.toLowerCase().includes(filter.value.search.toLowerCase())
+const rfqLoadingState = ref(false)
 
-    return matchesStatus && matchesCategory && matchesSearch
-  })
+const getRFQs = () => {
+  rfqLoadingState.value = true
+  if (rfqStore.RFQRequests.length) {
+    rfqLoadingState.value = false
+  }
+
+  rfqStore
+    .GetRFQs(`offset=${rfq_requests.value.length}`)
+    .then((response) => {
+      if (response.status === 'success') {
+        rfqStore.RFQRequests.push(...response.data)
+      }
+    })
+    .finally(() => {
+      rfqLoadingState.value = false
+    })
+}
+
+onMounted(() => {
+  if (!rfqStore.RFQRequests.length) {
+    getRFQs()
+  }
 })
 
 const getStatusColor = (status) => {
@@ -376,19 +344,38 @@ const getStatusColor = (status) => {
 }
 
 const formatDate = (dateStr) => {
-  return date.formatDate(dateStr, 'MMMM D, YYYY')
+  return date.formatDate(dateStr, 'MMMM D, YYYY hh:mm A')
 }
 
-const formatTime = (dateStr) => {
-  return date.formatDate(dateStr, 'h:mm A')
+const searchRFQs = () => {
+  rfqStore
+    .SearchRFQs(
+      `offset=${rfq_requests.value.length}&search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}`,
+    )
+    .then((response) => {
+      if (response.status === 'success') {
+        rfq_requests.value.push(...response.data)
+
+        if (response.data.length) {
+          searchRFQs()
+        }
+      }
+    })
+    .catch((error) => {
+      $q.notify({
+        type: 'negative',
+        message: error.message,
+      })
+    })
+    .finally(() => {
+      rfqLoadingState.value = false
+    })
 }
 
 const applyFilters = () => {
-  loading.value = true
-  // Simulate API call with filters
-  setTimeout(() => {
-    loading.value = false
-  }, 1000)
+  rfq_requests.value = []
+  rfqLoadingState.value = true
+  searchRFQs()
 }
 
 const viewRFQDetails = (rfq) => {
