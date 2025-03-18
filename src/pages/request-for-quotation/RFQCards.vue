@@ -301,6 +301,103 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Response Form Dialog -->
+    <q-dialog v-model="showResponseDialog" persistent>
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Respond to RFQ</div>
+          <div class="text-subtitle2" v-if="selectedRFQ">
+            {{ selectedRFQ.product_name }} - {{ selectedRFQ.id }}
+          </div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-form @submit="submitResponse" class="q-gutter-md">
+            <q-input
+              v-model.number="responseForm.quotedPrice"
+              type="number"
+              label="Quoted Price per Unit *"
+              prefix="$"
+              :rules="[
+                (val) => !!val || 'Price is required',
+                (val) => val > 0 || 'Price must be greater than 0',
+              ]"
+              outlined
+              dense
+            />
+
+            <q-input
+              v-model.number="responseForm.minQuantity"
+              type="number"
+              label="Minimum Order Quantity *"
+              :rules="[
+                (val) => !!val || 'Minimum quantity is required',
+                (val) => val > 0 || 'Quantity must be greater than 0',
+              ]"
+              outlined
+              dense
+            />
+
+            <q-input
+              v-model="responseForm.leadTime"
+              type="number"
+              label="Lead Time (days) *"
+              :rules="[
+                (val) => !!val || 'Lead time is required',
+                (val) => val > 0 || 'Lead time must be greater than 0',
+              ]"
+              outlined
+              dense
+            />
+
+            <q-select
+              v-model="responseForm.paymentTerms"
+              :options="paymentTermsOptions"
+              label="Payment Terms *"
+              :rules="[(val) => !!val || 'Payment terms are required']"
+              outlined
+              dense
+            />
+
+            <q-input
+              v-model="responseForm.shippingTerms"
+              label="Shipping Terms *"
+              :rules="[(val) => !!val || 'Shipping terms are required']"
+              outlined
+              dense
+            />
+
+            <q-input
+              class="additional-notes"
+              v-model="responseForm.additionalNotes"
+              type="textarea"
+              label="Additional Notes"
+              outlined
+              dense
+              autogrow
+            />
+
+            <q-toggle
+              v-model="responseForm.canMeetSpecs"
+              label="I confirm that I can meet all specified requirements"
+            />
+
+            <div class="row justify-end q-mt-md">
+              <q-btn flat label="Cancel" color="negative" v-close-popup class="q-mr-sm" />
+              <q-btn
+                type="submit"
+                label="Submit Response"
+                no-caps
+                color="primary"
+                :loading="responseLoadingState"
+                @click="submitResponse()"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -338,11 +435,7 @@ const getRFQs = () => {
     .GetRFQs(`offset=${rfqs.value.length}`)
     .then((response) => {
       if (response.status === 'success') {
-        response.data.forEach((data) => {
-          rfqs.value.push(data)
-        })
-
-        rfqStore.RFQs = rfqs.value
+        rfqStore.RFQs.push(...response.data)
       }
     })
     .finally(() => {
@@ -371,15 +464,18 @@ const formatDate = (dateStr) => {
   return date.formatDate(dateStr, 'MMMM D, YYYY')
 }
 
-const applyFilters = () => {
-  rfqLoadingState.value = true
+const searchRFQs = () => {
   rfqStore
     .SearchRFQs(
-      `search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}`,
+      `offset=${rfqs.value.length}&search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}`,
     )
     .then((response) => {
       if (response.status === 'success') {
-        rfqs.value = response.data
+        rfqs.value.push(...response.data)
+
+        if (response.data.length) {
+          searchRFQs()
+        }
       }
     })
     .catch((error) => {
@@ -393,16 +489,100 @@ const applyFilters = () => {
     })
 }
 
+const applyFilters = () => {
+  rfqs.value = []
+  rfqLoadingState.value = true
+  searchRFQs()
+}
+
 const viewRFQDetails = (rfq) => {
   selectedRFQ.value = rfq
   showDetailsDialog.value = true
 }
 
+const showResponseDialog = ref(false)
+const responseForm = ref({
+  quotedPrice: null,
+  minQuantity: null,
+  leadTime: null,
+  paymentTerms: null,
+  shippingTerms: '',
+  additionalNotes: '',
+  canMeetSpecs: false,
+})
+
+const paymentTermsOptions = [
+  'Net 30',
+  'Net 60',
+  'Net 90',
+  'Payment in advance',
+  'Letter of credit',
+  'Cash on delivery',
+]
+
 const respondToRFQ = (rfq) => {
-  $q.notify({
-    type: 'info',
-    message: `Opening response form for RFQ ${rfq.id}`,
-  })
+  selectedRFQ.value = rfq
+  showResponseDialog.value = true
+  // Reset form
+  responseForm.value = {
+    quotedPrice: null,
+    minQuantity: null,
+    leadTime: null,
+    paymentTerms: null,
+    shippingTerms: '',
+    additionalNotes: '',
+    canMeetSpecs: false,
+  }
+}
+
+const responseLoadingState = ref(false)
+const submitResponse = async () => {
+  if (!responseForm.value.canMeetSpecs) {
+    $q.notify({
+      type: 'warning',
+      message: 'Please confirm that you can meet all specifications',
+      position: 'top',
+    })
+    return
+  }
+
+  responseLoadingState.value = true
+
+  rfqStore
+    .InsertRFQResponse()
+    .then((response) => {
+      let status = Boolean(response.status === 'success') // Determine the status of the response
+      $q.notify({
+        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the RFQ ${status ? 'has been' : 'was not'} submitted.</p>`,
+        color: `${status ? 'green' : 'red'}-2`,
+        position: 'top-right',
+        textColor: `${status ? 'green' : 'red'}`,
+        html: true,
+      })
+
+      if (status) {
+        // Update RFQ status
+        const rfq = rfqs.value.find((r) => r.id === selectedRFQ.value.id)
+        if (rfq) {
+          rfq.status = 'Responded'
+        }
+
+        showResponseDialog.value = false
+      }
+    })
+    .catch((error) => {
+      // Notify user of the error
+      $q.notify({
+        message: `<p class='q-mb-none'>${error.message}</p>`,
+        color: `red-2`,
+        position: 'top-right',
+        textColor: `red`,
+        html: true,
+      })
+    })
+    .finally(() => {
+      responseLoadingState.value = false
+    })
 }
 </script>
 
