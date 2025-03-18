@@ -4,7 +4,8 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 // Define a Pinia store named 'counter' for managing rfq-related data
 export const useRFQStore = defineStore('rfq', {
   state: () => ({
-    RFQs: []
+    RFQs: [],
+    RFQRequests: [],
   }),
   actions: {
     // Action to fetch rfqs from the API with pagination support
@@ -87,6 +88,21 @@ export const useRFQStore = defineStore('rfq', {
         }).catch((response) => {
           reject(response.data); // Reject the promise if the API request fails
         });
+      });
+    },
+    // Action to insert reponse to rfq
+    InsertRFQResponse(request) {
+      return new Promise((resolve, reject) => {
+
+        // Make a POST request to insert rfq response in the database rfq response table
+        api
+          .post(`vendor-match/rfq-response`, request)
+          .then((response) => {
+            resolve(response.data); // Resolve the promise with the API response data
+          })
+          .catch((error) => {
+            reject(error); // Reject the promise if the API request fails
+          });
       });
     },
   },
