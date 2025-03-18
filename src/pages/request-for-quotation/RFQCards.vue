@@ -301,7 +301,13 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Attachment</q-item-label>
-                    <q-skeleton v-if="attachmentLoadingState" height="20px"></q-skeleton>
+                    <q-spinner
+                      v-if="attachmentLoadingState"
+                      color="primary"
+                      size="3em"
+                      :thickness="2"
+                      class="q-mt-sm"
+                    />
                     <div v-else class="q-mt-sm">
                       <div id="attachment"></div>
                       <q-tooltip anchor="bottom left" self="bottom middle" class="bg-primary"
