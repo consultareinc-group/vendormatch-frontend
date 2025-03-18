@@ -89,7 +89,7 @@
           </div>
         </div>
         <div class="row q-col-gutter-md">
-          <div v-for="rfq in filteredRFQs" :key="rfq.id" class="col-12 col-sm-6 col-md-4">
+          <div v-for="rfq in rfqs" :key="rfq.id" class="col-12 col-sm-6 col-md-4">
             <q-card class="rfq-card">
               <q-card-section>
                 <div class="row items-center no-wrap">
@@ -102,7 +102,7 @@
                   </div>
                   <div class="col-auto">
                     <q-chip :color="getStatusColor(rfq.status)" text-color="white" size="sm">
-                      {{ status[rfq.status] }}
+                      {{ rfq.status }}
                     </q-chip>
                   </div>
                 </div>
@@ -305,7 +305,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
@@ -313,7 +313,6 @@ import { useRFQStore } from 'src/stores/rfq'
 const $q = useQuasar()
 const rfqStore = useRFQStore()
 
-const loading = ref(false)
 const showDetailsDialog = ref(false)
 const selectedRFQ = ref(null)
 
@@ -325,21 +324,7 @@ const filter = ref({
 
 const categories = ['Food & Beverage', 'Health & Beauty', 'Home & Garden', 'Electronics', 'Apparel']
 
-// Sample data - replace with actual API data
 const rfqs = ref(rfqStore.RFQs)
-
-const filteredRFQs = computed(() => {
-  return rfqs.value.filter((rfq) => {
-    const matchesStatus = filter.value.status === 'All' || rfq.status === filter.value.status
-    const matchesCategory =
-      filter.value.category === 'All' || rfq.category === filter.value.category
-    const matchesSearch =
-      rfq.product_name.toLowerCase().includes(filter.value.search.toLowerCase()) ||
-      rfq.id.toLowerCase().includes(filter.value.search.toLowerCase())
-
-    return matchesStatus && matchesCategory && matchesSearch
-  })
-})
 
 const rfqLoadingState = ref(false)
 const viewMoreLoadingState = ref(false)
@@ -372,9 +357,12 @@ onMounted(() => {
   }
 })
 
-const status = ['Pending', 'Responded', 'Closed']
 const getStatusColor = (status) => {
-  const colors = ['warning', 'info', 'positive']
+  const colors = {
+    Pending: 'warning',
+    Responded: 'info',
+    Closed: 'grey',
+  }
 
   return colors[status] || 'grey'
 }
@@ -384,11 +372,25 @@ const formatDate = (dateStr) => {
 }
 
 const applyFilters = () => {
-  loading.value = true
-  // Simulate API call with filters
-  setTimeout(() => {
-    loading.value = false
-  }, 1000)
+  rfqLoadingState.value = true
+  rfqStore
+    .SearchRFQs(
+      `search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}`,
+    )
+    .then((response) => {
+      if (response.status === 'success') {
+        rfqs.value = response.data
+      }
+    })
+    .catch((error) => {
+      $q.notify({
+        type: 'negative',
+        message: error.message,
+      })
+    })
+    .finally(() => {
+      rfqLoadingState.value = false
+    })
 }
 
 const viewRFQDetails = (rfq) => {
