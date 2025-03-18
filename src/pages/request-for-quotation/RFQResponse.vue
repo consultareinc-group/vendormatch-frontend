@@ -156,21 +156,23 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Target Price</q-item-label>
-                    <q-item-label>${{ selectedRFQ.targetPrice }}</q-item-label>
+                    <q-item-label>${{ selectedRFQ.target_price }}</q-item-label>
                   </q-item-section>
                 </q-item>
 
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Delivery Location</q-item-label>
-                    <q-item-label>{{ selectedRFQ.deliveryLocation }}</q-item-label>
+                    <q-item-label>{{ selectedRFQ.delivery_location }}</q-item-label>
                   </q-item-section>
                 </q-item>
 
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Delivery Date</q-item-label>
-                    <q-item-label>{{ formatDate(selectedRFQ.deliveryDate) }}</q-item-label>
+                    <q-item-label>{{
+                      formatDate(selectedRFQ.required_delivery_date)
+                    }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -189,7 +191,11 @@
                   <q-item-section>
                     <q-item-label overline>Required Certifications</q-item-label>
                     <div class="q-gutter-xs">
-                      <q-chip v-for="cert in selectedRFQ.certifications" :key="cert" size="sm">
+                      <q-chip
+                        v-for="cert in selectedRFQ.required_certifications"
+                        :key="cert"
+                        size="sm"
+                      >
                         {{ cert }}
                       </q-chip>
                     </div>
@@ -200,7 +206,11 @@
                   <q-item-section>
                     <q-item-label overline>Packaging Requirements</q-item-label>
                     <div class="q-gutter-xs">
-                      <q-chip v-for="pkg in selectedRFQ.packaging" :key="pkg" size="sm">
+                      <q-chip
+                        v-for="pkg in selectedRFQ.packaging_requirements"
+                        :key="pkg"
+                        size="sm"
+                      >
                         {{ pkg }}
                       </q-chip>
                     </div>
@@ -210,7 +220,7 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label overline>Additional Notes</q-item-label>
-                    <q-item-label>{{ selectedRFQ.notes }}</q-item-label>
+                    <q-item-label>{{ selectedRFQ.additional_notes }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
