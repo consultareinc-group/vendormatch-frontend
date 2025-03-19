@@ -99,14 +99,7 @@
                   >
                     <q-tooltip>View Details</q-tooltip>
                   </q-btn>
-                  <q-btn
-                    v-if="props.row.status === 'Pending'"
-                    flat
-                    round
-                    color="positive"
-                    icon="chat"
-                    @click="respondToRFQ(props.row)"
-                  >
+                  <q-btn flat round color="positive" icon="chat" @click="respondToRFQ(props.row)">
                     <q-tooltip>Respond</q-tooltip>
                   </q-btn>
                 </q-btn-group>
