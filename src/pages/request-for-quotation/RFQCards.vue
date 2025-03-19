@@ -173,6 +173,9 @@
           </div>
         </div>
       </div>
+      <div v-if="!searchResults.length" class="text-center q-mt-xl full-width">
+        No Results Found!
+      </div>
       <div v-if="rfqs.length > 100" class="flex justify-center full-width q-my-md">
         <q-btn
           @click="getRFQs()"
@@ -461,7 +464,7 @@ const getRFQs = () => {
   }
   viewMoreLoadingState.value = true
   rfqStore
-    .GetRFQs(`offset=${rfqs.value.length}`)
+    .GetRFQs(`offset=${rfqs.value.length}&is_not_closed=true`)
     .then((response) => {
       if (response.status === 'success') {
         rfqStore.RFQs.push(...response.data)
@@ -493,14 +496,16 @@ const formatDate = (dateStr) => {
   return date.formatDate(dateStr, 'MMMM D, YYYY')
 }
 
+const searchResults = ref([])
 const searchRFQs = () => {
   rfqStore
     .SearchRFQs(
-      `offset=${rfqs.value.length}&search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}`,
+      `offset=${rfqs.value.length}&search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}&is_not_closed=true`,
     )
     .then((response) => {
       if (response.status === 'success') {
         rfqs.value.push(...response.data)
+        searchResults.value.push(...response.data)
 
         if (response.data.length) {
           searchRFQs()
