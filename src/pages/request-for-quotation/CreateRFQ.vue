@@ -191,7 +191,7 @@
               <div class="text-primary text-weight-medium q-mb-sm q-mt-lg">Attachment</div>
               <q-file
                 v-model="form.attachment"
-                label="Upload Documents"
+                label="Upload PDF/Image File"
                 outlined
                 accept=".pdf, .png, .jpg, .jpeg"
                 dense
