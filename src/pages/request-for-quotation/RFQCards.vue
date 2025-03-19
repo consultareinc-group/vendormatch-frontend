@@ -332,7 +332,7 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Close" color="primary" v-close-popup />
+          <q-btn flat label="Close" color="negative" v-close-popup no-caps />
           <q-btn
             color="primary"
             icon="chat"
@@ -432,7 +432,7 @@
             />
 
             <div class="row justify-end q-mt-md">
-              <q-btn flat label="Cancel" color="negative" v-close-popup class="q-mr-sm" />
+              <q-btn flat label="Cancel" color="negative" no-caps v-close-popup class="q-mr-sm" />
               <q-btn
                 type="submit"
                 label="Submit Response"
