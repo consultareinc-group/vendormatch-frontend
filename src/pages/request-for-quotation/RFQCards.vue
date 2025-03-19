@@ -164,7 +164,7 @@
                 <q-btn
                   color="primary"
                   icon="chat"
-                  :label="rfq.status === 'Pending' ? 'Respond' : 'Counteroffer'"
+                  label="Respond"
                   no-caps
                   @click="respondToRFQ(rfq)"
                 />
@@ -173,7 +173,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!searchResults.length" class="text-center q-mt-xl full-width">
+      <div v-if="!searchResults.length && isSearching" class="text-center q-mt-xl full-width">
         No Results Found!
       </div>
       <div v-if="rfqs.length > 100" class="flex justify-center full-width q-my-md">
@@ -326,14 +326,32 @@
           </div>
         </q-card-section>
 
+        <q-card-section>
+          <div class="text-h6 q-my-md">RFQ Responses</div>
+          <q-table color="primary" :rows="rfq_responses" :columns="columns" />
+        </q-card-section>
+
         <q-card-actions align="right">
           <q-btn flat label="Close" color="primary" v-close-popup />
+          <q-btn
+            color="primary"
+            icon="chat"
+            label="Respond"
+            no-caps
+            @click="respondToRFQ(selectedRFQ)"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
     <!-- Response Form Dialog -->
-    <q-dialog v-model="showResponseDialog" persistent>
+    <q-dialog
+      v-model="showResponseDialog"
+      persistent
+      :position="showDetailsDialog ? 'right' : 'standard'"
+      :allow-focus-outside="showDetailsDialog"
+      :no-shake="showDetailsDialog"
+    >
       <q-card style="min-width: 350px">
         <q-card-section>
           <div class="text-h6">Respond to RFQ</div>
@@ -452,6 +470,44 @@ const filter = ref({
 })
 
 const categories = ['Food & Beverage', 'Health & Beauty', 'Home & Garden', 'Electronics', 'Apparel']
+const rfq_responses = ref([])
+const columns = [
+  {
+    name: 'quoted_price',
+    label: 'Quoted Price',
+    field: 'quoted_price',
+    sortable: true,
+    align: 'left',
+  },
+  {
+    name: 'minimum_order_quantity',
+    label: 'Minimum Order Quantity',
+    field: 'minimum_order_quantity',
+    sortable: true,
+    align: 'left',
+  },
+  {
+    name: 'lead_time',
+    label: 'Lead Time',
+    field: 'lead_time',
+    sortable: true,
+    align: 'left',
+  },
+  {
+    name: 'payment_terms',
+    label: 'Payment Terms',
+    field: 'payment_terms',
+    sortable: true,
+    align: 'left',
+  },
+  {
+    name: 'shipping_terms',
+    label: 'Shipping Terms',
+    field: 'shipping_terms',
+    sortable: true,
+    align: 'left',
+  },
+]
 
 const rfqs = ref(rfqStore.RFQs)
 
@@ -497,7 +553,9 @@ const formatDate = (dateStr) => {
 }
 
 const searchResults = ref([])
+const isSearching = ref(false)
 const searchRFQs = () => {
+  isSearching.value = true
   rfqStore
     .SearchRFQs(
       `offset=${rfqs.value.length}&search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}&is_not_closed=true`,
