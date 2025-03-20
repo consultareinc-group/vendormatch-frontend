@@ -109,6 +109,7 @@
         </q-card>
       </div>
     </div>
+    <RFQDetails v-if="rfqStore.ShowRFQDetailsDialog" />
   </q-page>
 </template>
 
@@ -118,6 +119,7 @@ import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
+import RFQDetails from './components/RFQDetails.vue'
 
 const $q = useQuasar()
 const router = useRouter()
