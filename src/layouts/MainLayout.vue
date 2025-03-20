@@ -44,19 +44,31 @@
           <q-item-section>Dashboard</q-item-section>
         </q-item>
 
-        <q-item v-if="authStore.UserInformation.role === 0" clickable v-ripple to="/inquiries">
-          <q-item-section avatar>
-            <q-icon name="question_answer" />
-          </q-item-section>
-          <q-item-section>Inquiries</q-item-section>
-        </q-item>
-
         <q-item clickable v-ripple to="/products">
           <q-item-section avatar>
             <q-icon name="inventory_2" />
           </q-item-section>
           <q-item-section>Products</q-item-section>
         </q-item>
+
+        <q-item clickable v-ripple to="/inquiries">
+          <q-item-section avatar>
+            <q-icon name="question_answer" />
+          </q-item-section>
+          <q-item-section>Inquiries</q-item-section>
+        </q-item>
+
+        <q-expansion-item icon="request_quote" label="RFQ" expand-separator>
+          <q-item clickable v-ripple to="/request-for-quotation">
+            <q-item-section class="q-ml-xl q-pl-sm">Create RFQ</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple to="/request-for-quotation-list">
+            <q-item-section class="q-ml-xl q-pl-sm">RFQ List</q-item-section>
+          </q-item>
+          <q-item clickable v-ripple to="/request-for-quotation-cards">
+            <q-item-section class="q-ml-xl q-pl-sm">RFQs</q-item-section>
+          </q-item>
+        </q-expansion-item>
       </q-list>
     </q-drawer>
     <right-drawer v-if="triggerStore.RightDrawerOpen"></right-drawer>

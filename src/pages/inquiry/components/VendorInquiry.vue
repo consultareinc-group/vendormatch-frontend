@@ -133,7 +133,7 @@ import { useAuthStore } from 'src/stores/auth'
 import { useTriggerStore } from 'src/stores/triggers' // Import trigger store for managing UI triggers
 
 // Import component for viewing product details
-import ViewProductDetails from '../../components/ViewProductDetails.vue'
+import ViewProductDetails from '../../../components/ViewProductDetails.vue'
 
 const $q = useQuasar()
 const messageStore = useMessageStore()

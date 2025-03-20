@@ -14,19 +14,34 @@ const routes = [
       {
         path: 'dashboard/vendor',
         name: 'vendor',
-        component: () => import('src/pages/vendor/VendorDashboard.vue'),
-        meta: { role: 'vendor' }
+        component: () => import('src/pages/dashboard/VendorDashboard.vue'),
+        meta: { role: 0 }
       },
       {
         path: 'dashboard/buyer',
         name: 'buyer',
-        component: () => import('src/pages/buyer/BuyerDashboard.vue'),
-        meta: { role: 'buyer' }
+        component: () => import('src/pages/dashboard/BuyerDashboard.vue'),
+        meta: { role: 1 }
       },
       {
         path: 'inquiries',
-        component: () => import('src/pages/vendor/InquiryPage.vue'),
-        meta: { role: 'vendor' }
+        name: 'inquiries',
+        component: () => import('src/pages/inquiry/InquiryPage.vue'),
+      },
+      {
+        path: 'request-for-quotation',
+        name: 'request-for-quotation',
+        component: () => import('src/pages/request-for-quotation/CreateRFQ.vue'),
+      },
+      {
+        path: 'request-for-quotation-cards',
+        name: 'request-for-quotation-cards',
+        component: () => import('src/pages/request-for-quotation/RFQCards.vue'),
+      },
+      {
+        path: 'request-for-quotation-list',
+        name: 'request-for-quotation-list',
+        component: () => import('src/pages/request-for-quotation/RFQList.vue'),
       }
     ]
   },

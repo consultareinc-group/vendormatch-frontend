@@ -65,6 +65,16 @@
         <div class="flex justify-center items-center fit" v-if="!products.length">
           <div>No Products Found</div>
         </div>
+
+        <div v-if="products.length > 100" class="flex justify-center full-width q-my-md">
+          <q-btn
+            @click="viewMoreProducts()"
+            label="View More"
+            class="bg-white"
+            no-caps
+            :loading="viewMoreLoadingState"
+          />
+        </div>
       </div>
     </div>
     <ViewProductDetails v-if="triggerStore.ViewProductDetailsDialog" />
@@ -103,14 +113,7 @@ const products = computed(() => {
   }
 })
 
-// Fetch products when the component is mounted
-onMounted(() => {
-  cardLoadingState.value = true // Set loading state to true while fetching data
-  if (productStore.Products.length) {
-    cardLoadingState.value = false
-  }
-  // set search products to empty on page load
-  productStore.SearchedProducts = []
+const getProducts = () => {
   productStore
     .GetProducts(`offset=${productStore.Products.length}&include_image=1`) // Fetch products with offset and include images
     .then((response) => {
@@ -135,7 +138,27 @@ onMounted(() => {
     })
     .finally(() => {
       cardLoadingState.value = false // Reset loading state after API call is completed
+      viewMoreLoadingState.value = false
     })
+}
+
+const viewMoreLoadingState = ref(false)
+const viewMoreProducts = () => {
+  viewMoreLoadingState.value = true
+  getProducts()
+}
+
+// Fetch products when the component is mounted
+onMounted(() => {
+  cardLoadingState.value = true // Set loading state to true while fetching data
+  if (productStore.Products.length) {
+    cardLoadingState.value = false
+  }
+
+  // set search products to empty on page load
+  productStore.SearchedProducts = []
+
+  getProducts()
 
   if (!productStore.SavedProducts.length) {
     triggerStore.SavedProductsLoadingState = true
