@@ -38,7 +38,7 @@ jobs:
       # Update API URL in axios.js
       - name: Update API URL in axios.js
         run: |
-          sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.API_URL }}'|" src/boot/axios.js
+          sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.STAGING_API_URL }}'|" src/boot/axios.js
           sed -i "s|publicPath: '/'|publicPath: '/staging_frontend/'|" quasar.config.js
 
       # Build the Quasar app
