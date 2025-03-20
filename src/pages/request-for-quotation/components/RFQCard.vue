@@ -120,7 +120,7 @@
     </div>
   </div>
   <div
-    v-if="!rfqStore.RFQSearchResults.length && rfqStore.RFQSearching"
+    v-if="(!rfqStore.RFQSearchResults.length && rfqStore.RFQSearching) || !rfqStore.RFQs.length"
     class="text-center q-mt-xl full-width"
   >
     No Results Found!
