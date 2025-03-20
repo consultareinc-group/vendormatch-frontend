@@ -9,9 +9,9 @@
               <div class="text-h6">RFQ Details</div>
               <q-btn
                 dense
-                class="q-px-md no-print"
+                class="q-px-md"
                 icon="download"
-                label="Download"
+                label="Download PDF"
                 no-caps
                 @click="downloadPDF()"
                 :loading="downloadLoadingState"
@@ -162,7 +162,14 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Close" color="negative" v-close-popup no-caps />
-          <q-btn color="primary" icon="chat" label="Respond" no-caps @click="respondToRFQ()" />
+          <q-btn
+            v-if="route.name === 'request-for-quotation-cards'"
+            color="primary"
+            icon="chat"
+            label="Respond"
+            no-caps
+            @click="respondToRFQ()"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -174,9 +181,11 @@ import { ref, onMounted } from 'vue'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
 import { useHelperStore } from 'src/stores/helper'
+import { useRoute } from 'vue-router'
 import html2pdf from 'html2pdf.js'
 
 const rfqStore = useRFQStore()
+const route = useRoute()
 const helperStore = useHelperStore()
 
 const rfq_responses = ref([])
@@ -252,6 +261,10 @@ const downloadLoadingState = ref(false)
 const downloadPDF = () => {
   downloadLoadingState.value = true
   const element = document.getElementById('rfq-details-content')
+  const elementsToHide = document.querySelectorAll('.no-print')
+  // Hide elements before generating PDF
+  elementsToHide.forEach((el) => (el.style.display = 'none'))
+
   html2pdf()
     .set({
       margin: 10,
@@ -263,7 +276,10 @@ const downloadPDF = () => {
     .from(element)
     .save()
     .then(() => {
+      // Restore hidden elements after PDF generation
+      elementsToHide.forEach((el) => (el.style.display = ''))
       downloadLoadingState.value = false
     })
 }
+  
 </script>

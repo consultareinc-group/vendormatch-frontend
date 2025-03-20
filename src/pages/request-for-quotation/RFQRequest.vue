@@ -200,6 +200,10 @@ const getRFQs = () => {
     .then((response) => {
       if (response.status === 'success') {
         rfqStore.RFQRequests.push(...response.data)
+
+        if (response.data.length) {
+          getRFQs()
+        }
       }
     })
     .finally(() => {
