@@ -5,7 +5,17 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 export const useRFQStore = defineStore('rfq', {
   state: () => ({
     RFQs: [],
+    RFQSearchResults: [],
+    RFQDetails: {},
     RFQRequests: [],
+
+    // Triggers to show/hide the RFQ dialog
+    ShowRFQDetailsDialog: false,
+    ShowRFQRespondDialog: false,
+    // Triggers for loading state
+    RFQCardLoading: false,
+    // Trggers for true actions
+    RFQSearching: false,
   }),
   actions: {
     // Action to fetch rfqs from the API with pagination support
