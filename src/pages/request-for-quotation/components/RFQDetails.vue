@@ -14,6 +14,7 @@
                 label="Download"
                 no-caps
                 @click="downloadPDF()"
+                :loading="downloadLoadingState"
               />
             </div>
           </q-card-section>
@@ -247,11 +248,10 @@ const respondToRFQ = () => {
   rfqStore.ShowRFQRespondDialog = true
 }
 
+const downloadLoadingState = ref(false)
 const downloadPDF = () => {
-  const element = document.getElementById('rfq-details-content') // Get the content div
-  const elementsToHide = document.querySelectorAll('.no-print')
-  // Hide elements before generating PDF
-  elementsToHide.forEach((el) => (el.style.display = 'none'))
+  downloadLoadingState.value = true
+  const element = document.getElementById('rfq-details-content')
   html2pdf()
     .set({
       margin: 10,
@@ -262,5 +262,8 @@ const downloadPDF = () => {
     })
     .from(element)
     .save()
+    .then(() => {
+      downloadLoadingState.value = false
+    })
 }
 </script>
