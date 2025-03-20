@@ -11,7 +11,7 @@
                 dense
                 class="q-px-md no-print"
                 icon="download"
-                label="Download"
+                label="Download PDF"
                 no-caps
                 @click="downloadPDF()"
                 :loading="downloadLoadingState"
