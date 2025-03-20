@@ -1,9 +1,9 @@
-name: Deploy Vendor Match Staging Frontend to cPanel
+name: Deploy Vendor Match Stable Frontend to cPanel
 
 on:
   push:
     branches:
-      - staging # Trigger on push to the staging branch
+      - stable # Trigger on push to the staging branch
 
 jobs:
   deploy:
@@ -38,8 +38,7 @@ jobs:
       # Update API URL in axios.js
       - name: Update API URL in axios.js
         run: |
-          sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.STAGING_API_URL }}'|" src/boot/axios.js
-          sed -i "s|publicPath: '/'|publicPath: '/staging_frontend/'|" quasar.config.js
+          sed -i "s|baseURL: '.*'|baseURL: '${{ secrets.API_URL }}'|" src/boot/axios.js
 
       # Build the Quasar app
       - name: Build Quasar App
@@ -64,11 +63,11 @@ jobs:
 
           # Remove only specific files and folders from the cPanel web root
           ssh -p $SSH_PORT $CPANEL_USER@$CPANEL_HOST << EOF
-            cd ~/public_html/staging_frontend
+            cd ~/public_html
             rm -rf assets icons favicon.ico index.html
           EOF
 
           # Upload the build files to the cPanel server
-          rsync -avz -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:public_html/staging_frontend/
+          rsync -avz -e "ssh -p $SSH_PORT" dist/spa/ $CPANEL_USER@$CPANEL_HOST:public_html/
 
           echo "Deployment to cPanel completed."
