@@ -19,7 +19,7 @@
         <q-card-section>
           <q-form @submit="submitResponse" class="q-gutter-md">
             <q-input
-              v-model.number="form.quotedPrice"
+              v-model.number="form.quoted_price"
               type="number"
               label="Quoted Price per Unit *"
               prefix="$"
@@ -32,7 +32,7 @@
             />
 
             <q-input
-              v-model.number="form.minQuantity"
+              v-model.number="form.minimum_order_quantity"
               type="number"
               label="Minimum Order Quantity *"
               :rules="[
@@ -44,7 +44,7 @@
             />
 
             <q-input
-              v-model="form.leadTime"
+              v-model="form.lead_time_days"
               type="number"
               label="Lead Time (days) *"
               :rules="[
@@ -56,8 +56,8 @@
             />
 
             <q-select
-              v-model="form.paymentTerms"
-              :options="paymentTermsOptions"
+              v-model="form.payment_terms"
+              :options="payment_termsOptions"
               label="Payment Terms *"
               :rules="[(val) => !!val || 'Payment terms are required']"
               outlined
@@ -65,7 +65,7 @@
             />
 
             <q-input
-              v-model="form.shippingTerms"
+              v-model="form.shipping_terms"
               label="Shipping Terms *"
               :rules="[(val) => !!val || 'Shipping terms are required']"
               outlined
@@ -74,7 +74,7 @@
 
             <q-input
               class="additional-notes"
-              v-model="form.additionalNotes"
+              v-model="form.additional_notes"
               type="textarea"
               label="Additional Notes"
               outlined
@@ -83,7 +83,7 @@
             />
 
             <q-toggle
-              v-model="form.canMeetSpecs"
+              v-model="form.can_meet_specs"
               label="I confirm that I can meet all specified requirements"
             />
 
@@ -95,7 +95,6 @@
                 no-caps
                 color="primary"
                 :loading="responseLoadingState"
-                @click="submitResponse()"
               />
             </div>
           </q-form>
@@ -114,16 +113,16 @@ const $q = useQuasar()
 const rfqStore = useRFQStore()
 
 const form = ref({
-  quotedPrice: null,
-  minQuantity: null,
-  leadTime: null,
-  paymentTerms: null,
-  shippingTerms: '',
-  additionalNotes: '',
-  canMeetSpecs: false,
+  quoted_price: null,
+  minimum_order_quantity: null,
+  lead_time_days: null,
+  payment_terms: null,
+  shipping_terms: '',
+  additional_notes: '',
+  can_meet_specs: false,
 })
 
-const paymentTermsOptions = [
+const payment_termsOptions = [
   'Net 30',
   'Net 60',
   'Net 90',
@@ -134,7 +133,7 @@ const paymentTermsOptions = [
 
 const responseLoadingState = ref(false)
 const submitResponse = async () => {
-  if (!form.value.canMeetSpecs) {
+  if (!form.value.can_meet_specs) {
     $q.notify({
       type: 'warning',
       message: 'Please confirm that you can meet all specifications',
@@ -144,9 +143,9 @@ const submitResponse = async () => {
   }
 
   responseLoadingState.value = true
-
+  form.value.request_for_quotation_id = rfqStore.RFQDetails.id
   rfqStore
-    .InsertRFQResponse()
+    .InsertRFQResponse(form.value)
     .then((response) => {
       let status = Boolean(response.status === 'success') // Determine the status of the response
       $q.notify({
