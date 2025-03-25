@@ -12,7 +12,7 @@
           <q-skeleton type="QInput" class="q-mb-md" />
           <q-skeleton height="300px" class="q-mb-md" />
         </div>
-        <q-form v-show="!formLoadingState" @submit="updateProduct" greedy ref="productQForm">
+        <q-form v-show="!formLoadingState" greedy ref="productQForm">
           <q-input
             v-model="productForm.name"
             dense
@@ -57,7 +57,7 @@
               />
             </div>
             <q-card class="q-pa-md q-mb-md">
-              <q-input
+              <!-- <q-input
                 outlined
                 v-model="size.size"
                 dense
@@ -67,8 +67,9 @@
                 "
                 lazy-rules
                 class="q-mb-md"
-              />
-              <q-input
+              /> -->
+              <q-input outlined v-model="size.size" dense label="Size" class="q-mb-md" />
+              <!-- <q-input
                 outlined
                 v-model="size.upc"
                 dense
@@ -78,7 +79,8 @@
                 "
                 lazy-rules
                 class="q-mb-md"
-              />
+              /> -->
+              <q-input outlined v-model="size.upc" dense label="UPC" class="q-mb-md" />
               <!-- <q-toggle
                 @click="checkProductStatus()"
                 v-model="size.is_cost_negotiable"
@@ -139,7 +141,7 @@
                       @click="removeLandedCost(size_index, cost_index)"
                     />
                   </div>
-                  <q-input
+                  <!-- <q-input
                     outlined
                     v-model.number="cost.country"
                     dense
@@ -150,6 +152,13 @@
                         : []
                     "
                     lazy-rules
+                    class="q-mb-md"
+                  /> -->
+                  <q-input
+                    outlined
+                    v-model.number="cost.country"
+                    dense
+                    label="Destination/Country"
                     class="q-mb-md"
                   />
                   <q-input
@@ -471,7 +480,12 @@
 
           <div class="row justify-end q-mt-md">
             <q-btn flat label="Close" color="negative" v-close-popup class="q-mr-sm" />
-            <q-btn type="submit" label="Update" color="primary" :loading="btnLoadingState" />
+            <q-btn
+              @click="updateProduct"
+              label="Update"
+              color="primary"
+              :loading="btnLoadingState"
+            />
           </div>
         </q-form>
       </q-card-section>
@@ -555,6 +569,15 @@ onMounted(() => {
         productForm.value = response.data
         // Restructure the  category value
         productForm.value.category = productForm.value.category.split(', ')
+
+        productForm.value.size.forEach((size) => {
+          if (size.size === 'null') size.size = ''
+          if (size.upc === 'null') size.upc = ''
+
+          size.landed_cost.forEach((cost) => {
+            if (cost.country === 'null') cost.country = ''
+          })
+        })
 
         // convert base64 to real file and add to q-uploader
         productForm.value.images.forEach((image) => {
@@ -811,7 +834,7 @@ watch(
 //     $q.notify({
 //       message: `<p class='q-mb-none'>Enabling a negotiable cost is not allowed when the product status is set to "Publish."</p>`,
 //       color: `red-2`, // Set the notification background color
-//       position: 'bottom', // Display the notification at the bottom
+//       position: 'top', // Display the notification at the bottom
 //       textColor: `red`, // Set the notification text color
 //       html: true, // Allow HTML in the notification message
 //     })
@@ -832,7 +855,7 @@ const updateProduct = () => {
         $q.notify({
           message: `<p class='q-mb-none'>Product image is required.</p>`,
           color: `red-2`,
-          position: 'bottom',
+          position: 'top',
           textColor: `red`,
           html: true,
         })
@@ -848,7 +871,7 @@ const updateProduct = () => {
           $q.notify({
             message: `<p class='q-mb-none'>Product certificate is required.</p>`,
             color: `red-2`,
-            position: 'bottom',
+            position: 'top',
             textColor: `red`,
             html: true,
           })
@@ -862,7 +885,7 @@ const updateProduct = () => {
           $q.notify({
             message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
             color: `red-2`,
-            position: 'bottom',
+            position: 'top',
             textColor: `red`,
             html: true,
           })
@@ -965,6 +988,14 @@ const updateProduct = () => {
         .finally(() => {
           btnLoadingState.value = false // Reset loading state
         })
+    } else {
+      $q.notify({
+        message: `<p class='q-mb-none'>Please fill out the required fields.</p>`,
+        color: `red-2`,
+        position: 'top',
+        textColor: `red`,
+        html: true,
+      })
     }
   })
 }

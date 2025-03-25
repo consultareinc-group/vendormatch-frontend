@@ -6,7 +6,7 @@
       </q-card-section>
 
       <q-card-section>
-        <q-form @submit="saveProduct" greedy ref="productQForm">
+        <q-form greedy ref="productQForm">
           <q-input
             v-model="productForm.name"
             dense
@@ -50,7 +50,7 @@
               />
             </div>
             <q-card class="q-pa-md q-mb-md">
-              <q-input
+              <!-- <q-input
                 outlined
                 v-model="size.size"
                 dense
@@ -60,8 +60,9 @@
                 "
                 lazy-rules
                 class="q-mb-md"
-              />
-              <q-input
+              /> -->
+              <q-input outlined v-model="size.size" dense label="Size" class="q-mb-md" />
+              <!-- <q-input
                 outlined
                 v-model="size.upc"
                 dense
@@ -71,7 +72,8 @@
                 "
                 lazy-rules
                 class="q-mb-md"
-              />
+              /> -->
+              <q-input outlined v-model="size.upc" dense label="UPC" class="q-mb-md" />
 
               <!-- <q-toggle
                 @click="checkProductStatus()"
@@ -80,7 +82,7 @@
                 class="q-mb-md"
               /> -->
               <q-toggle v-model="size.is_cost_negotiable" label="Negotiable" class="q-mb-md" />
-              <q-input
+              <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 v-model.number="size.cost"
                 outlined
@@ -98,9 +100,19 @@
                 "
                 lazy-rules
                 class="q-mb-md"
+              /> -->
+              <q-input
+                :disable="size.is_cost_negotiable"
+                v-model.number="size.cost"
+                outlined
+                dense
+                type="number"
+                label="Cost"
+                prefix="$"
+                class="q-mb-md"
               />
 
-              <q-input
+              <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.srp"
@@ -118,6 +130,16 @@
                 "
                 lazy-rules
                 class="q-mb-md"
+              /> -->
+              <q-input
+                :disable="size.is_cost_negotiable"
+                outlined
+                v-model.number="size.srp"
+                dense
+                type="number"
+                label="SRP"
+                prefix="$"
+                class="q-mb-md"
               />
 
               <div class="q-px-md q-mb-md">
@@ -133,7 +155,7 @@
                       @click="removeLandedCost(size_index, cost_index)"
                     />
                   </div>
-                  <q-input
+                  <!-- <q-input
                     outlined
                     v-model.number="cost.country"
                     dense
@@ -145,8 +167,15 @@
                     "
                     lazy-rules
                     class="q-mb-md"
-                  />
+                  /> -->
                   <q-input
+                    outlined
+                    v-model.number="cost.country"
+                    dense
+                    label="Destination/Country"
+                    class="q-mb-md"
+                  />
+                  <!-- <q-input
                     outlined
                     :disable="size.is_cost_negotiable"
                     v-model.number="cost.amount"
@@ -163,6 +192,15 @@
                         : []
                     "
                     lazy-rules
+                  /> -->
+                  <q-input
+                    outlined
+                    :disable="size.is_cost_negotiable"
+                    v-model.number="cost.amount"
+                    dense
+                    type="number"
+                    label="Landed Cost"
+                    prefix="$"
                   />
                 </div>
 
@@ -465,7 +503,7 @@
 
           <div class="row justify-end q-mt-md">
             <q-btn flat label="Close" color="negative" v-close-popup class="q-mr-sm" />
-            <q-btn type="submit" label="Save" color="primary" :loading="formLoadingState" />
+            <q-btn @click="saveProduct" label="Save" color="primary" :loading="formLoadingState" />
           </div>
         </q-form>
       </q-card-section>
@@ -672,7 +710,7 @@ watch(
 //     $q.notify({
 //       message: `<p class='q-mb-none'>Enabling a negotiable cost is not allowed when the product status is set to "Publish."</p>`,
 //       color: `red-2`, // Set the notification background color
-//       position: 'bottom', // Display the notification at the bottom
+//       position: 'top', // Display the notification at the bottom
 //       textColor: `red`, // Set the notification text color
 //       html: true, // Allow HTML in the notification message
 //     })
@@ -699,7 +737,7 @@ const saveProduct = () => {
         $q.notify({
           message: `<p class='q-mb-none'>Product image is required.</p>`,
           color: `red-2`,
-          position: 'bottom',
+          position: 'top',
           textColor: `red`,
           html: true,
         })
@@ -715,7 +753,7 @@ const saveProduct = () => {
           $q.notify({
             message: `<p class='q-mb-none'>Product certificate is required.</p>`,
             color: `red-2`,
-            position: 'bottom',
+            position: 'top',
             textColor: `red`,
             html: true,
           })
@@ -729,7 +767,7 @@ const saveProduct = () => {
           $q.notify({
             message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
             color: `red-2`,
-            position: 'bottom',
+            position: 'top',
             textColor: `red`,
             html: true,
           })
@@ -878,6 +916,14 @@ const saveProduct = () => {
         .finally(() => {
           formLoadingState.value = false // Reset loading state
         })
+    } else {
+      $q.notify({
+        message: `<p class='q-mb-none'>Please fill out the required fields.</p>`,
+        color: `red-2`,
+        position: 'top',
+        textColor: `red`,
+        html: true,
+      })
     }
   })
 }
