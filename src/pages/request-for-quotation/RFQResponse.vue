@@ -320,28 +320,28 @@ const rfq_requests = ref(rfqStore.RFQRequests)
 
 const rfqLoadingState = ref(false)
 
-const getRFQs = () => {
-  rfqLoadingState.value = true
-  if (rfqStore.RFQRequests.length) {
-    rfqLoadingState.value = false
-  }
+// const getRFQs = () => {
+//   rfqLoadingState.value = true
+//   if (rfqStore.RFQRequests.length) {
+//     rfqLoadingState.value = false
+//   }
 
-  rfqStore
-    .GetRFQs(`offset=${rfq_requests.value.length}`)
-    .then((response) => {
-      if (response.status === 'success') {
-        rfqStore.RFQRequests.push(...response.data)
-      }
-    })
-    .finally(() => {
-      rfqLoadingState.value = false
-    })
-}
+//   rfqStore
+//     .GetRFQs(`offset=${rfq_requests.value.length}`)
+//     .then((response) => {
+//       if (response.status === 'success') {
+//         rfqStore.RFQRequests.push(...response.data)
+//       }
+//     })
+//     .finally(() => {
+//       rfqLoadingState.value = false
+//     })
+// }
 
 onMounted(() => {
-  if (!rfqStore.RFQRequests.length) {
-    getRFQs()
-  }
+  // if (!rfqStore.RFQRequests.length) {
+  //   getRFQs()
+  // }
 })
 
 const getStatusColor = (status) => {
