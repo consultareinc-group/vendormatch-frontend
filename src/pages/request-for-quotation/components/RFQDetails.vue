@@ -156,7 +156,12 @@
 
           <q-card-section>
             <div class="text-h6 q-my-md">RFQ Responses</div>
-            <q-table color="primary" :rows="rfq_responses" :columns="columns" />
+            <q-table
+              color="primary"
+              :rows="rfqResponses"
+              :columns="columns"
+              :loading="rfqResponsesLoadingState"
+            />
           </q-card-section>
         </q-card-section>
 
@@ -188,12 +193,14 @@ const rfqStore = useRFQStore()
 const route = useRoute()
 const helperStore = useHelperStore()
 
-const rfq_responses = ref([])
+const rfqResponses = ref([])
+const rfqResponsesLoadingState = ref(false)
 const columns = [
   {
     name: 'quoted_price',
     label: 'Quoted Price',
     field: 'quoted_price',
+    format: (val) => `$${val}`,
     sortable: true,
     align: 'left',
   },
@@ -205,9 +212,9 @@ const columns = [
     align: 'left',
   },
   {
-    name: 'lead_time',
-    label: 'Lead Time',
-    field: 'lead_time',
+    name: 'lead_time_days',
+    label: 'Lead Time Days',
+    field: 'lead_time_days',
     sortable: true,
     align: 'left',
   },
@@ -225,7 +232,31 @@ const columns = [
     sortable: true,
     align: 'left',
   },
+  {
+    name: 'additional_notes',
+    label: 'Additional Notes',
+    field: 'additional_notes',
+    sortable: true,
+    align: 'left',
+  },
 ]
+
+const getRFQResponses = () => {
+  rfqStore
+    .GetRFQResponses(`offset=${rfqResponses.value.length}`)
+    .then((response) => {
+      if (response.status === 'success') {
+        rfqResponses.value.push(...response.data)
+
+        if (response.data.length) {
+          getRFQResponses()
+        }
+      }
+    })
+    .finally(() => {
+      rfqResponsesLoadingState.value = false
+    })
+}
 
 const formatDate = (dateStr) => {
   return date.formatDate(dateStr, 'MMMM D, YYYY')
@@ -251,6 +282,9 @@ onMounted(() => {
     .finally(() => {
       attachmentLoadingState.value = false
     })
+
+    rfqResponsesLoadingState.value = true
+    getRFQResponses()
 })
 
 const respondToRFQ = () => {
@@ -271,7 +305,7 @@ const downloadPDF = () => {
       filename: `${rfqStore.RFQDetails.product_name} - ${rfqStore.RFQDetails.category} - ${rfqStore.RFQDetails.id}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
     })
     .from(element)
     .save()
