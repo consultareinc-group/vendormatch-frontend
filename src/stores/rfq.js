@@ -111,6 +111,17 @@ export const useRFQStore = defineStore('rfq', {
         });
       });
     },
+    // Action to fetch rfqs responses from the API with pagination support
+    GetRFQResponses(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch rfqs responses based on the offset
+        api.get(`vendor-match/rfq-response?${request}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((error) => {
+          reject(error); // Reject the promise with the error response data
+        });
+      });
+    },
     // Action to insert reponse to rfq
     InsertRFQResponse(request) {
       return new Promise((resolve, reject) => {
