@@ -51,14 +51,24 @@
           <q-item-section>Products</q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple to="/inquiries">
+        <q-item
+          v-if="authStore.UserInformation.role === 0 && authStore.UserInformation.level === 1"
+          clickable
+          v-ripple
+          to="/inquiries"
+        >
           <q-item-section avatar>
             <q-icon name="question_answer" />
           </q-item-section>
           <q-item-section>Inquiries</q-item-section>
         </q-item>
 
-        <q-expansion-item icon="request_quote" label="RFQ" expand-separator>
+        <q-expansion-item
+          v-if="authStore.UserInformation.role === 0 && authStore.UserInformation.level === 1"
+          icon="request_quote"
+          label="RFQ"
+          expand-separator
+        >
           <q-item clickable v-ripple to="/request-for-quotation">
             <q-item-section class="q-ml-xl q-pl-sm">Create RFQ</q-item-section>
           </q-item>
