@@ -178,11 +178,12 @@
             <div v-else class="q-mt-sm">
               <label class="text-bold">Product Certificate:</label>
               <div class="flex justify-start">
-                <div v-for="(cert, index) in productDetails.product_certificates" :key="cert">
-                  <div :id="`pdf-product-certificates${index}`" class="q-mr-xs"></div>
+                <div v-for="cert in productDetails.product_certificates" :key="cert">
+                  <div>{{ cert.description }}</div>
+                  <!-- <div :id="`pdf-product-certificates${index}`" class="q-mr-xs"></div>
                   <q-tooltip anchor="top middle" self="top middle" class="bg-primary"
                     >Click Me</q-tooltip
-                  >
+                  > -->
                 </div>
               </div>
             </div>
@@ -190,22 +191,23 @@
             <div v-else class="q-mt-sm">
               <label class="text-bold">Facility/Process Certificate:</label>
               <div class="flex justify-start">
-                <div v-for="(cert, index) in productDetails.facility_certificates" :key="cert">
-                  <div :id="`pdf-facility-certificates${index}`" class="q-mr-xs"></div>
+                <div v-for="cert in productDetails.facility_certificates" :key="cert">
+                  <div>{{ cert.description }}</div>
+                  <!-- <div :id="`pdf-facility-certificates${index}`" class="q-mr-xs"></div>
                   <q-tooltip anchor="top middle" self="top middle" class="bg-primary"
                     >Click Me</q-tooltip
-                  >
+                  > -->
                 </div>
               </div>
             </div>
-            <q-skeleton v-if="!productDetails.enterprise_name" height="85px"></q-skeleton>
+            <!-- <q-skeleton v-if="!productDetails.enterprise_name" height="85px"></q-skeleton>
             <div v-else class="flex justify-start items-center">
               <div class="text-bold q-mr-sm text-primary">{{ productDetails.enterprise_name }}</div>
               <div style="border: 1px solid #dfdfdf" class="q-pa-xs">
                 <q-icon name="storefront" size="sm" color="secondary" />
                 <span class="text-secondary q-ml-xs">Vendor</span>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </q-card-section>
@@ -253,10 +255,10 @@ import { useProductStore } from 'src/stores/products'
 import { useTriggerStore } from 'src/stores/triggers'
 import { useMessageStore } from 'src/stores/chat'
 import { useAuthStore } from 'src/stores/auth'
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
+// import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf'
 
-// Set worker source to the CDN URL
-GlobalWorkerOptions.workerSrc = '/pdf.worker.js'
+// // Set worker source to the CDN URL
+// GlobalWorkerOptions.workerSrc = '/pdf.worker.js'
 
 // Import Quasar framework utilities
 import { useQuasar } from 'quasar'
@@ -319,15 +321,15 @@ onMounted(() => {
         changeProductCost()
 
         // Generate pdf renderer
-        productDetails.value.product_certificates.forEach((cert, index) => {
-          const containerId = `pdf-product-certificates${index}`
-          createPdfThumbnail(cert.binary, containerId)
-        })
+        // productDetails.value.product_certificates.forEach((cert, index) => {
+        //   const containerId = `pdf-product-certificates${index}`
+        //   createPdfThumbnail(cert.binary, containerId)
+        // })
 
-        productDetails.value.facility_certificates.forEach((cert, index) => {
-          const containerId = `pdf-facility-certificates${index}`
-          createPdfThumbnail(cert.binary, containerId)
-        })
+        // productDetails.value.facility_certificates.forEach((cert, index) => {
+        //   const containerId = `pdf-facility-certificates${index}`
+        //   createPdfThumbnail(cert.binary, containerId)
+        // })
 
         if (authStore.UserInformation.role === 1 || !triggerStore.HideChatSection) {
           let payload =
@@ -360,58 +362,58 @@ onMounted(() => {
 })
 
 // Function to create a thumbnail and make it clickable
-async function createPdfThumbnail(base64Pdf, containerId) {
-  // Convert base64 PDF to a Blob
-  const pdfBlob = base64ToBlob(base64Pdf, 'application/pdf')
+// async function createPdfThumbnail(base64Pdf, containerId) {
+//   // Convert base64 PDF to a Blob
+//   const pdfBlob = base64ToBlob(base64Pdf, 'application/pdf')
 
-  // Create a URL for the Blob
-  const pdfUrl = URL.createObjectURL(pdfBlob)
+//   // Create a URL for the Blob
+//   const pdfUrl = URL.createObjectURL(pdfBlob)
 
-  // Render the first page of the PDF as a thumbnail
-  const canvas = document.createElement('canvas')
-  const context = canvas.getContext('2d')
+//   // Render the first page of the PDF as a thumbnail
+//   const canvas = document.createElement('canvas')
+//   const context = canvas.getContext('2d')
 
-  // Use PDF.js to render the first page
-  const pdf = await getDocument(pdfUrl).promise
-  const page = await pdf.getPage(1)
+//   // Use PDF.js to render the first page
+//   const pdf = await getDocument(pdfUrl).promise
+//   const page = await pdf.getPage(1)
 
-  const viewport = page.getViewport({ scale: 0.1 })
-  canvas.width = viewport.width
-  canvas.height = viewport.height
+//   const viewport = page.getViewport({ scale: 0.1 })
+//   canvas.width = viewport.width
+//   canvas.height = viewport.height
 
-  const renderContext = {
-    canvasContext: context,
-    viewport: viewport,
-  }
+//   const renderContext = {
+//     canvasContext: context,
+//     viewport: viewport,
+//   }
 
-  await page.render(renderContext).promise
+//   await page.render(renderContext).promise
 
-  // Append the canvas as a clickable thumbnail
-  const container = document.getElementById(containerId)
-  const thumbnailLink = document.createElement('a')
-  thumbnailLink.href = pdfUrl
-  thumbnailLink.target = '_blank' // Open the PDF in a new tab
-  thumbnailLink.appendChild(canvas)
-  container.appendChild(thumbnailLink)
-}
+//   // Append the canvas as a clickable thumbnail
+//   const container = document.getElementById(containerId)
+//   const thumbnailLink = document.createElement('a')
+//   thumbnailLink.href = pdfUrl
+//   thumbnailLink.target = '_blank' // Open the PDF in a new tab
+//   thumbnailLink.appendChild(canvas)
+//   container.appendChild(thumbnailLink)
+// }
 
 // Function to convert base64 to a Blob
-function base64ToBlob(base64, contentType = '', sliceSize = 512) {
-  const byteCharacters = atob(base64)
-  const byteArrays = []
+// function base64ToBlob(base64, contentType = '', sliceSize = 512) {
+//   const byteCharacters = atob(base64)
+//   const byteArrays = []
 
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize)
-    const byteNumbers = new Array(slice.length)
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i)
-    }
-    const byteArray = new Uint8Array(byteNumbers)
-    byteArrays.push(byteArray)
-  }
+//   for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+//     const slice = byteCharacters.slice(offset, offset + sliceSize)
+//     const byteNumbers = new Array(slice.length)
+//     for (let i = 0; i < slice.length; i++) {
+//       byteNumbers[i] = slice.charCodeAt(i)
+//     }
+//     const byteArray = new Uint8Array(byteNumbers)
+//     byteArrays.push(byteArray)
+//   }
 
-  return new Blob(byteArrays, { type: contentType })
-}
+//   return new Blob(byteArrays, { type: contentType })
+// }
 
 const chatContainer = ref(null)
 
