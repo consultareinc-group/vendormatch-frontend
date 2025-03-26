@@ -10,8 +10,16 @@
         </q-toolbar-title>
 
         <div>
-          <q-btn flat round dense icon="person" class="q-mr-sm">
-            <q-menu>
+          <q-btn
+            flat
+            dense
+            icon="person"
+            :icon-right="isMenuOpen ? 'arrow_drop_down' : 'arrow_drop_up'"
+            class="q-mr-sm"
+            :label="`${authStore.UserInformation.last_name}, ${authStore.UserInformation.first_name}`"
+            no-caps
+          >
+            <q-menu v-model="isMenuOpen">
               <q-list style="min-width: 200px">
                 <!-- <q-item clickable v-close-popup @click="navigateToProfile">
                   <q-item-section>Profile</q-item-section>
@@ -110,6 +118,8 @@ const leftDrawerOpen = ref(false)
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+const isMenuOpen = ref(false)
 
 // const navigateToProfile = () => {
 //   router.push('/profile')
