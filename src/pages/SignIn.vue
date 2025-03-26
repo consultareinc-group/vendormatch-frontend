@@ -97,11 +97,13 @@ const onSubmit = () => {
     .then((response) => {
       let status = Boolean(response.status === 'success') // Determine the status of the response
       if (status) {
-        if (response.data.role === 0) {
-          router.push({ name: 'vendor' })
-        } else {
-          router.push({ name: 'buyer' })
-        }
+        setTimeout(() => {
+          if (response.data.role === 0) {
+            window.location.href = router.resolve({ name: 'vendor' }).href
+          } else {
+            window.location.href = router.resolve({ name: 'buyer' }).href
+          }
+        }, 1000)
 
         $q.notify({
           message: `<p class='q-mb-none'><b>Welcome back!</b> You have successfully logged in.</p>`,
