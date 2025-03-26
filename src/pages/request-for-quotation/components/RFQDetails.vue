@@ -243,7 +243,7 @@ const columns = [
 
 const getRFQResponses = () => {
   rfqStore
-    .GetRFQResponses(`offset=${rfqResponses.value.length}`)
+    .GetRFQResponses(`id=${rfqStore.RFQDetails.id}&offset=${rfqResponses.value.length}`)
     .then((response) => {
       if (response.status === 'success') {
         rfqResponses.value.push(...response.data)
@@ -283,8 +283,8 @@ onMounted(() => {
       attachmentLoadingState.value = false
     })
 
-    rfqResponsesLoadingState.value = true
-    getRFQResponses()
+  rfqResponsesLoadingState.value = true
+  getRFQResponses()
 })
 
 const respondToRFQ = () => {
