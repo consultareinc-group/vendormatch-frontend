@@ -137,23 +137,52 @@
               <div>
                 <div class="row q-col-gutter-md">
                   <div class="col-12 col-md-6">
-                    <q-input
+                    <!-- <q-input
                       v-model="form.delivery_location"
                       label="Delivery Location *"
                       :rules="[(val) => !!val || 'Delivery location is required']"
                       lazy-rules
                       outlined
                       dense
+                    /> -->
+                    <q-input
+                      v-model="form.delivery_location"
+                      label="Delivery Location"
+                      outlined
+                      dense
                     />
                   </div>
                   <div class="col-12 col-md-6">
-                    <q-input
+                    <!-- <q-input
                       outlined
                       v-model="form.required_delivery_date"
                       label="Required Delivery Date *"
                       dense
                       :rules="[(val) => !!val || 'Delivery date is required']"
                       lazy-rules
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy
+                            ref="required_delivery_date"
+                            transition-show="scale"
+                            transition-hide="scale"
+                          >
+                            <q-date
+                              minimal
+                              v-model="form.required_delivery_date"
+                              @update:model-value="() => $refs.required_delivery_date.hide()"
+                              mask="YYYY-MM-DD"
+                            />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input> -->
+                    <q-input
+                      outlined
+                      v-model="form.required_delivery_date"
+                      label="Required Delivery Date"
+                      dense
                     >
                       <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
