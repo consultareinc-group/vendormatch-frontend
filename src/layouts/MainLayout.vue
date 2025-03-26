@@ -52,7 +52,10 @@
         </q-item>
 
         <q-item
-          v-if="authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2"
+          v-if="
+            (authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2) ||
+            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2)
+          "
           clickable
           v-ripple
           to="/inquiries"
@@ -64,7 +67,10 @@
         </q-item>
 
         <q-expansion-item
-          v-if="authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2"
+          v-if="
+            (authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2) ||
+            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2)
+          "
           icon="request_quote"
           label="RFQ"
           expand-separator
