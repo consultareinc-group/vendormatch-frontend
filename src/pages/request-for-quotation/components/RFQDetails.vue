@@ -168,7 +168,9 @@
         <q-card-actions align="right">
           <q-btn flat label="Close" color="negative" v-close-popup no-caps />
           <q-btn
-            v-if="route.name === 'request-for-quotation-cards'"
+            v-if="
+              route.name === 'request-for-quotation-cards' && authStore.UserInformation.role === 0
+            "
             color="primary"
             icon="chat"
             label="Respond"
@@ -186,10 +188,12 @@ import { ref, onMounted } from 'vue'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
 import { useHelperStore } from 'src/stores/helper'
+import { useAuthStore } from 'src/stores/auth'
 import { useRoute } from 'vue-router'
 import html2pdf from 'html2pdf.js'
 
 const rfqStore = useRFQStore()
+const authStore = useAuthStore()
 const route = useRoute()
 const helperStore = useHelperStore()
 
