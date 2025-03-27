@@ -579,7 +579,7 @@ const productForm = ref({
 })
 
 // Array of predefined product categories
-const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
+const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic', 'Dietary Supplements']
 
 // Array of predefined product statuses
 const statuses = ['Draft', 'Publish']
