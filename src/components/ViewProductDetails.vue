@@ -99,13 +99,19 @@
               class="q-mb-sm"
             ></q-skeleton>
             <div class="">{{ productDetails.category }}</div>
-            <q-skeleton v-if="!size.size" square height="167px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="167px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else>
               <div class="row q-mt-md">
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">Cost:</div>
-                    <h5 class="q-ma-none text-bold">${{ size.cost }}</h5>
+                    <div v-if="!size.cost || size.cost === '0.00'">Negotiable</div>
+                    <h5 v-else class="q-ma-none text-bold">${{ size.cost }}</h5>
                   </div>
                 </div>
               </div>
@@ -113,7 +119,8 @@
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">SRP:</div>
-                    <h5 class="q-ma-none text-bold">${{ size.srp }}</h5>
+                    <div v-if="!size.srp || size.srp === '0.00'">TBD</div>
+                    <h5 v-else class="q-ma-none text-bold">${{ size.srp }}</h5>
                   </div>
                 </div>
               </div>
