@@ -161,7 +161,23 @@
               :rows="rfqResponses"
               :columns="columns"
               :loading="rfqResponsesLoadingState"
-            />
+            >
+              <template v-slot:body-cell-actions="props">
+                <q-td :props="props">
+                  <q-btn-group flat>
+                    <q-btn
+                      flat
+                      round
+                      color="positive"
+                      icon="chat"
+                      @click="showBuyerResponse(props.row)"
+                    >
+                      <q-tooltip>Respond</q-tooltip>
+                    </q-btn>
+                  </q-btn-group>
+                </q-td>
+              </template>
+            </q-table>
           </q-card-section>
         </q-card-section>
 
@@ -180,6 +196,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <RFQReply v-if="rfqStore.ShowRFQReplyDialog" />
   </div>
 </template>
 
@@ -191,6 +208,8 @@ import { useHelperStore } from 'src/stores/helper'
 import { useAuthStore } from 'src/stores/auth'
 import { useRoute } from 'vue-router'
 import html2pdf from 'html2pdf.js'
+
+import RFQReply from './RFQReply.vue'
 
 const rfqStore = useRFQStore()
 const authStore = useAuthStore()
@@ -243,6 +262,7 @@ const columns = [
     sortable: true,
     align: 'left',
   },
+  { name: 'actions', label: 'Actions', field: 'actions' },
 ]
 
 const getRFQResponses = () => {
@@ -319,5 +339,9 @@ const downloadPDF = () => {
       downloadLoadingState.value = false
     })
 }
-  
+
+const showBuyerResponse = (response) => {
+  rfqStore.RFQResponseDetails = response
+  rfqStore.ShowRFQReplyDialog = true
+}
 </script>

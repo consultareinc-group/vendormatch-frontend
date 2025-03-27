@@ -8,10 +8,12 @@ export const useRFQStore = defineStore('rfq', {
     RFQSearchResults: [],
     RFQDetails: {},
     RFQRequests: [],
+    RFQResponseDetails: {},
 
     // Triggers to show/hide the RFQ dialog
     ShowRFQDetailsDialog: false,
     ShowRFQRespondDialog: false,
+    ShowRFQReplyDialog: false,
     // Triggers for loading state
     RFQCardLoading: false,
     // Trggers for true actions
