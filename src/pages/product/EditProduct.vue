@@ -97,7 +97,7 @@
                 class="q-mb-md"
               /> -->
               <q-toggle v-model="size.is_cost_negotiable" label="Negotiable" class="q-mb-md" />
-              <q-input
+              <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.cost"
@@ -115,9 +115,20 @@
                 "
                 lazy-rules
                 class="q-mb-md"
-              />
+              /> -->
 
               <q-input
+                :disable="size.is_cost_negotiable"
+                outlined
+                v-model.number="size.cost"
+                dense
+                type="number"
+                label="Cost"
+                prefix="$"
+                class="q-mb-md"
+              />
+
+              <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.srp"
@@ -134,6 +145,16 @@
                     : []
                 "
                 lazy-rules
+                class="q-mb-md"
+              /> -->
+              <q-input
+                :disable="size.is_cost_negotiable"
+                outlined
+                v-model.number="size.srp"
+                dense
+                type="number"
+                label="SRP"
+                prefix="$"
                 class="q-mb-md"
               />
 
@@ -170,7 +191,7 @@
                     label="Destination/Country"
                     class="q-mb-md"
                   />
-                  <q-input
+                  <!-- <q-input
                     outlined
                     :disable="size.is_cost_negotiable"
                     v-model.number="cost.amount"
@@ -187,6 +208,15 @@
                         : []
                     "
                     lazy-rules
+                  /> -->
+                  <q-input
+                    outlined
+                    :disable="size.is_cost_negotiable"
+                    v-model.number="cost.amount"
+                    dense
+                    type="number"
+                    label="Landed Cost"
+                    prefix="$"
                   />
                 </div>
 
