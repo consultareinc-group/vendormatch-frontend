@@ -47,7 +47,12 @@
               </div>
               <div class="text-subtitle2">{{ product?.category }}</div>
               <div class="text-body2 q-mt-sm">
-                <span class="text-grey">Cost:</span> ${{ product?.size?.[0]?.cost }}
+                <span class="text-grey">Cost:</span>
+                {{
+                  !product?.size?.[0]?.cost || product?.size?.[0]?.cost === '0.00'
+                    ? 'Negotiable'
+                    : `$${product?.size?.[0]?.cost}`
+                }}
               </div>
             </q-card-section>
 
@@ -118,7 +123,7 @@ const products = computed(() => {
 
 const getProducts = () => {
   productStore
-    .GetProducts(`offset=${productStore.Products.length}&include_image=1`) // Fetch products with offset and include images
+    .GetProducts(`offset=${productStore.Products.length}&include_image=1&all=true`) // Fetch products with offset and include images
     .then((response) => {
       if (response.status === 'success') {
         // Check if API call was successful
