@@ -93,14 +93,17 @@
                   <q-btn
                     flat
                     round
-                    color="primary"
+                    color="secondary"
                     icon="visibility"
                     @click="viewRFQDetails(props.row)"
                   >
                     <q-tooltip>View Details</q-tooltip>
                   </q-btn>
-                  <q-btn flat round color="positive" icon="chat" @click="respondToRFQ(props.row)">
-                    <q-tooltip>Respond</q-tooltip>
+                  <q-btn flat round color="primary" icon="edit">
+                    <q-tooltip>Edit</q-tooltip>
+                  </q-btn>
+                  <q-btn flat round color="negative" icon="delete">
+                    <q-tooltip>Edit</q-tooltip>
                   </q-btn>
                 </q-btn-group>
               </q-td>
@@ -262,13 +265,6 @@ const applyFilters = () => {
 const viewRFQDetails = (rfq) => {
   rfqStore.RFQDetails = rfq
   rfqStore.ShowRFQDetailsDialog = true
-}
-
-const respondToRFQ = (rfq) => {
-  $q.notify({
-    type: 'info',
-    message: `Opening response form for RFQ ${rfq.id}`,
-  })
 }
 </script>
 
