@@ -157,11 +157,12 @@
             <div v-else class="q-mt-sm">
               <label class="text-bold">Product Certificate:</label>
               <div class="flex justify-start">
-                <div v-for="(cert, index) in productDetails.product_certificates" :key="cert">
-                  <div :id="`pdf-product-certificates${index}`" class="q-mr-xs"></div>
+                <div v-for="cert in productDetails.product_certificates" :key="cert">
+                  <div>{{ cert.description }}</div>
+                  <!-- <div :id="`pdf-product-certificates${index}`" class="q-mr-xs"></div>
                   <q-tooltip anchor="top middle" self="top middle" class="bg-primary"
                     >Click Me</q-tooltip
-                  >
+                  > -->
                 </div>
               </div>
             </div>
@@ -169,11 +170,13 @@
             <div v-else class="q-mt-sm">
               <label class="text-bold">Facility/Process Certificate:</label>
               <div class="flex justify-start">
-                <div v-for="(cert, index) in productDetails.facility_certificates" :key="cert">
-                  <div :id="`pdf-facility-certificates${index}`" class="q-mr-xs"></div>
+                <div v-for="cert in productDetails.facility_certificates" :key="cert">
+                  <div>{{ cert.description }}</div>
+
+                  <!-- <div :id="`pdf-facility-certificates${index}`" class="q-mr-xs"></div>
                   <q-tooltip anchor="top middle" self="top middle" class="bg-primary"
                     >Click Me</q-tooltip
-                  >
+                  > -->
                 </div>
               </div>
             </div>
