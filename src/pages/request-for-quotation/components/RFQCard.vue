@@ -113,7 +113,14 @@
               no-caps
               @click="viewRFQDetails(rfq)"
             />
-            <q-btn color="primary" icon="chat" label="Respond" no-caps @click="respondToRFQ(rfq)" />
+            <q-btn
+              v-if="authStore.UserInformation.role === 0"
+              color="primary"
+              icon="chat"
+              label="Respond"
+              no-caps
+              @click="respondToRFQ(rfq)"
+            />
           </q-card-actions>
         </q-card>
       </div>
@@ -140,8 +147,10 @@
 import { ref, onMounted } from 'vue'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
+import { useAuthStore } from 'src/stores/auth'
 
 const rfqStore = useRFQStore()
+const authStore = useAuthStore()
 
 const viewMoreLoadingState = ref(false)
 const getRFQs = () => {
