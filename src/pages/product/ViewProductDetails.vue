@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-6">
             <div class="bg-grey-5 q-px-xs q-py-md">
-              <q-skeleton v-if="!productDetails.images.length" height="300px"></q-skeleton>
+              <q-skeleton v-if="productDetailsLoadingState" height="300px"></q-skeleton>
               <q-carousel
                 v-if="productDetails.images.length"
                 v-model="slide"
@@ -30,18 +30,23 @@
                   />
                 </q-carousel-slide>
               </q-carousel>
+              <q-img
+                v-if="!productDetails.images.length && !productDetailsLoadingState"
+                src="../../assets/img-placeholder.jpg"
+                alt="Product Image"
+              />
             </div>
           </div>
           <div class="col-6 q-px-md">
             <q-skeleton
-              v-if="!productDetails.name"
+              v-if="productDetailsLoadingState"
               square
               height="64px"
               class="q-mb-sm"
             ></q-skeleton>
             <h6 v-else class="q-ma-none">{{ productDetails.name }}</h6>
             <q-skeleton
-              v-if="!productDetails.category"
+              v-if="productDetailsLoadingState"
               square
               height="21px"
               class="q-mb-sm"
@@ -285,7 +290,7 @@ onMounted(() => {
         landed_costs.value = response.data.size[0].landed_cost
         size_option.value = response.data.size[0].size
         sizes.value = response.data.size.map((size) => size.size)
-        slide.value = response.data.images[0].name
+        response.data.images.length && (slide.value = response.data.images[0].name)
         changeProductCost()
 
         // Generate pdf renderer
