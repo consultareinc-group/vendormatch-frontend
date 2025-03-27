@@ -22,13 +22,22 @@
             class="q-mb-md"
           />
 
-          <q-input
+          <!-- <q-input
             v-model="productForm.description"
             dense
             type="textarea"
             label="Description"
             :rules="[(val) => !!val || 'Description is required']"
             lazy-rules
+            autogrow
+            class="q-mb-md"
+          /> -->
+
+          <q-input
+            v-model="productForm.description"
+            dense
+            type="textarea"
+            label="Description"
             autogrow
             class="q-mb-md"
           />
@@ -851,52 +860,52 @@ const updateProduct = () => {
   productQForm.value.validate().then((success) => {
     if (success) {
       // Check if at least one image is uploaded
-      if (!productForm.value.images.length) {
-        $q.notify({
-          message: `<p class='q-mb-none'>Product image is required.</p>`,
-          color: `red-2`,
-          position: 'top',
-          textColor: `red`,
-          html: true,
-        })
-        return // Exit if no image is uploaded
-      }
+      // if (!productForm.value.images.length) {
+      //   $q.notify({
+      //     message: `<p class='q-mb-none'>Product image is required.</p>`,
+      //     color: `red-2`,
+      //     position: 'top',
+      //     textColor: `red`,
+      //     html: true,
+      //   })
+      //   return // Exit if no image is uploaded
+      // }
 
       // Initialize error flag for certificate validation
-      let error = false
+      // let error = false
 
       // Validate product certificates
-      productForm.value.product_certificates.forEach((cert) => {
-        if (!cert.file.length && productForm.value.status === 'Publish') {
-          $q.notify({
-            message: `<p class='q-mb-none'>Product certificate is required.</p>`,
-            color: `red-2`,
-            position: 'top',
-            textColor: `red`,
-            html: true,
-          })
-          error = true // Set error flag to true if validation fails
-        }
-      })
+      // productForm.value.product_certificates.forEach((cert) => {
+      //   if (!cert.file.length && productForm.value.status === 'Publish') {
+      //     $q.notify({
+      //       message: `<p class='q-mb-none'>Product certificate is required.</p>`,
+      //       color: `red-2`,
+      //       position: 'top',
+      //       textColor: `red`,
+      //       html: true,
+      //     })
+      //     error = true // Set error flag to true if validation fails
+      //   }
+      // })
 
       // Validate facility certificates
-      productForm.value.facility_certificates.forEach((cert) => {
-        if (!cert.file.length && productForm.value.status === 'Publish') {
-          $q.notify({
-            message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
-            color: `red-2`,
-            position: 'top',
-            textColor: `red`,
-            html: true,
-          })
-          error = true // Set error flag to true if validation fails
-        }
-      })
+      // productForm.value.facility_certificates.forEach((cert) => {
+      //   if (!cert.file.length && productForm.value.status === 'Publish') {
+      //     $q.notify({
+      //       message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
+      //       color: `red-2`,
+      //       position: 'top',
+      //       textColor: `red`,
+      //       html: true,
+      //     })
+      //     error = true // Set error flag to true if validation fails
+      //   }
+      // })
 
       // Exit if any certificate validation failed
-      if (error) {
-        return
-      }
+      // if (error) {
+      //   return
+      // }
 
       btnLoadingState.value = true // Set loading state to true
 

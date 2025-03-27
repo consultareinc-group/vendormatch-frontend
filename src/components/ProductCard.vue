@@ -30,10 +30,13 @@
         >
           <q-card class="product-card">
             <q-img
+              v-if="product?.image?.length"
               :src="`data:image/jpeg;base64,${product?.image?.[0]?.binary}`"
               :ratio="1"
               alt="Product Image"
             />
+
+            <q-img v-else src="../assets/img-placeholder.jpg" alt="Product Image" />
 
             <q-card-section>
               <div class="text-weight-medium ellipsis">
