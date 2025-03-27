@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-6">
             <div class="bg-grey-5 q-px-xs q-py-md">
-              <q-skeleton v-if="!productDetails.images.length" height="300px"></q-skeleton>
+              <q-skeleton v-if="productDetailsLoadingState" height="300px"></q-skeleton>
               <q-carousel
                 v-if="productDetails.images.length"
                 v-model="slide"
@@ -26,6 +26,11 @@
                   <q-img :src="`data:image/jpeg;base64,${image.binary}`" alt="Product Image" />
                 </q-carousel-slide>
               </q-carousel>
+              <q-img
+                v-if="!productDetails.images.length && !productDetailsLoadingState"
+                src="../assets/img-placeholder.jpg"
+                alt="Product Image"
+              />
             </div>
             <div v-if="authStore.UserInformation.role === 1 || !triggerStore.HideChatSection">
               <div class="text-bold q-mt-md">
@@ -81,14 +86,14 @@
           </div>
           <div class="col-6 q-px-md">
             <q-skeleton
-              v-if="!productDetails.name"
+              v-if="productDetailsLoadingState"
               square
               height="64px"
               class="q-mb-sm"
             ></q-skeleton>
             <h6 v-else class="q-ma-none">{{ productDetails.name }}</h6>
             <q-skeleton
-              v-if="!productDetails.category"
+              v-if="productDetailsLoadingState"
               square
               height="21px"
               class="q-mb-sm"
@@ -136,7 +141,12 @@
               </q-select>
             </div>
             <hr class="q-mt-md" />
-            <q-skeleton v-if="!size.size" square height="21px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="21px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else class="flex justify-start items-center q-mt-md">
               <div class="text-bold q-mr-md">Size:</div>
               <div>
@@ -150,7 +160,12 @@
                 />
               </div>
             </div>
-            <q-skeleton v-if="!size.upc" square height="21px" class="q-mb-sm"></q-skeleton>
+            <q-skeleton
+              v-if="productDetailsLoadingState"
+              square
+              height="21px"
+              class="q-mb-sm"
+            ></q-skeleton>
             <div v-else class="flex justify-start items-center q-mt-md">
               <div class="text-bold q-mr-md">UPC:</div>
               <div>
@@ -159,7 +174,7 @@
             </div>
             <hr class="q-mt-md" />
             <q-skeleton
-              v-if="!productDetails.description"
+              v-if="productDetailsLoadingState"
               square
               height="98px"
               class="q-mb-sm"
@@ -171,7 +186,7 @@
               </div>
             </div>
             <q-skeleton
-              v-if="!productDetails.product_certificates"
+              v-if="productDetailsLoadingState"
               height="85px"
               class="q-my-sm"
             ></q-skeleton>
@@ -187,7 +202,7 @@
                 </div>
               </div>
             </div>
-            <q-skeleton v-if="!productDetails.facility_certificates" height="85px"></q-skeleton>
+            <q-skeleton v-if="productDetailsLoadingState" height="85px"></q-skeleton>
             <div v-else class="q-mt-sm">
               <label class="text-bold">Facility/Process Certificate:</label>
               <div class="flex justify-start">
@@ -304,7 +319,9 @@ const changeProductCost = () => {
   })
 }
 
+const productDetailsLoadingState = ref(false)
 onMounted(() => {
+  productDetailsLoadingState.value = true
   productDetails.value = { images: [] }
   messageLoadingState.value = true
   productStore
@@ -317,7 +334,7 @@ onMounted(() => {
         landed_costs.value = response.data.size[0].landed_cost
         size_option.value = response.data.size[0].size
         sizes.value = response.data.size.map((size) => size.size)
-        slide.value = response.data.images[0].name
+        response.data.images.length && (slide.value = response.data.images[0].name)
         changeProductCost()
 
         // Generate pdf renderer
@@ -358,6 +375,9 @@ onMounted(() => {
         textColor: `red`, // Set text color
         html: true, // Enable HTML content
       })
+    })
+    .finally(() => {
+      productDetailsLoadingState.value = false
     })
 })
 

@@ -22,13 +22,22 @@
             class="q-mb-md"
           />
 
-          <q-input
+          <!-- <q-input
             v-model="productForm.description"
             dense
             type="textarea"
             label="Description"
             :rules="[(val) => !!val || 'Description is required']"
             lazy-rules
+            autogrow
+            class="q-mb-md"
+          /> -->
+
+          <q-input
+            v-model="productForm.description"
+            dense
+            type="textarea"
+            label="Description"
             autogrow
             class="q-mb-md"
           />
@@ -88,7 +97,7 @@
                 class="q-mb-md"
               /> -->
               <q-toggle v-model="size.is_cost_negotiable" label="Negotiable" class="q-mb-md" />
-              <q-input
+              <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.cost"
@@ -106,9 +115,20 @@
                 "
                 lazy-rules
                 class="q-mb-md"
-              />
+              /> -->
 
               <q-input
+                :disable="size.is_cost_negotiable"
+                outlined
+                v-model.number="size.cost"
+                dense
+                type="number"
+                label="Cost"
+                prefix="$"
+                class="q-mb-md"
+              />
+
+              <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.srp"
@@ -125,6 +145,16 @@
                     : []
                 "
                 lazy-rules
+                class="q-mb-md"
+              /> -->
+              <q-input
+                :disable="size.is_cost_negotiable"
+                outlined
+                v-model.number="size.srp"
+                dense
+                type="number"
+                label="SRP"
+                prefix="$"
                 class="q-mb-md"
               />
 
@@ -161,7 +191,7 @@
                     label="Destination/Country"
                     class="q-mb-md"
                   />
-                  <q-input
+                  <!-- <q-input
                     outlined
                     :disable="size.is_cost_negotiable"
                     v-model.number="cost.amount"
@@ -178,6 +208,15 @@
                         : []
                     "
                     lazy-rules
+                  /> -->
+                  <q-input
+                    outlined
+                    :disable="size.is_cost_negotiable"
+                    v-model.number="cost.amount"
+                    dense
+                    type="number"
+                    label="Landed Cost"
+                    prefix="$"
                   />
                 </div>
 
@@ -554,7 +593,7 @@ const productForm = ref({
 })
 
 // Array of predefined product categories
-const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic']
+const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic', 'Dietary Supplements']
 
 // Array of predefined product statuses
 const statuses = ['Draft', 'Publish']
@@ -851,52 +890,52 @@ const updateProduct = () => {
   productQForm.value.validate().then((success) => {
     if (success) {
       // Check if at least one image is uploaded
-      if (!productForm.value.images.length) {
-        $q.notify({
-          message: `<p class='q-mb-none'>Product image is required.</p>`,
-          color: `red-2`,
-          position: 'top',
-          textColor: `red`,
-          html: true,
-        })
-        return // Exit if no image is uploaded
-      }
+      // if (!productForm.value.images.length) {
+      //   $q.notify({
+      //     message: `<p class='q-mb-none'>Product image is required.</p>`,
+      //     color: `red-2`,
+      //     position: 'top',
+      //     textColor: `red`,
+      //     html: true,
+      //   })
+      //   return // Exit if no image is uploaded
+      // }
 
       // Initialize error flag for certificate validation
-      let error = false
+      // let error = false
 
       // Validate product certificates
-      productForm.value.product_certificates.forEach((cert) => {
-        if (!cert.file.length && productForm.value.status === 'Publish') {
-          $q.notify({
-            message: `<p class='q-mb-none'>Product certificate is required.</p>`,
-            color: `red-2`,
-            position: 'top',
-            textColor: `red`,
-            html: true,
-          })
-          error = true // Set error flag to true if validation fails
-        }
-      })
+      // productForm.value.product_certificates.forEach((cert) => {
+      //   if (!cert.file.length && productForm.value.status === 'Publish') {
+      //     $q.notify({
+      //       message: `<p class='q-mb-none'>Product certificate is required.</p>`,
+      //       color: `red-2`,
+      //       position: 'top',
+      //       textColor: `red`,
+      //       html: true,
+      //     })
+      //     error = true // Set error flag to true if validation fails
+      //   }
+      // })
 
       // Validate facility certificates
-      productForm.value.facility_certificates.forEach((cert) => {
-        if (!cert.file.length && productForm.value.status === 'Publish') {
-          $q.notify({
-            message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
-            color: `red-2`,
-            position: 'top',
-            textColor: `red`,
-            html: true,
-          })
-          error = true // Set error flag to true if validation fails
-        }
-      })
+      // productForm.value.facility_certificates.forEach((cert) => {
+      //   if (!cert.file.length && productForm.value.status === 'Publish') {
+      //     $q.notify({
+      //       message: `<p class='q-mb-none'>Facility certificate is required.</p>`,
+      //       color: `red-2`,
+      //       position: 'top',
+      //       textColor: `red`,
+      //       html: true,
+      //     })
+      //     error = true // Set error flag to true if validation fails
+      //   }
+      // })
 
       // Exit if any certificate validation failed
-      if (error) {
-        return
-      }
+      // if (error) {
+      //   return
+      // }
 
       btnLoadingState.value = true // Set loading state to true
 
