@@ -68,7 +68,7 @@
                   </div>
                 </div>
               </div>
-              <div class="row q-mt-md">
+              <div v-if="size.srp && size.srp !== '0.00'" class="row q-mt-md">
                 <div class="col-6">
                   <div class="flex justify-between items-center">
                     <div class="text-bold">SRP:</div>
