@@ -189,7 +189,11 @@
             <div v-else class="q-mt-md">
               <div class="text-bold">Description:</div>
               <div class="scroll">
-                <pre>{{ productDetails.description }}</pre>
+                <pre>{{
+                  productDetails.description && productDetails.description !== 'null'
+                    ? productDetails.description
+                    : ''
+                }}</pre>
               </div>
             </div>
             <q-skeleton
