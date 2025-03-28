@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="triggerStore.AddProductDialog">
-    <q-card style="min-width: 500px">
+    <q-card style="min-width: 900px">
       <q-card-section>
         <div class="text-h6">Add Product</div>
       </q-card-section>
@@ -500,6 +500,19 @@
             />
           </q-card>
 
+          <q-file
+            v-model="productForm.attachments"
+            label="Attachments (PDF file)"
+            multiple
+            accept=".pdf, .png, .jpg, .jpeg"
+            dense
+            class="q-mb-md"
+          >
+            <template v-slot:append>
+              <q-icon name="attach_file" />
+            </template>
+          </q-file>
+
           <q-select
             v-model="productForm.status"
             :options="statuses"
@@ -576,6 +589,7 @@ const productForm = ref({
       expiry_date: '', // Expiry date of the certificate
     },
   ], // Array to store facility-related certificates
+  attachments: [],
 })
 
 // Array of predefined product categories
@@ -798,6 +812,16 @@ const saveProduct = () => {
       formData.append('description', productForm.value.description)
       formData.append('category', productForm.value.category.join(', '))
       formData.append('status', productForm.value.status)
+      formData.append('attachments', productForm.value.status)
+
+      // Append product attachments to FormData
+      productForm.value.attachments.forEach((file) => {
+        formData.append('attachments[]', file)
+      })
+
+      if (!productForm.value.attachments.length) {
+        formData.append('attachments[]', null)
+      }
 
       // Append product images to FormData
       productForm.value.images.forEach((file) => {
@@ -908,6 +932,7 @@ const saveProduct = () => {
                   expiry_date: '',
                 },
               ],
+              attachments: [],
             }
           }
         })
