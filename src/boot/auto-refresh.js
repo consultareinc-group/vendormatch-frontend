@@ -1,19 +1,17 @@
 // Export an asynchronous function as a Quasar boot file
 export default async () => {
-  let shouldReload = false; // Flag to track if the page should reload
+  let reloadTime = 0; // Variable to store the timeout number
+  setInterval(() => {
+    reloadTime++
+  }, 1000); // Check every second
 
   // Function to handle visibility changes (when user switches tabs)
   const handleVisibilityChange = () => {
-    // If the tab is now visible and an error has occurred, reload the page
-    if (document.visibilityState === "visible" && shouldReload) {
+    // If the tab is now visible and reloadTime , reload the page
+    if (document.visibilityState === "visible" && reloadTime >= 300) {
       location.reload(); // Refresh the page
     }
   };
-
-  // Listen for any JavaScript runtime errors
-  window.addEventListener("error", () => {
-    shouldReload = true; // Set flag to true when an error occurs
-  });
 
   // Listen for tab visibility changes
   document.addEventListener("visibilitychange", handleVisibilityChange);
