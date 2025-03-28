@@ -84,7 +84,10 @@
                       v-for="size in props.row.size"
                       :key="size"
                     >
-                      <div>{{ size.size }} - {{ size.upc }}</div>
+                      <div>
+                        {{ size.size && size.size !== 'null' ? size.size : '' }} -
+                        {{ size.upc && size.upc !== 'null' ? size.upc : '' }}
+                      </div>
                     </div>
                   </q-td>
                 </template>
