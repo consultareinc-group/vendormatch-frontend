@@ -27,6 +27,7 @@
                     class="full-width"
                     :src="`data:image/jpeg;base64,${image.binary}`"
                     alt="Product Image"
+                    fit="contain"
                   />
                 </q-carousel-slide>
               </q-carousel>
@@ -51,7 +52,14 @@
               height="21px"
               class="q-mb-sm"
             ></q-skeleton>
-            <div class="">{{ productDetails.category }}</div>
+            <div class="flex justify-between items-center">
+              <div class="">{{ productDetails.category }}</div>
+              <div class="">
+                {{ getInitials(productDetails.enterprise_name) }}-{{
+                  padToElevenDigits(productDetails.id)
+                }}
+              </div>
+            </div>
             <q-skeleton
               v-if="productDetailsLoadingState"
               square
@@ -280,6 +288,22 @@ const changeProductCost = () => {
     }
   })
 }
+
+const getInitials = (sentence) => {
+  if (sentence) {
+    return sentence
+      .split(/\s+/) // Split by spaces
+      .map((word) => word.charAt(0).toUpperCase()) // Get first letter and capitalize
+      .join('') // Join them together
+  }
+}
+
+function padToElevenDigits(number) {
+  if (number) {
+    return number.toString().padStart(11, '0')
+  }
+}
+
 const productDetailsLoadingState = ref(false)
 onMounted(() => {
   productDetailsLoadingState.value = true
