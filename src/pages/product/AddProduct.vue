@@ -1,22 +1,43 @@
 <template>
   <q-dialog v-model="triggerStore.AddProductDialog">
-    <q-card style="min-width: 900px">
-      <q-card-section>
+    <q-card style="min-width: 1300px">
+      <q-card-section class="flex justify-between">
         <div class="text-h6">Add Product</div>
+        <div><q-btn v-close-popup icon="close" round size="sm"></q-btn></div>
       </q-card-section>
 
       <q-card-section>
         <q-form greedy ref="productQForm">
-          <q-input
-            v-model="productForm.name"
-            dense
-            label="Product Name"
-            :rules="[(val) => !!val || 'Product Name is required']"
-            lazy-rules
-            class="q-mb-md"
-          />
+          <div class="row q-gutter-x-md">
+            <div class="col-12 col-md">
+              <div class="q-pa-sm bg-grey-4 q-my-lg rounded-borders">
+                <h6 class="q-ma-none font-sm">Basic Information</h6>
+              </div>
+              <q-input
+                v-model="productForm.name"
+                outlined
+                dense
+                label="Product Name"
+                :rules="[(val) => !!val || 'Product Name is required']"
+                lazy-rules
+                class="q-mb-md"
+              />
 
-          <!-- <q-input
+              <q-uploader
+                ref="imageUploadRef"
+                @vue:updated="productForm.images = imageUploadRef.files"
+                hide-upload-btn
+                multiple
+                accept=".jpg,.png,.jpeg"
+                max-file-size="2097152"
+                @rejected="onRejected"
+                label="Upload image file"
+                color="white"
+                text-color="grey"
+                class="q-mb-md full-width"
+              />
+
+              <!-- <q-input
             v-model="productForm.description"
             dense
             type="textarea"
@@ -26,39 +47,71 @@
             class="q-mb-md"
           /> -->
 
-          <q-input
-            v-model="productForm.description"
-            dense
-            type="textarea"
-            label="Description"
-            class="q-mb-md"
-          />
+              <q-input
+                v-model="productForm.description"
+                outlined
+                dense
+                type="textarea"
+                label="Description"
+                class="q-mb-md"
+              />
 
-          <q-select
-            v-model="productForm.category"
-            dense
-            :options="categories"
-            label="Category"
-            :rules="[(val) => (Array.isArray(val) && val.length > 0) || 'Category is required']"
-            lazy-rules
-            class="q-mb-md"
-            multiple
-          />
+              <q-select
+                v-model="productForm.category"
+                outlined
+                dense
+                :options="categories"
+                label="Category"
+                :rules="[(val) => (Array.isArray(val) && val.length > 0) || 'Category is required']"
+                lazy-rules
+                class="q-mb-md"
+                multiple
+              />
 
-          <div v-for="(size, size_index) in productForm.size" :key="size_index">
-            <div class="flex justify-between q-mb-sm">
-              <label>Product Size</label>
-              <q-icon
-                v-if="size_index !== 0"
-                name="close"
-                size="sm"
-                color="red"
-                class="cursor-pointer"
-                @click="removeProductSize(size_index)"
+              <q-file
+                v-model="productForm.attachments"
+                outlined
+                label="Attachments (PDF file)"
+                multiple
+                accept=".pdf, .png, .jpg, .jpeg"
+                dense
+                class="q-mb-md"
+              >
+                <template v-slot:append>
+                  <q-icon name="attach_file" />
+                </template>
+              </q-file>
+
+              <q-select
+                v-model="productForm.status"
+                outlined
+                :options="statuses"
+                label="Status"
+                :rules="[(val) => !!val || 'Status is required']"
+                lazy-rules
+                class="q-mb-md"
+                dense
               />
             </div>
-            <q-card class="q-pa-md q-mb-md">
-              <!-- <q-input
+            <div class="col-12 col-md">
+              <div class="q-pa-sm bg-grey-4 q-my-lg rounded-borders">
+                <h6 class="q-ma-none font-sm">Product Size / Parameters</h6>
+              </div>
+
+              <div v-for="(size, size_index) in productForm.size" :key="size_index">
+                <div class="flex justify-end">
+                  <!-- <label>Product Size</label> -->
+                  <q-icon
+                    v-if="size_index !== 0"
+                    name="close"
+                    size="sm"
+                    color="red"
+                    class="cursor-pointer q-mb-sm"
+                    @click="removeProductSize(size_index)"
+                  />
+                </div>
+                <q-card class="q-pa-md q-mb-md">
+                  <!-- <q-input
                 outlined
                 v-model="size.size"
                 dense
@@ -69,8 +122,14 @@
                 lazy-rules
                 class="q-mb-md"
               /> -->
-              <q-input outlined v-model="size.size" dense label="Size" class="q-mb-md" />
-              <!-- <q-input
+                  <q-input
+                    outlined
+                    v-model="size.size"
+                    dense
+                    label="Size / Parameters"
+                    class="q-mb-md"
+                  />
+                  <!-- <q-input
                 outlined
                 v-model="size.upc"
                 dense
@@ -81,16 +140,16 @@
                 lazy-rules
                 class="q-mb-md"
               /> -->
-              <q-input outlined v-model="size.upc" dense label="UPC" class="q-mb-md" />
+                  <q-input outlined v-model="size.upc" dense label="UPC" class="q-mb-md" />
 
-              <!-- <q-toggle
+                  <!-- <q-toggle
                 @click="checkProductStatus()"
                 v-model="size.is_cost_negotiable"
                 label="Negotiable"
                 class="q-mb-md"
               /> -->
-              <q-toggle v-model="size.is_cost_negotiable" label="Negotiable" class="q-mb-md" />
-              <!-- <q-input
+                  <q-toggle v-model="size.is_cost_negotiable" label="Negotiable" class="q-mb-md" />
+                  <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 v-model.number="size.cost"
                 outlined
@@ -109,18 +168,18 @@
                 lazy-rules
                 class="q-mb-md"
               /> -->
-              <q-input
-                :disable="size.is_cost_negotiable"
-                v-model.number="size.cost"
-                outlined
-                dense
-                type="number"
-                label="Cost"
-                prefix="$"
-                class="q-mb-md"
-              />
+                  <q-input
+                    :disable="size.is_cost_negotiable"
+                    v-model.number="size.cost"
+                    outlined
+                    dense
+                    type="number"
+                    label="Cost"
+                    prefix="$"
+                    class="q-mb-md"
+                  />
 
-              <!-- <q-input
+                  <!-- <q-input
                 :disable="size.is_cost_negotiable"
                 outlined
                 v-model.number="size.srp"
@@ -139,31 +198,31 @@
                 lazy-rules
                 class="q-mb-md"
               /> -->
-              <q-input
-                :disable="size.is_cost_negotiable"
-                outlined
-                v-model.number="size.srp"
-                dense
-                type="number"
-                label="SRP"
-                prefix="$"
-                class="q-mb-md"
-              />
+                  <q-input
+                    :disable="size.is_cost_negotiable"
+                    outlined
+                    v-model.number="size.srp"
+                    dense
+                    type="number"
+                    label="SRP"
+                    prefix="$"
+                    class="q-mb-md"
+                  />
 
-              <div class="q-px-md q-mb-md">
-                <div class="q-mb-sm"><label class="text-grey-7">Landed Cost</label></div>
-                <div v-for="(cost, cost_index) in size.landed_cost" :key="cost_index">
-                  <div class="flex justify-end q-mb-md">
-                    <q-icon
-                      v-if="cost_index !== 0"
-                      name="close"
-                      size="sm"
-                      color="red"
-                      class="cursor-pointer"
-                      @click="removeLandedCost(size_index, cost_index)"
-                    />
-                  </div>
-                  <!-- <q-input
+                  <div class="q-px-md q-mb-md">
+                    <div class="q-mb-sm"><label class="text-grey-7">Landed Cost</label></div>
+                    <div v-for="(cost, cost_index) in size.landed_cost" :key="cost_index">
+                      <div class="flex justify-end q-mb-md">
+                        <q-icon
+                          v-if="cost_index !== 0"
+                          name="close"
+                          size="sm"
+                          color="red"
+                          class="cursor-pointer"
+                          @click="removeLandedCost(size_index, cost_index)"
+                        />
+                      </div>
+                      <!-- <q-input
                     outlined
                     v-model.number="cost.country"
                     dense
@@ -176,14 +235,14 @@
                     lazy-rules
                     class="q-mb-md"
                   /> -->
-                  <q-input
-                    outlined
-                    v-model.number="cost.country"
-                    dense
-                    label="Destination/Country"
-                    class="q-mb-md"
-                  />
-                  <!-- <q-input
+                      <q-input
+                        outlined
+                        v-model.number="cost.country"
+                        dense
+                        label="Destination/Country"
+                        class="q-mb-md"
+                      />
+                      <!-- <q-input
                     outlined
                     :disable="size.is_cost_negotiable"
                     v-model.number="cost.amount"
@@ -201,326 +260,305 @@
                     "
                     lazy-rules
                   /> -->
-                  <q-input
-                    outlined
-                    :disable="size.is_cost_negotiable"
-                    v-model.number="cost.amount"
-                    dense
-                    type="number"
-                    label="Landed Cost"
-                    prefix="$"
-                  />
-                </div>
+                      <q-input
+                        outlined
+                        :disable="size.is_cost_negotiable"
+                        v-model.number="cost.amount"
+                        dense
+                        type="number"
+                        label="Landed Cost"
+                        prefix="$"
+                      />
+                    </div>
 
+                    <q-btn
+                      icon="add"
+                      dense
+                      label="Add Destination/Country"
+                      class="q-px-sm q-mt-md"
+                      no-caps
+                      @click="addLandedCost(size_index)"
+                    />
+                  </div>
+                </q-card>
+              </div>
+
+              <q-btn
+                icon="add"
+                dense
+                label="Add Product Size"
+                class="q-px-sm"
+                no-caps
+                @click="addProductSize()"
+              />
+            </div>
+            <div class="col-12 col-md">
+              <div class="q-pa-sm bg-grey-4 q-my-lg rounded-borders">
+                <h6 class="q-ma-none font-sm">Certifications</h6>
+              </div>
+
+              <q-card class="q-pa-md q-mb-md">
+                <div v-for="(certificate, index) in productForm.product_certificates" :key="index">
+                  <div class="flex justify-between q-mb-md">
+                    <label>Product Certificate</label>
+                    <q-icon
+                      v-if="index !== 0"
+                      name="close"
+                      size="sm"
+                      color="red"
+                      class="cursor-pointer"
+                      @click="removeCertificate(index, 'product')"
+                    />
+                  </div>
+                  <q-uploader
+                    :ref="(el) => (refs[`productCertificateUploadRef${index}`] = el)"
+                    @vue:updated="() => updateCertificateFile(index, 'product')"
+                    max-file-size="2097152"
+                    @rejected="onRejected"
+                    hide-upload-btn
+                    accept=".pdf"
+                    label="Upload pdf file"
+                    color="white"
+                    text-color="grey"
+                    class="q-mb-md full-width"
+                  />
+                  <div v-if="certificate.file.length">
+                    <q-input
+                      outlined
+                      v-model="certificate.description"
+                      label="Document Name"
+                      :rules="
+                        productForm.status === 'Publish'
+                          ? [(val) => !!val || 'Document name is required']
+                          : []
+                      "
+                      lazy-rules
+                      dense
+                      class="q-mb-md"
+                    />
+                    <q-input
+                      outlined
+                      v-model="certificate.issue_date"
+                      lazy-rules
+                      label="Issuance Date"
+                      dense
+                      class="q-mt-sm q-mb-md"
+                      :rules="
+                        productForm.status === 'Publish'
+                          ? [
+                              (val) => !!val || 'Field is required', // Ensure the field is not empty
+                              (val) =>
+                                /^\d{4}-\d{2}-\d{2}$/.test(val) ||
+                                'Invalid date format (YYYY-MM-DD)', // Validate date format
+                            ]
+                          : []
+                      "
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy
+                            :ref="(el) => (refs[`productCertificateIssuanceDate${index}`] = el)"
+                            transition-show="scale"
+                            transition-hide="scale"
+                          >
+                            <q-date
+                              minimal
+                              v-model="certificate.issue_date"
+                              @update:model-value="
+                                () => refs[`productCertificateIssuanceDate${index}`]?.hide()
+                              "
+                              mask="YYYY-MM-DD"
+                            />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input>
+                    <q-input
+                      outlined
+                      v-model="certificate.expiry_date"
+                      lazy-rules
+                      label="Expiry Date"
+                      dense
+                      class="q-mt-sm q-mb-md"
+                      :rules="
+                        productForm.status === 'Publish'
+                          ? [
+                              (val) => !!val || 'Field is required', // Ensure the field is not empty
+                              (val) =>
+                                /^\d{4}-\d{2}-\d{2}$/.test(val) ||
+                                'Invalid date format (YYYY-MM-DD)', // Validate date format
+                            ]
+                          : []
+                      "
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy
+                            :ref="(el) => (refs[`productCertificateExpiryDate${index}`] = el)"
+                            transition-show="scale"
+                            transition-hide="scale"
+                          >
+                            <q-date
+                              minimal
+                              v-model="certificate.expiry_date"
+                              @update:model-value="
+                                () => refs[`productCertificateExpiryDate${index}`]?.hide()
+                              "
+                              mask="YYYY-MM-DD"
+                            />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input>
+                  </div>
+
+                  <div v-if="index !== productForm.product_certificates.length - 1" class="q-pb-sm">
+                    <hr class="q-mb-lg q-pb-xs bg-primary" />
+                  </div>
+                </div>
                 <q-btn
                   icon="add"
                   dense
-                  label="Add Destination/Country"
-                  class="q-px-sm q-mt-md"
+                  class="q-px-sm"
+                  label="Add Certificate"
                   no-caps
-                  @click="addLandedCost(size_index)"
+                  @click="addCertificate('product')"
                 />
-              </div>
-            </q-card>
+              </q-card>
+
+              <q-card class="q-pa-md q-mb-md">
+                <div v-for="(certificate, index) in productForm.facility_certificates" :key="index">
+                  <div class="flex justify-between q-mb-md">
+                    <label>Facility/Process Certificate</label>
+                    <q-icon
+                      v-if="index !== 0"
+                      name="close"
+                      size="sm"
+                      color="red"
+                      class="cursor-pointer"
+                      @click="removeCertificate(index, 'facility')"
+                    />
+                  </div>
+                  <q-uploader
+                    :ref="(el) => (refs[`facilityCertificateUploadRef${index}`] = el)"
+                    @vue:updated="() => updateCertificateFile(index, 'facility')"
+                    max-file-size="2097152"
+                    @rejected="onRejected"
+                    hide-upload-btn
+                    accept=".pdf"
+                    label="Upload pdf file"
+                    color="white"
+                    text-color="grey"
+                    class="q-mb-md full-width"
+                  />
+
+                  <div v-if="certificate.file.length">
+                    <q-input
+                      outlined
+                      v-model="certificate.description"
+                      label="Document Name"
+                      :rules="
+                        productForm.status === 'Publish'
+                          ? [(val) => !!val || 'Document name is required']
+                          : []
+                      "
+                      lazy-rules
+                      dense
+                      class="q-mb-md"
+                    />
+                    <q-input
+                      outlined
+                      v-model="certificate.issue_date"
+                      lazy-rules
+                      label="Issuance Date"
+                      dense
+                      class="q-mt-sm q-mb-md"
+                      :rules="
+                        productForm.status === 'Publish'
+                          ? [
+                              (val) => !!val || 'Field is required', // Ensure the field is not empty
+                              (val) =>
+                                /^\d{4}-\d{2}-\d{2}$/.test(val) ||
+                                'Invalid date format (YYYY-MM-DD)', // Validate date format
+                            ]
+                          : []
+                      "
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy
+                            :ref="(el) => (refs[`facilityCertificateIssuanceDate${index}`] = el)"
+                            transition-show="scale"
+                            transition-hide="scale"
+                          >
+                            <q-date
+                              minimal
+                              v-model="certificate.issue_date"
+                              @update:model-value="
+                                () => refs[`facilityCertificateIssuanceDate${index}`]?.hide()
+                              "
+                              mask="YYYY-MM-DD"
+                            />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input>
+                    <q-input
+                      outlined
+                      v-model="certificate.expiry_date"
+                      lazy-rules
+                      label="Expiry Date"
+                      dense
+                      class="q-mt-sm q-mb-md"
+                      :rules="
+                        productForm.status === 'Publish'
+                          ? [
+                              (val) => !!val || 'Field is required', // Ensure the field is not empty
+                              (val) =>
+                                /^\d{4}-\d{2}-\d{2}$/.test(val) ||
+                                'Invalid date format (YYYY-MM-DD)', // Validate date format
+                            ]
+                          : []
+                      "
+                    >
+                      <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                          <q-popup-proxy
+                            :ref="(el) => (refs[`facilityCertificateExpiryDate${index}`] = el)"
+                            transition-show="scale"
+                            transition-hide="scale"
+                          >
+                            <q-date
+                              minimal
+                              v-model="certificate.expiry_date"
+                              @update:model-value="
+                                () => refs[`facilityCertificateExpiryDate${index}`]?.hide()
+                              "
+                              mask="YYYY-MM-DD"
+                            />
+                          </q-popup-proxy>
+                        </q-icon>
+                      </template>
+                    </q-input>
+                  </div>
+                  <div
+                    v-if="index !== productForm.facility_certificates.length - 1"
+                    class="q-pb-sm"
+                  >
+                    <hr class="q-mb-lg q-pb-xs bg-primary" />
+                  </div>
+                </div>
+                <q-btn
+                  icon="add"
+                  dense
+                  class="q-px-sm"
+                  label="Add Certificate"
+                  no-caps
+                  @click="addCertificate('facility')"
+                />
+              </q-card>
+            </div>
           </div>
-
-          <q-btn
-            icon="add"
-            dense
-            label="Add Product Size"
-            class="q-px-sm"
-            no-caps
-            @click="addProductSize()"
-          />
-
-          <h6 class="q-mt-lg text-grey-14">Product Image</h6>
-          <q-uploader
-            ref="imageUploadRef"
-            @vue:updated="productForm.images = imageUploadRef.files"
-            hide-upload-btn
-            multiple
-            accept=".jpg,.png,.jpeg"
-            max-file-size="2097152"
-            @rejected="onRejected"
-            label="Upload image file"
-            color="secondary"
-            class="q-mb-md full-width"
-          />
-
-          <h6 class="text-grey-14">Certifications</h6>
-          <q-card class="q-pa-md q-mb-md">
-            <div v-for="(certificate, index) in productForm.product_certificates" :key="index">
-              <div class="flex justify-between q-mb-md">
-                <label>Product Certificate</label>
-                <q-icon
-                  v-if="index !== 0"
-                  name="close"
-                  size="sm"
-                  color="red"
-                  class="cursor-pointer"
-                  @click="removeCertificate(index, 'product')"
-                />
-              </div>
-              <q-uploader
-                :ref="(el) => (refs[`productCertificateUploadRef${index}`] = el)"
-                @vue:updated="() => updateCertificateFile(index, 'product')"
-                max-file-size="2097152"
-                @rejected="onRejected"
-                hide-upload-btn
-                accept=".pdf"
-                label="Upload pdf file"
-                color="secondary"
-                class="q-mb-md full-width"
-              />
-              <div v-if="certificate.file.length">
-                <q-input
-                  outlined
-                  v-model="certificate.description"
-                  label="Document Name"
-                  :rules="
-                    productForm.status === 'Publish'
-                      ? [(val) => !!val || 'Document name is required']
-                      : []
-                  "
-                  lazy-rules
-                  dense
-                  class="q-mb-md"
-                />
-                <q-input
-                  outlined
-                  v-model="certificate.issue_date"
-                  lazy-rules
-                  label="Issuance Date"
-                  dense
-                  class="q-mt-sm q-mb-md"
-                  :rules="
-                    productForm.status === 'Publish'
-                      ? [
-                          (val) => !!val || 'Field is required', // Ensure the field is not empty
-                          (val) =>
-                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                        ]
-                      : []
-                  "
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        :ref="(el) => (refs[`productCertificateIssuanceDate${index}`] = el)"
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          minimal
-                          v-model="certificate.issue_date"
-                          @update:model-value="
-                            () => refs[`productCertificateIssuanceDate${index}`]?.hide()
-                          "
-                          mask="YYYY-MM-DD"
-                        />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-                <q-input
-                  outlined
-                  v-model="certificate.expiry_date"
-                  lazy-rules
-                  label="Expiry Date"
-                  dense
-                  class="q-mt-sm q-mb-md"
-                  :rules="
-                    productForm.status === 'Publish'
-                      ? [
-                          (val) => !!val || 'Field is required', // Ensure the field is not empty
-                          (val) =>
-                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                        ]
-                      : []
-                  "
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        :ref="(el) => (refs[`productCertificateExpiryDate${index}`] = el)"
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          minimal
-                          v-model="certificate.expiry_date"
-                          @update:model-value="
-                            () => refs[`productCertificateExpiryDate${index}`]?.hide()
-                          "
-                          mask="YYYY-MM-DD"
-                        />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-
-              <div v-if="index !== productForm.product_certificates.length - 1" class="q-pb-sm">
-                <hr class="q-mb-lg q-pb-xs bg-primary" />
-              </div>
-            </div>
-            <q-btn
-              icon="add"
-              dense
-              class="q-px-sm"
-              label="Add Certificate"
-              no-caps
-              @click="addCertificate('product')"
-            />
-          </q-card>
-
-          <q-card class="q-pa-md q-mb-md">
-            <div v-for="(certificate, index) in productForm.facility_certificates" :key="index">
-              <div class="flex justify-between q-mb-md">
-                <label>Facility/Process Certificate</label>
-                <q-icon
-                  v-if="index !== 0"
-                  name="close"
-                  size="sm"
-                  color="red"
-                  class="cursor-pointer"
-                  @click="removeCertificate(index, 'facility')"
-                />
-              </div>
-              <q-uploader
-                :ref="(el) => (refs[`facilityCertificateUploadRef${index}`] = el)"
-                @vue:updated="() => updateCertificateFile(index, 'facility')"
-                max-file-size="2097152"
-                @rejected="onRejected"
-                hide-upload-btn
-                accept=".pdf"
-                label="Upload pdf file"
-                color="secondary"
-                class="q-mb-md full-width"
-              />
-
-              <div v-if="certificate.file.length">
-                <q-input
-                  outlined
-                  v-model="certificate.description"
-                  label="Document Name"
-                  :rules="
-                    productForm.status === 'Publish'
-                      ? [(val) => !!val || 'Document name is required']
-                      : []
-                  "
-                  lazy-rules
-                  dense
-                  class="q-mb-md"
-                />
-                <q-input
-                  outlined
-                  v-model="certificate.issue_date"
-                  lazy-rules
-                  label="Issuance Date"
-                  dense
-                  class="q-mt-sm q-mb-md"
-                  :rules="
-                    productForm.status === 'Publish'
-                      ? [
-                          (val) => !!val || 'Field is required', // Ensure the field is not empty
-                          (val) =>
-                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                        ]
-                      : []
-                  "
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        :ref="(el) => (refs[`facilityCertificateIssuanceDate${index}`] = el)"
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          minimal
-                          v-model="certificate.issue_date"
-                          @update:model-value="
-                            () => refs[`facilityCertificateIssuanceDate${index}`]?.hide()
-                          "
-                          mask="YYYY-MM-DD"
-                        />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-                <q-input
-                  outlined
-                  v-model="certificate.expiry_date"
-                  lazy-rules
-                  label="Expiry Date"
-                  dense
-                  class="q-mt-sm q-mb-md"
-                  :rules="
-                    productForm.status === 'Publish'
-                      ? [
-                          (val) => !!val || 'Field is required', // Ensure the field is not empty
-                          (val) =>
-                            /^\d{4}-\d{2}-\d{2}$/.test(val) || 'Invalid date format (YYYY-MM-DD)', // Validate date format
-                        ]
-                      : []
-                  "
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        :ref="(el) => (refs[`facilityCertificateExpiryDate${index}`] = el)"
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          minimal
-                          v-model="certificate.expiry_date"
-                          @update:model-value="
-                            () => refs[`facilityCertificateExpiryDate${index}`]?.hide()
-                          "
-                          mask="YYYY-MM-DD"
-                        />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-              <div v-if="index !== productForm.facility_certificates.length - 1" class="q-pb-sm">
-                <hr class="q-mb-lg q-pb-xs bg-primary" />
-              </div>
-            </div>
-            <q-btn
-              icon="add"
-              dense
-              class="q-px-sm"
-              label="Add Certificate"
-              no-caps
-              @click="addCertificate('facility')"
-            />
-          </q-card>
-
-          <q-file
-            v-model="productForm.attachments"
-            label="Attachments (PDF file)"
-            multiple
-            accept=".pdf, .png, .jpg, .jpeg"
-            dense
-            class="q-mb-md"
-          >
-            <template v-slot:append>
-              <q-icon name="attach_file" />
-            </template>
-          </q-file>
-
-          <q-select
-            v-model="productForm.status"
-            :options="statuses"
-            label="Status"
-            :rules="[(val) => !!val || 'Status is required']"
-            lazy-rules
-            class="q-mb-md"
-          />
 
           <div class="row justify-end q-mt-md">
             <q-btn flat label="Close" color="negative" v-close-popup class="q-mr-sm" />
