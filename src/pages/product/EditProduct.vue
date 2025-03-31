@@ -85,6 +85,7 @@
               />
 
               <q-file
+                ref="attachmentRef"
                 v-model="productForm.attachments"
                 outlined
                 label="Attachments (PDF file)"
@@ -330,7 +331,7 @@
                     text-color="grey"
                     class="q-mb-md full-width"
                   />
-                  <div v-if="certificate.file.length">
+                  <div v-if="certificate?.file?.length">
                     <q-input
                       outlined
                       v-model="certificate.description"
@@ -459,7 +460,7 @@
                     text-color="grey"
                     class="q-mb-md full-width"
                   />
-                  <div v-if="certificate.file.length">
+                  <div v-if="certificate?.file?.length">
                     <q-input
                       outlined
                       v-model="certificate.description"
@@ -604,20 +605,20 @@ const triggerStore = useTriggerStore()
 
 // Reactive object to manage the product form data
 const productForm = ref({
-  id: '',
-  name: '', // Name of the product
-  description: '', // Description of the product
+  id: null,
+  name: null, // Name of the product
+  description: null, // Description of the product
   category: [], // Categories associated with the product
   size: [
     {
-      size: '', // Size of the product
-      upc: '', // Upc code of the product
-      cost: '', // Cost of the product
-      srp: '', // Suggested retail price of the product
+      size: null, // Size of the product
+      upc: null, // Upc code of the product
+      cost: null, // Cost of the product
+      srp: null, // Suggested retail price of the product
       landed_cost: [
         {
-          country: '',
-          amount: '',
+          country: null,
+          amount: null,
         },
       ], // Landed cost of the product
       is_cost_negotiable: false,
@@ -627,18 +628,18 @@ const productForm = ref({
   images: [], // Array to store uploaded product images
   product_certificates: [
     {
-      file: '', // File associated with the certificate
-      description: '', // Name of the certificate document
-      issue_date: '', // Issue date of the certificate
-      expiry_date: '', // Expiry date of the certificate
+      file: null, // File associated with the certificate
+      description: null, // Name of the certificate document
+      issue_date: null, // Issue date of the certificate
+      expiry_date: null, // Expiry date of the certificate
     },
   ], // Array to store certificates related to the product
   facility_certificates: [
     {
-      file: '', // File associated with the certificate
-      description: '', // Name of the certificate document
-      issue_date: '', // Issue date of the certificate
-      expiry_date: '', // Expiry date of the certificate
+      file: null, // File associated with the certificate
+      description: null, // Name of the certificate document
+      issue_date: null, // Issue date of the certificate
+      expiry_date: null, // Expiry date of the certificate
     },
   ], // Array to store facility-related certificates
   attachments: [],
@@ -654,7 +655,7 @@ const formLoadingState = ref(false)
 onMounted(() => {
   formLoadingState.value = true
   productStore
-    .GetProduct({ id: productStore.ProductDetails.id })
+    .GetProductToEdit({ id: productStore.ProductDetails.id })
     .then((response) => {
       if (response.status === 'success') {
         productForm.value = response.data
@@ -662,11 +663,11 @@ onMounted(() => {
         productForm.value.category = productForm.value.category.split(', ')
 
         productForm.value.size.forEach((size) => {
-          if (size.size === 'null') size.size = ''
-          if (size.upc === 'null') size.upc = ''
+          if (size.size === 'null') size.size = null
+          if (size.upc === 'null') size.upc = null
 
           size.landed_cost.forEach((cost) => {
-            if (cost.country === 'null') cost.country = ''
+            if (cost.country === 'null') cost.country = null
           })
         })
 
@@ -674,6 +675,12 @@ onMounted(() => {
         productForm.value.images.forEach((image) => {
           fetchAndAddFile(image.binary, image.name)
         })
+
+        // convert base64 to real file and add to q-uploader
+        productForm.value.attachments.forEach((attachment) => {
+          fetchAndAddFile(attachment.binary, attachment.name, 'attachmentRef')
+        })
+
         // convert base64 to real file and add to q-uploader
         productForm.value.product_certificates.forEach((cert, index) => {
           // set default file value
@@ -685,10 +692,10 @@ onMounted(() => {
         if (!productForm.value.product_certificates.length) {
           productForm.value.product_certificates = [
             {
-              file: '',
-              description: '',
-              issue_date: '',
-              expiry_date: '',
+              file: null,
+              description: null,
+              issue_date: null,
+              expiry_date: null,
             },
           ]
         }
@@ -703,10 +710,10 @@ onMounted(() => {
         if (!productForm.value.facility_certificates.length) {
           productForm.value.facility_certificates = [
             {
-              file: '',
-              description: '',
-              issue_date: '',
-              expiry_date: '',
+              file: null,
+              description: null,
+              issue_date: null,
+              expiry_date: null,
             },
           ]
         }
@@ -761,7 +768,11 @@ const fetchAndAddFile = async (base64, fileName, ref = 'imageUploadRef') => {
 
     // Use q-uploader's addFiles method to add the file
     if (fileExtension === 'pdf') {
-      refs[ref].addFiles([file])
+      if (ref === 'attachmentRef') {
+        attachmentRef.value.addFiles([file])
+      } else {
+        refs[ref].addFiles([file])
+      }
     } else {
       imageUploadRef.value.addFiles([file])
     }
@@ -792,15 +803,16 @@ const base64ToBlob = async (base64, mimeType) => {
 }
 // Reference for the image upload component
 const imageUploadRef = ref(null)
+const attachmentRef = ref(null)
 
 // Function to add a certificate to the specified type (product or facility)
 const addCertificate = (type) => {
   // Define the structure of the certificate data
   let data = {
-    file: '', // File reference for the certificate
-    description: '', // Name of the document
-    issue_date: '', // Issue date of the certificate
-    expiry_date: '', // Expiry date of the certificate
+    file: null, // File reference for the certificate
+    description: null, // Name of the document
+    issue_date: null, // Issue date of the certificate
+    expiry_date: null, // Expiry date of the certificate
   }
 
   // Check the type of certificate and push it to the respective list
@@ -854,14 +866,14 @@ const updateCertificateFile = (index, type) => {
 
 const addProductSize = () => {
   productForm.value.size.push({
-    size: '',
-    upc: '',
-    cost: '',
-    srp: '',
+    size: null,
+    upc: null,
+    cost: null,
+    srp: null,
     landed_cost: [
       {
-        country: '',
-        amount: '',
+        country: null,
+        amount: null,
       },
     ],
     is_cost_negotiable: false,
@@ -870,8 +882,8 @@ const addProductSize = () => {
 
 const addLandedCost = (index) => {
   productForm.value.size[index].landed_cost.push({
-    country: '',
-    amount: '',
+    country: null,
+    amount: null,
   })
 }
 
