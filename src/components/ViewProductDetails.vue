@@ -23,7 +23,11 @@
                   :name="image.name"
                   class="column flex-center"
                 >
-                  <q-img :src="`data:image/jpeg;base64,${image.binary}`" alt="Product Image" />
+                  <q-img
+                    :src="`data:image/jpeg;base64,${image.binary}`"
+                    alt="Product Image"
+                    fit="contain"
+                  />
                 </q-carousel-slide>
               </q-carousel>
               <q-img
