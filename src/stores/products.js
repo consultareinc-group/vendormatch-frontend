@@ -35,6 +35,17 @@ export const useProductStore = defineStore('product', {
         });
       });
     },
+    // Action to fetch specific products from the API
+    GetProductToEdit(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch products based on the offset
+        api.get(`vendor-match/product/${request.id}?include_files=true`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((response) => {
+          reject(response.data); // Reject the promise if the API request fails
+        });
+      });
+    },
     // Action to search for products using a keyword
     SearchProducts(request) {
       return new Promise((resolve, reject) => {

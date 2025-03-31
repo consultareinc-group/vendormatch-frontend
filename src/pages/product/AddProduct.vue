@@ -322,7 +322,7 @@
                     text-color="grey"
                     class="q-mb-md full-width"
                   />
-                  <div v-if="certificate.file.length">
+                  <div v-if="certificate?.file?.length">
                     <q-input
                       outlined
                       v-model="certificate.description"
@@ -452,7 +452,7 @@
                     class="q-mb-md full-width"
                   />
 
-                  <div v-if="certificate.file.length">
+                  <div v-if="certificate?.file?.length">
                     <q-input
                       outlined
                       v-model="certificate.description"
@@ -591,19 +591,19 @@ const triggerStore = useTriggerStore()
 
 // Reactive object to manage the product form data
 const productForm = ref({
-  name: '', // Name of the product
-  description: '', // Description of the product
+  name: null, // Name of the product
+  description: null, // Description of the product
   category: [], // Categories associated with the product
   size: [
     {
-      size: '', // Size of the product
-      upc: '', // Upc code of the product
-      cost: '', // Cost of the product
-      srp: '', // Suggested retail price of the product
+      size: null, // Size of the product
+      upc: null, // Upc code of the product
+      cost: null, // Cost of the product
+      srp: null, // Suggested retail price of the product
       landed_cost: [
         {
-          country: '',
-          amount: '',
+          country: null,
+          amount: null,
         },
       ], // Landed cost of the product
       is_cost_negotiable: false,
@@ -613,18 +613,18 @@ const productForm = ref({
   images: [], // Array to store uploaded product images
   product_certificates: [
     {
-      file: '', // File associated with the certificate
-      description: '', // Name of the certificate document
-      issue_date: '', // Issue date of the certificate
-      expiry_date: '', // Expiry date of the certificate
+      file: null, // File associated with the certificate
+      description: null, // Name of the certificate document
+      issue_date: null, // Issue date of the certificate
+      expiry_date: null, // Expiry date of the certificate
     },
   ], // Array to store certificates related to the product
   facility_certificates: [
     {
-      file: '', // File associated with the certificate
-      description: '', // Name of the certificate document
-      issue_date: '', // Issue date of the certificate
-      expiry_date: '', // Expiry date of the certificate
+      file: null, // File associated with the certificate
+      description: null, // Name of the certificate document
+      issue_date: null, // Issue date of the certificate
+      expiry_date: null, // Expiry date of the certificate
     },
   ], // Array to store facility-related certificates
   attachments: [],
@@ -643,10 +643,10 @@ const imageUploadRef = ref(null)
 const addCertificate = (type) => {
   // Define the structure of the certificate data
   let data = {
-    file: '', // File reference for the certificate
-    description: '', // Name of the document
-    issue_date: '', // Issue date of the certificate
-    expiry_date: '', // Expiry date of the certificate
+    file: null, // File reference for the certificate
+    description: null, // Name of the document
+    issue_date: null, // Issue date of the certificate
+    expiry_date: null, // Expiry date of the certificate
   }
 
   // Check the type of certificate and push it to the respective list
@@ -700,14 +700,14 @@ const updateCertificateFile = (index, type) => {
 
 const addProductSize = () => {
   productForm.value.size.push({
-    size: '',
-    upc: '',
-    cost: '',
-    srp: '',
+    size: null,
+    upc: null,
+    cost: null,
+    srp: null,
     landed_cost: [
       {
-        country: '',
-        amount: '',
+        country: null,
+        amount: null,
       },
     ],
     is_cost_negotiable: false,
@@ -716,8 +716,8 @@ const addProductSize = () => {
 
 const addLandedCost = (index) => {
   productForm.value.size[index].landed_cost.push({
-    country: '',
-    amount: '',
+    country: null,
+    amount: null,
   })
 }
 
@@ -934,40 +934,40 @@ const saveProduct = () => {
             })
 
             productForm.value = {
-              name: '',
-              description: '',
+              name: null,
+              description: null,
               category: [],
               size: [
                 {
-                  size: '',
-                  upc: '',
-                  cost: '',
-                  srp: '',
+                  size: null,
+                  upc: null,
+                  cost: null,
+                  srp: null,
                   landed_cost: [
                     {
-                      country: '',
-                      amount: '',
+                      country: null,
+                      amount: null,
                     },
                   ],
                   is_cost_negotiable: false,
                 },
               ],
-              status: '',
+              status: null,
               images: [],
               product_certificates: [
                 {
-                  file: '',
-                  description: '',
-                  issue_date: '',
-                  expiry_date: '',
+                  file: null,
+                  description: null,
+                  issue_date: null,
+                  expiry_date: null,
                 },
               ],
               facility_certificates: [
                 {
-                  file: '',
-                  description: '',
-                  issue_date: '',
-                  expiry_date: '',
+                  file: null,
+                  description: null,
+                  issue_date: null,
+                  expiry_date: null,
                 },
               ],
               attachments: [],
