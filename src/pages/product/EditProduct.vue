@@ -1,8 +1,9 @@
 <template>
   <q-dialog v-model="triggerStore.EditProductDialog">
     <q-card style="min-width: 1300px">
-      <q-card-section>
+      <q-card-section class="flex justify-between">
         <div class="text-h6">Edit Product</div>
+        <div><q-btn v-close-popup icon="close" round size="sm"></q-btn></div>
       </q-card-section>
 
       <q-card-section>
