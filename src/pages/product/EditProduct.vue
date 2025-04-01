@@ -80,6 +80,9 @@
                 label="Category"
                 :rules="[(val) => (Array.isArray(val) && val.length > 0) || 'Category is required']"
                 lazy-rules
+                use-input
+                input-debounce="0"
+                @filter="filterFn"
                 class="q-mb-md"
                 outlined
                 multiple
@@ -647,7 +650,73 @@ const productForm = ref({
 })
 
 // Array of predefined product categories
-const categories = ['Food', 'Non-Food', 'Organic', 'Non-Organic', 'Dietary Supplements']
+const categoryOptions = [
+  'Food',
+  'Non-Food',
+  'Organic',
+  'Non-Organic',
+  'Dietary Supplements',
+  'Alcoholic Beverages',
+  'Animal/Pet Food and Feed',
+  'Baby/Toddler Foods and Infant Formulas',
+  'Bakery Products, Dough Mixes or Icings',
+  'Beverage Bases',
+  'Botanicals And Herbs',
+  'Brewer Products',
+  'Candies and Chewing Gums',
+  'Cannabis',
+  'Chemical Preservatives',
+  'Cosmetics',
+  'Biologics',
+  'Breakfast Foods and Cereals',
+  'Cheese and Cheese Products',
+  'Chocolate and Cocoa Products',
+  'Coffee and Tea',
+  'Color Additives',
+  'Dietary Conventional Foods',
+  'Dressings and Condiments',
+  'Drugs and Pharmaceuticals',
+  'Fishery/Seafood Products',
+  'Food Additives',
+  'Food Sweeteners',
+  'Fruits and Fruit Products',
+  'Fruit or Vegetable Juices and Concentrates',
+  'Gelatin, Rennet, Pudding mixes or Pie Fillings',
+  'Ice Cream',
+  'Pasta and Noodles',
+  'Meat, Meat Products and Poultry',
+  'Medical Devices',
+  'Milk and Milk Products',
+  'Nuts and Edible Seeds',
+  'Prepared Salad Products',
+  'Shell Eggs and Egg Products',
+  'Snack Foods',
+  'Spices, Flavors and Salts',
+  'Soups',
+  'Soft Drinks and Waters',
+  'Tobacco Products',
+  'Vegetable and Vegetable Products',
+  'Vegetable Oils',
+  'Vegetable Proteins',
+  'Whole Grain and Miller Grain Products',
+  'Yeast Products',
+]
+
+const categories = ref(categoryOptions)
+
+const filterFn = (val, update) => {
+  if (val === '') {
+    update(() => {
+      categories.value = categoryOptions
+    })
+    return
+  }
+
+  update(() => {
+    const needle = val.toLowerCase()
+    categories.value = categoryOptions.filter((v) => v.toLowerCase().indexOf(needle) > -1)
+  })
+}
 
 // Array of predefined product statuses
 const statuses = ['Draft', 'Publish']
