@@ -24,10 +24,13 @@
                   class="column flex-center"
                 >
                   <q-img
+                    class="cursor-pointer"
                     :src="`data:image/jpeg;base64,${image.binary}`"
                     alt="Product Image"
                     fit="contain"
+                    @click="openDialog(image)"
                   />
+                  <q-tooltip>Click Me!</q-tooltip>
                 </q-carousel-slide>
               </q-carousel>
               <q-img
@@ -35,6 +38,20 @@
                 src="../assets/img-placeholder.jpg"
                 alt="Product Image"
               />
+              <q-dialog v-model="dialogVisible">
+                <q-card class="q-pa-md flex justify-center items-center" style="width: 700px">
+                  <div class="full-width flex justify-end">
+                    <q-btn icon="close" round size="sm" v-close-popup></q-btn>
+                  </div>
+                  <q-img
+                    v-if="selectedImage"
+                    :src="`data:image/jpeg;base64,${selectedImage.binary}`"
+                    alt="Zoomed Image"
+                    fit="contain"
+                    class="full-width q-mt-sm"
+                  />
+                </q-card>
+              </q-dialog>
             </div>
             <div v-if="authStore.UserInformation.role === 1 || !triggerStore.HideChatSection">
               <div class="text-bold q-mt-md">
@@ -139,13 +156,22 @@
                 class="q-pa-none"
               >
                 <template v-slot:append>
-                  <div class="text-black text-body2">${{ landed_cost_option.amount }}</div>
+                  <div
+                    v-if="!landed_cost_option.amount || landed_cost_option.amount === '0.00'"
+                    class="text-black text-body2"
+                  >
+                    TBD
+                  </div>
+                  <div v-else class="text-black text-body2">${{ landed_cost_option.amount }}</div>
                 </template>
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps" :clickable="false">
                     <div class="flex justify-between items-center full-width">
                       <div>{{ scope.opt.country }}</div>
-                      <div>${{ scope.opt.amount }}</div>
+                      <div>
+                        <div v-if="!scope.opt.amount || scope.opt.amount === '0.00'">TBD</div>
+                        <div v-else>${{ scope.opt.amount }}</div>
+                      </div>
                     </div>
                   </q-item>
                 </template>
@@ -178,9 +204,11 @@
               class="q-mb-sm"
             ></q-skeleton>
             <div v-else class="flex justify-start items-center q-mt-md">
-              <div class="text-bold q-mr-md">UPC:</div>
-              <div>
-                {{ size.upc }}
+              <div v-if="size.upc && size.upc !== 'null'">
+                <div class="text-bold q-mr-md">UPC:</div>
+                <div>
+                  {{ size.upc }}
+                </div>
               </div>
             </div>
             <hr class="q-mt-md" />
@@ -305,6 +333,13 @@ const triggerStore = useTriggerStore()
 const authStore = useAuthStore()
 
 const slide = ref('style')
+const dialogVisible = ref(false)
+const selectedImage = ref(null)
+
+const openDialog = (image) => {
+  selectedImage.value = image
+  dialogVisible.value = true
+}
 
 const landed_cost_option = ref('')
 const landed_costs = ref([])
@@ -345,9 +380,13 @@ onMounted(() => {
       if (response.status === 'success') {
         productDetails.value = response.data
         // Assign a default value
+        response.data.size[0].landed_cost[0].country =
+          response.data.size[0].landed_cost[0].country !== 'null'
+            ? response.data.size[0].landed_cost[0].country
+            : ''
         landed_cost_option.value = response.data.size[0].landed_cost[0]
         landed_costs.value = response.data.size[0].landed_cost
-        size_option.value = response.data.size[0].size
+        size_option.value = response.data.size[0].size !== 'null' ? response.data.size[0].size : ''
         sizes.value = response.data.size.map((size) => size.size)
         response.data.images.length && (slide.value = response.data.images[0].name)
         changeProductCost()
