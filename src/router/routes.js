@@ -4,10 +4,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '',
-        component: () => import('pages/IndexPage.vue')
-      },
-
+        path: 'create-account',
+        name: 'create-account',
+        component: () => import('src/pages/CreateAccount.vue'),
+      }
     ]
   },
 
