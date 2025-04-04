@@ -47,6 +47,7 @@ const routes = [
         path: 'create-account',
         name: 'create-account',
         component: () => import('src/pages/CreateAccount.vue'),
+        meta: { level: 0 }
       }
     ]
   },
