@@ -101,7 +101,7 @@ const onSubmit = () => {
           if (response.data.role === 0) {
             window.location.href = router.resolve({ name: 'vendor' }).href
           } else {
-            window.location.href = router.resolve({ name: 'buyer' }).href
+            window.location.href = router.resolve({ name: 'products' }).href
           }
         }, 1000)
 
