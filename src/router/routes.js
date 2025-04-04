@@ -42,6 +42,12 @@ const routes = [
         path: 'request-for-quotation-list',
         name: 'request-for-quotation-list',
         component: () => import('src/pages/request-for-quotation/RFQList.vue'),
+      },
+      {
+        path: 'create-account',
+        name: 'create-account',
+        component: () => import('src/pages/CreateAccount.vue'),
+        meta: { level: 0 }
       }
     ]
   },

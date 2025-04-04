@@ -24,6 +24,14 @@
                 <!-- <q-item clickable v-close-popup @click="navigateToProfile">
                   <q-item-section>Profile</q-item-section>
                 </q-item> -->
+                <!-- <q-item
+                  v-if="authStore.UserInformation.level === 0"
+                  clickable
+                  v-close-popup
+                  to="/create-account"
+                >
+                  <q-item-section>Create Account</q-item-section>
+                </q-item> -->
                 <q-separator />
                 <q-item clickable v-close-popup @click="logout">
                   <q-item-section>Logout</q-item-section>

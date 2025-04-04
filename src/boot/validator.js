@@ -13,9 +13,12 @@ export default boot(async ({ router }) => {
       const response = await authStore.ValidateToken();
       if (response.status === 'success') {
         const userRole = response.data.role; // Get user role from API response
+        const userLevel = response.data.level; // Get user role from API response
 
         router.beforeEach((to, from, next) => {
           if (to.meta?.role !== undefined && to.meta.role !== userRole) {
+            next({ name: 'signin' }); // Redirect to sign-in if role doesn't match
+          } else if (to.meta?.level !== undefined && to.meta.level !== userLevel) {
             next({ name: 'signin' }); // Redirect to sign-in if role doesn't match
           } else {
             next(); // Allow navigation
