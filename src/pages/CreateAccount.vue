@@ -599,8 +599,8 @@ const onPermissionSubmit = () => {
   }
 }
 
-const registerUserInformationandPermissions = (enterprise_id) => {
-  user.value.enterprise_id = enterprise_id
+const registerUserInformationandPermissions = (enterpriseid) => {
+  user.value.enterprise_id = enterpriseid
   accountStore
     .RegisterUser(user.value)
     .then((response) => {
