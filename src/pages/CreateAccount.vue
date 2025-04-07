@@ -16,13 +16,30 @@
                   <q-checkbox v-model="hasEnterprise" label="Already have an enterprise?" />
                 </div>
                 <div v-if="hasEnterprise" class="col-12">
-                  <q-input
-                    v-model="enterprise.name"
+                  <q-select
+                    v-model="enterprise_id"
+                    use-input
+                    :options="enterpriseOptions"
+                    @filter="filterEnterprise"
                     label="Search Enterprise *"
-                    :rules="[(val) => !!val || 'Enterprise name is required']"
                     outlined
+                    clearable
+                    option-label="name"
+                    option-value="id"
+                    emit-value
+                    map-options
+                    input-debounce="1000"
+                    :loading="searchEnterpriseLoadingState"
                     dense
-                  />
+                    :rules="[(val) => !!val || 'Enterprise name is required']"
+                    lazy-rules
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey"> No results </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
                 </div>
               </div>
               <div v-if="!hasEnterprise" class="row q-col-gutter-md">
@@ -106,6 +123,7 @@
                       (val) => !!val || 'Email is required',
                       (val) => /.+@.+\..+/.test(val) || 'Please enter a valid email',
                     ]"
+                    lazy-rules
                     outlined
                     dense
                   />
@@ -229,6 +247,7 @@
                       (val) => !!val || 'Email is required',
                       (val) => /.+@.+\..+/.test(val) || 'Please enter a valid email',
                     ]"
+                    lazy-rules
                     outlined
                     dense
                   />
@@ -243,6 +262,7 @@
                       (val) => !!val || 'Password is required',
                       (val) => val.length >= 8 || 'Password must be at least 8 characters',
                     ]"
+                    lazy-rules
                     outlined
                     dense
                   />
@@ -360,6 +380,7 @@ const enterprise = ref({
   website: '',
   established_date: '',
 })
+const enterprise_id = ref(null)
 
 // Array of predefined product categories
 const categoryOptions = [
@@ -498,6 +519,49 @@ const permissions = ref({
   ],
 })
 
+const enterpriseOptions = ref([])
+const searchEnterpriseLoadingState = ref(false)
+
+const fetchEnterprises = async (val, update) => {
+  searchEnterpriseLoadingState.value = true
+  try {
+    const response = await accountStore.SearchEnterprise(`search=${val}`)
+    if (response.status === 'success') {
+      // Use a Set to avoid duplicate enterprise entries
+      const existingIds = new Set(accountStore.Enterprises.map((enterprise) => enterprise.id))
+      response.data.forEach((enterprise) => {
+        if (!existingIds.has(enterprise.id)) {
+          accountStore.Enterprises.push(enterprise)
+        }
+      })
+
+      update(() => {
+        enterpriseOptions.value = accountStore.Enterprises
+      })
+    }
+  } finally {
+    searchEnterpriseLoadingState.value = false
+  }
+}
+
+const filterEnterprise = (val, update) => {
+  if (!val) {
+    update(() => (enterpriseOptions.value = accountStore.Enterprises))
+    return
+  }
+
+  update(() => {
+    enterpriseOptions.value = accountStore.Enterprises.filter((enterprise) =>
+      enterprise.name.toLowerCase().includes(val.toLowerCase()),
+    )
+  })
+
+  if (!enterpriseOptions.value.length) {
+    accountStore.Enterprises = [] // Clear old data before fetching
+    fetchEnterprises(val, update)
+  }
+}
+
 const onEnterpriseSubmit = () => {
   step.value = 2
 }
@@ -509,73 +573,83 @@ const onUserSubmit = async () => {
 const onPermissionSubmit = () => {
   registering.value = true
 
+  if (!hasEnterprise.value) {
+    accountStore
+      .RegisterEnterprise(enterprise.value)
+      .then((response) => {
+        let status = Boolean(response.status === 'success')
+
+        if (status) {
+          registering.value = true
+          registerUserInformationandPermissions(response.data.id)
+        }
+        $q.notify({
+          message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the enterprise ${status ? 'has been' : 'was not'} saved.</p>`,
+          color: `${status ? 'green' : 'red'}-2`,
+          position: 'top-right',
+          textColor: `${status ? 'green' : 'red'}`,
+          html: true,
+        })
+      })
+      .finally(() => {
+        registering.value = false
+      })
+  } else {
+    registerUserInformationandPermissions(enterprise_id.value)
+  }
+}
+
+const registerUserInformationandPermissions = (enterprise_id) => {
+  user.value.enterprise_id = enterprise_id
   accountStore
-    .RegisterEnterprise(enterprise.value)
+    .RegisterUser(user.value)
     .then((response) => {
       let status = Boolean(response.status === 'success')
 
       if (status) {
         registering.value = true
-        user.value.enterprise_id = response.data.id
         accountStore
-          .RegisterUser(user.value)
-          .then((response) => {
+          .RegisterUserPermission({
+            user_id: response.data.id,
+            functions_id: function_ids.value,
+            system_id: 1,
+          })
+          .then(() => {
             let status = Boolean(response.status === 'success')
-
             if (status) {
-              registering.value = true
-              accountStore
-                .RegisterUserPermission({
-                  user_id: response.data.id,
-                  functions_id: function_ids.value,
-                  system_id: 1,
-                })
-                .then(() => {
-                  let status = Boolean(response.status === 'success')
-                  if (status) {
-                    enterprise.value = {
-                      name: '',
-                      registration_number: '',
-                      industry_type: '',
-                      address: '',
-                      city: '',
-                      state: '',
-                      country: '',
-                      postal_code: '',
-                      contact_number: '',
-                      email: '',
-                      website: '',
-                      established_date: '',
-                    }
-                    user.value = {
-                      first_name: '',
-                      middle_name: '',
-                      last_name: '',
-                      suffix_name: '',
-                      birthday: '',
-                      email: '',
-                      photo: null,
-                      password: '',
-                      role: null,
-                      level: null,
-                    }
-                    function_ids.value = []
-                    step.value = 1
-                  }
-                  $q.notify({
-                    message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the user permission ${status ? 'has been' : 'was not'} saved.</p>`,
-                    color: `${status ? 'green' : 'red'}-2`,
-                    position: 'top-right',
-                    textColor: `${status ? 'green' : 'red'}`,
-                    html: true,
-                  })
-                })
-                .finally(() => {
-                  registering.value = false
-                })
+              enterprise.value = {
+                name: '',
+                registration_number: '',
+                industry_type: '',
+                address: '',
+                city: '',
+                state: '',
+                country: '',
+                postal_code: '',
+                contact_number: '',
+                email: '',
+                website: '',
+                established_date: '',
+              }
+              user.value = {
+                first_name: '',
+                middle_name: '',
+                last_name: '',
+                suffix_name: '',
+                birthday: '',
+                email: '',
+                photo: null,
+                password: '',
+                role: null,
+                level: null,
+              }
+              function_ids.value = []
+              hasEnterprise.value = false
+              enterprise_id.value = null
+              step.value = 1
             }
             $q.notify({
-              message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the user ${status ? 'has been' : 'was not'} saved.</p>`,
+              message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the user permission ${status ? 'has been' : 'was not'} saved.</p>`,
               color: `${status ? 'green' : 'red'}-2`,
               position: 'top-right',
               textColor: `${status ? 'green' : 'red'}`,
@@ -587,7 +661,7 @@ const onPermissionSubmit = () => {
           })
       }
       $q.notify({
-        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the enterprise ${status ? 'has been' : 'was not'} saved.</p>`,
+        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> the user ${status ? 'has been' : 'was not'} saved.</p>`,
         color: `${status ? 'green' : 'red'}-2`,
         position: 'top-right',
         textColor: `${status ? 'green' : 'red'}`,
