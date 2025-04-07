@@ -4,7 +4,7 @@ import { api } from 'boot/axios'; // Import the axios instance for API requests
 // Define a Pinia store named 'counter' for managing users-related data
 export const useAccountStore = defineStore('account', {
   state: () => ({
-
+    Enterprises: []
   }),
   actions: {
     // Action to insert enterprise information
@@ -50,6 +50,16 @@ export const useAccountStore = defineStore('account', {
           });
       });
     },
-
+    // Action to fetch enterprise from the API
+    SearchEnterprise(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch enterprises based on the offset
+        api.get(`enterprise?${request}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((error) => {
+          reject(error); // Reject the promise if the API request fails
+        });
+      });
+    },
   },
 })
