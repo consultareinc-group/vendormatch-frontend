@@ -256,7 +256,7 @@
                 <div class="col-12 col-md-6">
                   <q-input
                     v-model="user.password"
-                    type="password"
+                    :type="isPwd ? 'password' : 'text'"
                     label="Password *"
                     :rules="[
                       (val) => !!val || 'Password is required',
@@ -265,7 +265,18 @@
                     lazy-rules
                     outlined
                     dense
-                  />
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                      />
+                    </template>
+                  </q-input>
+                  <div class="cursor-pointer text-primary text-right" @click="generatePassword()">
+                    generate password
+                  </div>
                 </div>
 
                 <div class="col-12 col-md-6">
@@ -463,6 +474,20 @@ const user = ref({
   role: null,
   level: null,
 })
+
+const isPwd = ref(true)
+
+const generatePassword = () => {
+  const length = 12
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
+  let password = ''
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length)
+    password += charset[randomIndex]
+  }
+  user.value.password = password
+}
+
 const function_ids = ref([])
 watch(
   () => [user.value.role, user.value.level],
