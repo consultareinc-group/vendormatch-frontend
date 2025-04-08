@@ -433,6 +433,7 @@ const categoryOptions = [
   'Milk and Milk Products',
   'Nuts and Edible Seeds',
   'Prepared Salad Products',
+  'Services',
   'Shell Eggs and Egg Products',
   'Snack Foods',
   'Spices, Flavors and Salts',
