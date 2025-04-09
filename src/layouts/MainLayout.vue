@@ -53,6 +53,7 @@
           clickable
           v-ripple
           :to="{ name: authStore.UserInformation.role === 0 ? 'vendor' : 'buyer' }"
+          v-if="authStore.UserInformation.role === 0"
         >
           <q-item-section avatar>
             <q-icon name="dashboard" />
