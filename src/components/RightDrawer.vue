@@ -19,6 +19,7 @@
             :options="categories"
             label="Category"
             use-input
+            use-chips
             input-debounce="0"
             @filter="filterFn"
             class="q-mb-md"
@@ -68,7 +69,7 @@ const $q = useQuasar()
 
 const searchQuery = ref('')
 const selectedCategories = ref([])
-const priceRange = ref({ min: 1, max: 1000 })
+const priceRange = ref({ min: 0, max: 1000 })
 
 // Array of predefined product categories
 const categoryOptions = [
