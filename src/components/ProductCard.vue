@@ -74,7 +74,7 @@
           <div>No Products Found</div>
         </div>
 
-        <div v-if="products.length > 100" class="flex justify-center full-width q-my-md">
+        <div v-if="products.length >= 20" class="flex justify-center full-width q-my-md">
           <q-btn
             @click="viewMoreProducts()"
             label="View More"
