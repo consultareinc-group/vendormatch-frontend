@@ -68,7 +68,7 @@
                     outlined
                     dense
                     :options="categories"
-                    label="Category"
+                    label="Category *"
                     :rules="[(val) => !!val || 'Category is required']"
                     lazy-rules
                     use-input
@@ -126,6 +126,7 @@
                     lazy-rules
                     outlined
                     dense
+                    autocomplete="off"
                   />
                 </div>
 
@@ -250,6 +251,7 @@
                     lazy-rules
                     outlined
                     dense
+                    autocomplete="new-email"
                   />
                 </div>
 
@@ -265,6 +267,7 @@
                     lazy-rules
                     outlined
                     dense
+                    autocomplete="new-password"
                   >
                     <template v-slot:append>
                       <q-icon
@@ -274,8 +277,8 @@
                       />
                     </template>
                   </q-input>
-                  <div class="cursor-pointer text-primary text-right" @click="generatePassword()">
-                    generate password
+                  <div class="text-primary text-right">
+                    <q-btn dense no-caps @click="generatePassword()" flat>generate password</q-btn>
                   </div>
                 </div>
 
@@ -285,6 +288,7 @@
                     :options="[
                       { label: 'Vendor', value: 0 },
                       { label: 'Buyer', value: 1 },
+                      { label: 'Buyer & Vendor', value: 2 },
                     ]"
                     label="Role *"
                     option-label="label"
