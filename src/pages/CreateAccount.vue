@@ -503,6 +503,8 @@ watch(
       function_ids.value = [1, 2, 3, 4]
     } else if (role === 1 && level === 2) {
       function_ids.value = [1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    } else if (role === 2) {
+      function_ids.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     } else {
       function_ids.value = []
     }
