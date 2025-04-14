@@ -15,13 +15,13 @@ const routes = [
         path: 'dashboard/vendor',
         name: 'vendor',
         component: () => import('src/pages/dashboard/VendorDashboard.vue'),
-        meta: { role: 0 }
+        meta: { role: [0, 2] }
       },
       {
         path: 'dashboard/buyer',
         name: 'buyer',
         component: () => import('src/pages/dashboard/BuyerDashboard.vue'),
-        meta: { role: 1 }
+        meta: { role: [1] }
       },
       {
         path: 'inquiries',
@@ -47,6 +47,11 @@ const routes = [
         path: 'create-account',
         name: 'create-account',
         component: () => import('src/pages/CreateAccount.vue'),
+        meta: { level: 0 }
+      },
+      {
+        path: 'users',
+        component: () => import('src/pages/user-management/UserManagement.vue'),
         meta: { level: 0 }
       }
     ]

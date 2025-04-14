@@ -52,8 +52,8 @@
         <q-item
           clickable
           v-ripple
-          :to="{ name: authStore.UserInformation.role === 0 ? 'vendor' : 'buyer' }"
-          v-if="authStore.UserInformation.role === 0"
+          :to="{ name: authStore.UserInformation.role !== 1 ? 'vendor' : 'buyer' }"
+          v-if="authStore.UserInformation.role !== 1"
         >
           <q-item-section avatar>
             <q-icon name="dashboard" />
@@ -71,7 +71,8 @@
         <q-item
           v-if="
             (authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2) ||
-            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2)
+            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2) ||
+            authStore.UserInformation.role === 2
           "
           clickable
           v-ripple
@@ -86,7 +87,8 @@
         <q-expansion-item
           v-if="
             (authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2) ||
-            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2)
+            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2) ||
+            authStore.UserInformation.role === 2
           "
           icon="request_quote"
           label="RFQ"

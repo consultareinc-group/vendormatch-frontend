@@ -16,10 +16,15 @@ export default boot(async ({ router }) => {
         const userLevel = response.data.level; // Get user role from API response
 
         router.beforeEach((to, from, next) => {
-          if (to.meta?.role !== undefined && to.meta.role !== userRole) {
-            next({ name: 'signin' }); // Redirect to sign-in if role doesn't match
+
+          if (to.meta?.role !== undefined) {
+            if (!to.meta.role.includes(userRole)) {
+              next({ name: 'signin' }); // Redirect to sign-in if role doesn't match
+            } else {
+              next(); // Allow navigation
+            }
           } else if (to.meta?.level !== undefined && to.meta.level !== userLevel) {
-            next({ name: 'signin' }); // Redirect to sign-in if role doesn't match
+            next({ name: 'signin' }); // Redirect to sign-in if level doesn't match
           } else {
             next(); // Allow navigation
           }
