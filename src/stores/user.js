@@ -2,28 +2,20 @@ import { defineStore } from 'pinia'; // Import Pinia's defineStore to create a s
 import { api } from 'boot/axios'; // Import the axios instance for API requests
 
 // Define a Pinia store named 'counter' for managing users-related data
-export const useBuyerStore = defineStore('buyer', {
+export const useUserStore = defineStore('user', {
   state: () => ({
-    Buyers: [],
-    BuyerList: [],
+    Users: [],
+    UserDetails: {},
+    ShowUserDetailsDialog: false,
+    ShowUserEditDialog: false,
+
   }),
   actions: {
     // Action to fetch specific users from the API
-    SearchBuyer(request) {
+    SearchUser(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch users based on the offset
-        api.get(`vendor-match/buyer?${request}`).then((response) => {
-          resolve(response.data); // Resolve the promise with the API response data
-        }).catch((error) => {
-          reject(error); // Reject the promise if the API request fails
-        });
-      });
-    },
-    // Action to fetch specific buyers from the API
-    GetBuyers(request) {
-      return new Promise((resolve, reject) => {
-        // Make a GET request to fetch buyers based on the offset
-        api.get(`vendor-match/buyer?${request}`).then((response) => {
+        api.get(`vendor-match/user?${request}`).then((response) => {
           resolve(response.data); // Resolve the promise with the API response data
         }).catch((error) => {
           reject(error); // Reject the promise if the API request fails
