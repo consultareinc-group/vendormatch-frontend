@@ -4,10 +4,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '',
-        component: () => import('pages/IndexPage.vue')
+        path: 'users',
+        component: () => import('src/pages/user-management/UserManagement.vue'),
+        meta: { level: 0 }
       },
-
     ]
   },
 
