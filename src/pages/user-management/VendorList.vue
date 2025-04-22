@@ -30,9 +30,9 @@
 
       <template v-slot:body-cell-actions="props">
         <q-td :props="props" class="q-gutter-sm">
-          <q-btn flat round color="primary" icon="visibility" @click="viewUserDetails(props.row)">
+          <!-- <q-btn flat round color="primary" icon="visibility" @click="viewUserDetails(props.row)">
             <q-tooltip>View Details</q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <q-btn flat round color="warning" icon="edit" @click="editUser(props.row)">
             <q-tooltip>Edit User</q-tooltip>
           </q-btn>
@@ -48,15 +48,15 @@
         </q-td>
       </template>
     </q-table>
-    <UserDetails />
-    <EditUser />
+    <!-- <UserDetails /> -->
+    <EditUser v-if="userStore.ShowUserEditDialog" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 // import { useQuasar } from 'quasar'
-import UserDetails from 'src/pages/user-management/components/UserDetails.vue'
+// import UserDetails from 'src/pages/user-management/components/UserDetails.vue'
 import EditUser from 'src/pages/user-management/components/EditUser.vue'
 import { useUserStore } from 'src/stores/user'
 import { useVendorStore } from 'src/stores/vendor'
@@ -151,14 +151,14 @@ const filteredVendors = computed(() => {
   })
 })
 
-const viewUserDetails = (user) => {
-  userStore.UserDetails = user
-  userStore.ShowUserDetailsDialog = false
-}
+// const viewUserDetails = (user) => {
+//   userStore.UserDetails = user
+//   userStore.ShowUserDetailsDialog = false
+// }
 
 const editUser = (user) => {
   userStore.UserDetails = user
-  userStore.ShowUserEditDialog = false
+  userStore.ShowUserEditDialog = true
 }
 
 const toggleUserStatus = async (user) => {

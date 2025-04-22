@@ -30,9 +30,9 @@
 
       <template v-slot:body-cell-actions="props">
         <q-td :props="props" class="q-gutter-sm">
-          <q-btn flat round color="primary" icon="visibility" @click="viewUserDetails(props.row)">
+          <!-- <q-btn flat round color="primary" icon="visibility" @click="viewUserDetails(props.row)">
             <q-tooltip>View Details</q-tooltip>
-          </q-btn>
+          </q-btn> -->
           <q-btn flat round color="warning" icon="edit" @click="editUser(props.row)">
             <q-tooltip>Edit User</q-tooltip>
           </q-btn>
@@ -58,7 +58,7 @@ import { useBuyerStore } from 'src/stores/buyer'
 // const $q = useQuasar()
 const buyerStore = useBuyerStore()
 
-const showDetailsDialog = ref(false)
+// const showDetailsDialog = ref(false)
 const showEditDialog = ref(false)
 const selectedUser = ref(null)
 const buyerSearch = ref('')
@@ -154,10 +154,10 @@ const filteredBuyers = computed(() => {
   })
 })
 
-const viewUserDetails = (user) => {
-  selectedUser.value = user
-  showDetailsDialog.value = false
-}
+// const viewUserDetails = (user) => {
+//   selectedUser.value = user
+//   showDetailsDialog.value = false
+// }
 
 const editUser = (user) => {
   selectedUser.value = user
