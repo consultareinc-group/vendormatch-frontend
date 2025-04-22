@@ -19,11 +19,22 @@ export const useVendorStore = defineStore('vendor', {
         });
       });
     },
-    // Action to fetch specific vendors from the API
+    // Action to fetch vendors from the API
     GetVendors(request) {
       return new Promise((resolve, reject) => {
         // Make a GET request to fetch vendors based on the offset
         api.get(`vendor-match/vendor?${request}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((error) => {
+          reject(error); // Reject the promise if the API request fails
+        });
+      });
+    },
+    // Action to fetch specific vendor from the API
+    GetVendor(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch vendor based on the offset
+        api.get(`vendor-match/vendor/${request.id}`).then((response) => {
           resolve(response.data); // Resolve the promise with the API response data
         }).catch((error) => {
           reject(error); // Reject the promise if the API request fails
