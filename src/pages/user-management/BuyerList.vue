@@ -48,19 +48,20 @@
         </q-td>
       </template>
     </q-table>
+    <EditUser v-if="userStore.ShowUserEditDialog" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 // import { useQuasar } from 'quasar'
+import EditUser from 'src/pages/user-management/components/EditUser.vue'
 import { useBuyerStore } from 'src/stores/buyer'
+import { useUserStore } from 'src/stores/user'
 // const $q = useQuasar()
 const buyerStore = useBuyerStore()
+const userStore = useUserStore()
 
-// const showDetailsDialog = ref(false)
-const showEditDialog = ref(false)
-const selectedUser = ref(null)
 const buyerSearch = ref('')
 const loading = ref(false)
 
@@ -69,12 +70,6 @@ const buyerPagination = ref({
   descending: false,
   page: 1,
   rowsPerPage: 10,
-})
-
-const editForm = ref({
-  first_name: '',
-  last_name: '',
-  email: '',
 })
 
 const columns = [
@@ -160,13 +155,8 @@ const filteredBuyers = computed(() => {
 // }
 
 const editUser = (user) => {
-  selectedUser.value = user
-  editForm.value = {
-    first_name: user.first_name,
-    last_name: user.last_name,
-    email: user.email,
-  }
-  showEditDialog.value = false
+  userStore.UserDetails = user
+  userStore.ShowUserEditDialog = true
 }
 
 const toggleUserStatus = async (user) => {
