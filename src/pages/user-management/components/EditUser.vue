@@ -100,7 +100,15 @@
                 />
               </div>
             </div>
-            <div><q-btn dense flat label="Change Password" no-caps></q-btn></div>
+            <div>
+              <q-btn
+                dense
+                flat
+                label="Change Password"
+                no-caps
+                @click="userStore.ShowPasswordDialog = true"
+              ></q-btn>
+            </div>
 
             <div class="row justify-end q-mt-md">
               <q-btn flat label="Cancel" color="negative" v-close-popup class="q-mr-sm" no-caps />
@@ -116,6 +124,7 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <ChangePassword v-if="userStore.ShowPasswordDialog" />
   </div>
 </template>
 
@@ -123,10 +132,13 @@
 import { onMounted, ref } from 'vue'
 import { useUserStore } from 'src/stores/user'
 import { useVendorStore } from 'src/stores/vendor'
+import { useBuyerStore } from 'src/stores/buyer'
 import { useAccountStore } from 'src/stores/account'
 import { useQuasar } from 'quasar'
+import ChangePassword from './ChangePassword.vue'
 const userStore = useUserStore()
 const vendorStore = useVendorStore()
+const buyerStore = useBuyerStore()
 const accountStore = useAccountStore()
 const $q = useQuasar()
 
@@ -243,6 +255,17 @@ const saveUserChanges = () => {
             editForm.value.last_name + ', ' + editForm.value.first_name
           vendorStore.VendorList[index].email = editForm.value.email
           vendorStore.VendorList[index].enterprise_name =
+            enterpriseOptions.value[
+              enterpriseOptions.value.findIndex((e) => e.id === editForm.value.enterprise_id)
+            ].name
+        }
+
+        index = buyerStore.BuyerList.findIndex((user) => user.id === response.data.id)
+        if (index !== -1) {
+          buyerStore.BuyerList[index].full_name =
+            editForm.value.last_name + ', ' + editForm.value.first_name
+          buyerStore.BuyerList[index].email = editForm.value.email
+          buyerStore.BuyerList[index].enterprise_name =
             enterpriseOptions.value[
               enterpriseOptions.value.findIndex((e) => e.id === editForm.value.enterprise_id)
             ].name
