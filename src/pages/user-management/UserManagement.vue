@@ -19,6 +19,7 @@
             align="left"
             narrow-indicator
           >
+            <q-tab name="enterprises" icon="business" label="Enterprises" />
             <q-tab name="vendors" icon="store" label="Vendors" />
             <q-tab name="buyers" icon="shopping_cart" label="Buyers" />
           </q-tabs>
@@ -26,6 +27,10 @@
           <q-separator />
 
           <q-tab-panels v-model="activeTab" animated>
+            <!-- Vendors Panel -->
+            <q-tab-panel name="enterprises">
+              <EnterpriseList />
+            </q-tab-panel>
             <!-- Vendors Panel -->
             <q-tab-panel name="vendors">
               <VendorList />
@@ -42,7 +47,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import EnterpriseList from 'src/pages/user-management/EnterpriseList.vue'
 import VendorList from 'src/pages/user-management/VendorList.vue'
 import BuyerList from 'src/pages/user-management/BuyerList.vue'
-const activeTab = ref('vendors')
+const activeTab = ref('enterprises')
 </script>
