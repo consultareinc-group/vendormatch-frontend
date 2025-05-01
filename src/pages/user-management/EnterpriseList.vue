@@ -46,7 +46,7 @@
           <q-btn flat round color="warning" icon="edit" @click="editEnterpise(props.row)">
             <q-tooltip>Edit User</q-tooltip>
           </q-btn>
-          <q-btn
+          <!-- <q-btn
             flat
             round
             :color="props.row.status === 'Active' ? 'negative' : 'positive'"
@@ -54,7 +54,7 @@
             @click="toggleUserStatus(props.row)"
           >
             <q-tooltip>{{ props.row.status === 'Active' ? 'Deactivate' : 'Activate' }}</q-tooltip>
-          </q-btn>
+          </q-btn> -->
         </q-td>
       </template>
     </q-table>
@@ -173,22 +173,7 @@ const editEnterpise = (user) => {
   enterpriseStore.ShowEnterpriseEditDialog = true // Show the edit dialog
 }
 
-const toggleUserStatus = async (user) => {
-  console.log(user)
-  // try {
-  //   // Simulate API call
-  //   await new Promise((resolve) => setTimeout(resolve, 1000))
-  //   const newStatus = user.status === 'Active' ? 'Inactive' : 0
-  //   user.status = newStatus
-  //   $q.notify({
-  //     type: 'positive',
-  //     message: `User status updated to ${newStatus}`,
-  //   })
-  // } catch (error) {
-  //   $q.notify({
-  //     type: 'negative',
-  //     message: 'Failed to update user status ' + error.message,
-  //   })
-  // }
-}
+// const toggleUserStatus = async (user) => {
+//   console.log(user)
+// }
 </script>
