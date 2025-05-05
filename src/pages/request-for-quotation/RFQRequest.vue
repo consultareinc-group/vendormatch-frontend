@@ -99,11 +99,11 @@
                   >
                     <q-tooltip>View Details</q-tooltip>
                   </q-btn>
-                  <q-btn flat round color="primary" icon="edit">
+                  <q-btn flat round color="primary" icon="edit" @click="editRFQ(props.row)">
                     <q-tooltip>Edit</q-tooltip>
                   </q-btn>
                   <q-btn flat round color="negative" icon="delete">
-                    <q-tooltip>Edit</q-tooltip>
+                    <q-tooltip>Delete</q-tooltip>
                   </q-btn>
                 </q-btn-group>
               </q-td>
@@ -113,6 +113,7 @@
       </div>
     </div>
     <RFQDetails v-if="rfqStore.ShowRFQDetailsDialog" />
+    <EditRFQ v-if="rfqStore.ShowRFQEditDialog" />
   </q-page>
 </template>
 
@@ -123,6 +124,7 @@ import { useRouter } from 'vue-router'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
 import RFQDetails from './components/RFQDetails.vue'
+import EditRFQ from './components/EditRFQ.vue'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -267,6 +269,11 @@ const applyFilters = () => {
 const viewRFQDetails = (rfq) => {
   rfqStore.RFQDetails = rfq
   rfqStore.ShowRFQDetailsDialog = true
+}
+
+const editRFQ = (rfq) => {
+  rfqStore.RFQDetails = rfq
+  rfqStore.ShowRFQEditDialog = true
 }
 </script>
 

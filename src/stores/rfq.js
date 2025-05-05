@@ -14,6 +14,7 @@ export const useRFQStore = defineStore('rfq', {
     ShowRFQDetailsDialog: false,
     ShowRFQRespondDialog: false,
     ShowRFQReplyDialog: false,
+    ShowRFQEditDialog: false,
     // Triggers for loading state
     RFQCardLoading: false,
     // Trggers for true actions
