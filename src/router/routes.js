@@ -39,9 +39,14 @@ const routes = [
         component: () => import('src/pages/request-for-quotation/RFQCards.vue'),
       },
       {
-        path: 'request-for-quotation-list',
-        name: 'request-for-quotation-list',
-        component: () => import('src/pages/request-for-quotation/RFQList.vue'),
+        path: 'rfq-requests',
+        name: 'rfq-requests',
+        component: () => import('src/pages/request-for-quotation/RFQRequest.vue'),
+      },
+      {
+        path: 'rfq-responses',
+        name: 'rfq-responses',
+        component: () => import('src/pages/request-for-quotation/RFQResponse.vue'),
       },
       {
         path: 'create-account',
