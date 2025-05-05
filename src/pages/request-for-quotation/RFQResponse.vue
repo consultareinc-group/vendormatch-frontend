@@ -60,7 +60,7 @@
           </q-card-section>
 
           <q-table
-            :rows="rfq_requests"
+            :rows="rfq_responses"
             :columns="columns"
             row-key="id"
             :loading="rfqLoadingState"
@@ -316,21 +316,21 @@ const columns = [
 ]
 
 // Sample data - replace with actual API data
-const rfq_requests = ref(rfqStore.RFQRequests)
+const rfq_responses = ref(rfqStore.RFQResponses)
 
 const rfqLoadingState = ref(false)
 
 // const getRFQs = () => {
 //   rfqLoadingState.value = true
-//   if (rfqStore.RFQRequests.length) {
+//   if (rfqStore.RFQResponses.length) {
 //     rfqLoadingState.value = false
 //   }
 
 //   rfqStore
-//     .GetRFQs(`offset=${rfq_requests.value.length}`)
+//     .GetRFQs(`offset=${rfq_responses.value.length}`)
 //     .then((response) => {
 //       if (response.status === 'success') {
-//         rfqStore.RFQRequests.push(...response.data)
+//         rfqStore.RFQResponses.push(...response.data)
 //       }
 //     })
 //     .finally(() => {
@@ -339,7 +339,7 @@ const rfqLoadingState = ref(false)
 // }
 
 onMounted(() => {
-  // if (!rfqStore.RFQRequests.length) {
+  // if (!rfqStore.RFQResponses.length) {
   //   getRFQs()
   // }
 })
@@ -360,11 +360,11 @@ const formatDate = (dateStr) => {
 const searchRFQs = () => {
   rfqStore
     .SearchRFQs(
-      `offset=${rfq_requests.value.length}&search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}`,
+      `offset=${rfq_responses.value.length}&search_keyword=${filter.value.search}&status=${filter.value.status}&category=${encodeURIComponent(filter.value.category)}`,
     )
     .then((response) => {
       if (response.status === 'success') {
-        rfq_requests.value.push(...response.data)
+        rfq_responses.value.push(...response.data)
 
         if (response.data.length) {
           searchRFQs()
@@ -383,7 +383,7 @@ const searchRFQs = () => {
 }
 
 const applyFilters = () => {
-  rfq_requests.value = []
+  rfq_responses.value = []
   rfqLoadingState.value = true
   searchRFQs()
 }
