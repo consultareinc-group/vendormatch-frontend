@@ -43,7 +43,7 @@
           <!-- <q-btn flat round color="primary" icon="visibility" @click="viewEnterpriseDetails(props.row)">
             <q-tooltip>View Details</q-tooltip>
           </q-btn> -->
-          <q-btn flat round color="warning" icon="edit" @click="editEnterpise(props.row)">
+          <q-btn flat round color="primary" icon="edit" @click="editEnterpise(props.row)">
             <q-tooltip>Edit User</q-tooltip>
           </q-btn>
           <!-- <q-btn
