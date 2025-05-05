@@ -50,13 +50,6 @@
         <q-card>
           <q-card-section class="row items-center">
             <div class="text-h6">RFQ Responses</div>
-            <q-space />
-            <q-btn
-              color="primary"
-              icon="add"
-              label="Create RFQ"
-              @click="router.push('/request-for-quotation')"
-            />
           </q-card-section>
 
           <q-table
