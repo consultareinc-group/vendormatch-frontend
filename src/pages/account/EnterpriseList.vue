@@ -65,7 +65,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue' // Importing Vue's reactive and lifecycle functions
 // import { useQuasar } from 'quasar' // Importing Quasar's utility functions (commented out)
-import EditEnterprise from 'src/pages/user-management/components/EditEnterprise.vue' // Importing the EditEnterprise component
+import EditEnterprise from 'src/pages/account/components/EditEnterprise.vue' // Importing the EditEnterprise component
 import { useEnterpriseStore } from 'src/stores/enterprise' // Importing the enterprise store for state management
 // const $q = useQuasar() // Initializing Quasar's notification system (commented out)
 const enterpriseStore = useEnterpriseStore() // Using the enterprise store instance
