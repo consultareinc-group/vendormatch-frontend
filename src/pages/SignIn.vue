@@ -98,7 +98,7 @@ const onSubmit = () => {
       let status = Boolean(response.status === 'success') // Determine the status of the response
       if (status) {
         setTimeout(() => {
-          if (response.data.role === 0) {
+          if (response.data.role === 0 || response.data.role === 2) {
             window.location.href = router.resolve({ name: 'vendor' }).href
           } else {
             window.location.href = router.resolve({ name: 'products' }).href
