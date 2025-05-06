@@ -238,12 +238,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
 
 const $q = useQuasar()
-const router = useRouter()
+// const router = useRouter()
 const rfqStore = useRFQStore()
 
 const showDetailsDialog = ref(false)
