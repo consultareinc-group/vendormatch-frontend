@@ -28,9 +28,9 @@
                   v-if="authStore.UserInformation.level === 0"
                   clickable
                   v-close-popup
-                  to="/users"
+                  to="/accounts"
                 >
-                  <q-item-section>User Management</q-item-section>
+                  <q-item-section>Account Management</q-item-section>
                 </q-item>
                 <q-separator />
                 <q-item clickable v-close-popup @click="logout">

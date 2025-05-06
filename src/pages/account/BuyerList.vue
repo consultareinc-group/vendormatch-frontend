@@ -84,7 +84,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue' // Import Vue's reactive and lifecycle utilities
 import { useQuasar } from 'quasar' // Import Quasar framework utilities
-import EditUser from 'src/pages/user-management/components/EditUser.vue' // Import the EditUser component
+import EditUser from 'src/pages/account/components/EditUser.vue' // Import the EditUser component
 import { useBuyerStore } from 'src/stores/buyer' // Import the buyer store
 import { useUserStore } from 'src/stores/user' // Import the user store
 import { useVendorStore } from 'src/stores/vendor' // Import the vendor store

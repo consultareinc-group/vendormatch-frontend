@@ -3,7 +3,7 @@
     <div class="row q-col-gutter-md">
       <!-- Page Header -->
       <div class="col-12 flex justify-between items-center q-mb-md">
-        <div class="text-h5">User Management</div>
+        <div class="text-h5">Account Management</div>
         <q-btn to="/create-account" label="Create Account" no-caps color="primary" />
       </div>
 
@@ -47,8 +47,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import EnterpriseList from 'src/pages/user-management/EnterpriseList.vue'
-import VendorList from 'src/pages/user-management/VendorList.vue'
-import BuyerList from 'src/pages/user-management/BuyerList.vue'
+import EnterpriseList from 'src/pages/account/EnterpriseList.vue'
+import VendorList from 'src/pages/account/VendorList.vue'
+import BuyerList from 'src/pages/account/BuyerList.vue'
 const activeTab = ref('enterprises')
 </script>
