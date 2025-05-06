@@ -54,9 +54,14 @@ const routes = [
         component: () => import('src/pages/CreateAccount.vue'),
       },
       {
-        path: 'users',
-        component: () => import('src/pages/user-management/UserManagement.vue'),
+        path: 'accounts',
+        component: () => import('src/pages/account/AccountList.vue'),
         meta: { level: 0 }
+      },
+      {
+        path: 'create-account',
+        name: 'create-account',
+        component: () => import('src/pages/account/CreateAccount.vue'),
       },
     ]
   },

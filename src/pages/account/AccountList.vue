@@ -3,7 +3,7 @@
     <div class="row q-col-gutter-md">
       <!-- Page Header -->
       <div class="col-12 flex justify-between items-center q-mb-md">
-        <div class="text-h5">User Management</div>
+        <div class="text-h5">Account Management</div>
         <q-btn to="/create-account" label="Create Account" no-caps color="primary" />
       </div>
 
