@@ -158,10 +158,29 @@
             <div class="text-h6 q-my-md">RFQ Responses</div>
             <q-table
               color="primary"
-              :rows="rfqResponses"
+              :rows="rfqStore.RFQResponseMessages"
               :columns="columns"
               :loading="rfqResponsesLoadingState"
             >
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <q-chip
+                    :color="
+                      props.value === 'Pending'
+                        ? 'warning'
+                        : props.value === 'Accepted'
+                          ? 'positive'
+                          : props.value === 'Declined'
+                            ? 'negative'
+                            : 'primary'
+                    "
+                    text-color="white"
+                    size="sm"
+                  >
+                    {{ props.value }}
+                  </q-chip>
+                </q-td>
+              </template>
               <template v-slot:body-cell-actions="props">
                 <q-td :props="props">
                   <q-btn-group flat>
@@ -216,7 +235,6 @@ const authStore = useAuthStore()
 const route = useRoute()
 const helperStore = useHelperStore()
 
-const rfqResponses = ref([])
 const rfqResponsesLoadingState = ref(false)
 const columns = [
   {
@@ -256,6 +274,12 @@ const columns = [
     align: 'left',
   },
   {
+    name: 'status',
+    label: 'Status',
+    field: 'status',
+    align: 'left',
+  },
+  {
     name: 'additional_notes',
     label: 'Additional Notes',
     field: 'additional_notes',
@@ -267,10 +291,10 @@ const columns = [
 
 const getRFQResponses = () => {
   rfqStore
-    .GetRFQResponses(`id=${rfqStore.RFQDetails.id}&offset=${rfqResponses.value.length}`)
+    .GetRFQResponses(`id=${rfqStore.RFQDetails.id}&offset=${rfqStore.RFQResponseMessages.length}`)
     .then((response) => {
       if (response.status === 'success') {
-        rfqResponses.value.push(...response.data)
+        rfqStore.RFQResponseMessages.push(...response.data)
 
         if (response.data.length) {
           getRFQResponses()
