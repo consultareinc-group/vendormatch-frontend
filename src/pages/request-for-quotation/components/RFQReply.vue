@@ -41,13 +41,6 @@
                     >
                   </q-item-section>
                 </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label caption>Notes</q-item-label>
-                    <q-item-label>{{ rfqStore.RFQResponseDetails?.additional_notes }}</q-item-label>
-                  </q-item-section>
-                </q-item>
               </q-list>
             </div>
             <div class="col-12 col-md-6">
@@ -64,6 +57,39 @@
                     <q-item-label>{{ rfqStore.RFQResponseDetails?.shipping_terms }}</q-item-label>
                   </q-item-section>
                 </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label caption>Status</q-item-label>
+                    <q-item-label
+                      ><q-chip
+                        :color="
+                          rfqStore.RFQResponseDetails?.status === 'Pending'
+                            ? 'warning'
+                            : rfqStore.RFQResponseDetails?.status === 'Accepted'
+                              ? 'positive'
+                              : rfqStore.RFQResponseDetails?.status === 'Declined'
+                                ? 'negative'
+                                : 'primary'
+                        "
+                        text-color="white"
+                        size="sm"
+                        class="q-ma-none"
+                      >
+                        {{ rfqStore.RFQResponseDetails?.status }}
+                      </q-chip></q-item-label
+                    >
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+            <div class="col-12">
+              <q-list dense>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label caption>Notes</q-item-label>
+                    <q-item-label>{{ rfqStore.RFQResponseDetails?.additional_notes }}</q-item-label>
+                  </q-item-section>
+                </q-item>
               </q-list>
             </div>
           </div>
@@ -75,17 +101,25 @@
           <div class="text-subtitle2 q-mb-md">Your Reply</div>
           <q-form @submit="submitBuyerResponse" class="q-gutter-md">
             <q-select
-              v-model="buyerResponseForm.decision"
-              :options="decisionOptions"
-              label="Decision *"
-              :rules="[(val) => !!val || 'Please select a decision']"
+              v-model="buyerResponseForm.status"
+              :options="statusOptions"
+              :label="`Decision ${rfqStore.RFQResponseDetails?.status === 'Pending' ? '*' : ''}`"
+              :rules="
+                rfqStore.RFQResponseDetails?.status === 'Pending' && [
+                  (val) => !!val || 'Please select a decision',
+                ]
+              "
+              emit-value
+              map-options
+              option-label="label"
+              option-value="value"
               outlined
               dense
             />
 
             <q-input
-              v-if="buyerResponseForm.decision === 'Counter Offer'"
-              v-model.number="buyerResponseForm.counterOfferPrice"
+              v-if="buyerResponseForm.status === 'Counter Offer'"
+              v-model.number="buyerResponseForm.counter_offer_price"
               type="number"
               label="Counter Offer Price per Unit *"
               prefix="$"
@@ -98,8 +132,8 @@
             />
 
             <q-input
-              v-if="buyerResponseForm.decision === 'Counter Offer'"
-              v-model.number="buyerResponseForm.counterOfferQuantity"
+              v-if="buyerResponseForm.status === 'Counter Offer'"
+              v-model.number="buyerResponseForm.counter_offer_quantity"
               type="number"
               label="Counter Offer Quantity *"
               :rules="[
@@ -139,25 +173,59 @@
 
 <script setup>
 import { ref } from 'vue'
-// import { useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
 
 const rfqStore = useRFQStore()
-// const $q = useQuasar()
+const $q = useQuasar()
 
 const submitting = ref(false)
 const selectedRFQ = ref(null)
 
 const buyerResponseForm = ref({
-  decision: null,
-  counterOfferPrice: null,
-  counterOfferQuantity: null,
+  status: '',
+  counter_offer_price: null,
+  counter_offer_quantity: null,
   message: '',
 })
 
-const decisionOptions = ['Accept', 'Decline', 'Counter Offer']
+const statusOptions = [
+  { label: 'Accept', value: 'Accepted' },
+  { label: 'Decline', value: 'Declined' },
+  { label: 'Counter Offer', value: 'Counter Offer' },
+]
 
-const submitBuyerResponse = () => {}
+const submitBuyerResponse = () => {
+  submitting.value = true
+  buyerResponseForm.value.rfq_response_id = rfqStore.RFQResponseDetails.id
+  rfqStore
+    .ReplyToRFQResponse(buyerResponseForm.value)
+    .then((response) => {
+      let status = Boolean(response.status === 'success')
+      $q.notify({
+        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> your reply ${status ? 'has been' : 'was not'} sent.</p>`,
+        color: `${status ? 'green' : 'red'}-2`,
+        position: 'top-right',
+        textColor: `${status ? 'green' : 'red'}`,
+        html: true,
+      })
+
+      if (status) {
+        let index = rfqStore.RFQResponseMessages.findIndex(
+          (response) => response.id === rfqStore.RFQResponseDetails.id,
+        )
+        index !== -1 &&
+          (rfqStore.RFQResponseMessages[index].status = buyerResponseForm.value.status)
+
+        console.log('rfqStore.RFQResponseMessages ', rfqStore.RFQResponseMessages)
+        console.log('index ', index)
+      }
+    })
+    .finally(() => {
+      submitting.value = false
+      rfqStore.ShowRFQReplyDialog = false
+    })
+}
 </script>
 
 <style lang="scss">

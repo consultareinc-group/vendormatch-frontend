@@ -10,6 +10,7 @@ export const useRFQStore = defineStore('rfq', {
     RFQRequests: [],
     RFQResponses: [],
     RFQResponseDetails: {},
+    RFQResponseMessages: [],
 
     // Triggers to show/hide the RFQ dialog
     ShowRFQDetailsDialog: false,
@@ -133,6 +134,21 @@ export const useRFQStore = defineStore('rfq', {
         // Make a POST request to insert rfq response in the database rfq response table
         api
           .post(`vendor-match/rfq-response`, request)
+          .then((response) => {
+            resolve(response.data); // Resolve the promise with the API response data
+          })
+          .catch((error) => {
+            reject(error); // Reject the promise if the API request fails
+          });
+      });
+    },
+    // Action to insert reponse to rfq
+    ReplyToRFQResponse(request) {
+      return new Promise((resolve, reject) => {
+
+        // Make a POST request to insert rfq response in the database rfq response table
+        api
+          .post(`vendor-match/rfq-message`, request)
           .then((response) => {
             resolve(response.data); // Resolve the promise with the API response data
           })
