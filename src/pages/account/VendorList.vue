@@ -22,8 +22,8 @@
     >
       <template v-slot:body-cell-status="props">
         <q-td :props="props">
-          <q-chip :color="props.value === 0 ? 'positive' : 'negative'" text-color="white" size="sm">
-            {{ props.value === 0 ? 'Active' : 'Deactivated' }}
+          <q-chip :color="props.value == 0 ? 'positive' : 'negative'" text-color="white" size="sm">
+            {{ props.value == 0 ? 'Active' : 'Deactivated' }}
           </q-chip>
         </q-td>
       </template>
@@ -39,11 +39,11 @@
           <q-btn
             flat
             round
-            :color="props.row.status === 0 ? 'negative' : 'positive'"
-            :icon="props.row.status === 0 ? 'block' : 'check_circle'"
+            :color="props.row.status == 0 ? 'negative' : 'positive'"
+            :icon="props.row.status == 0 ? 'block' : 'check_circle'"
             @click="showStatusDialog(props.row)"
           >
-            <q-tooltip>{{ props.row.status === 0 ? 'Deactivate' : 'Activate' }}</q-tooltip>
+            <q-tooltip>{{ props.row.status == 0 ? 'Deactivate' : 'Activate' }}</q-tooltip>
           </q-btn>
         </q-td>
       </template>
@@ -54,7 +54,7 @@
       <q-card style="min-width: 350px">
         <q-card-section class="row items-center">
           <div class="text-h6">
-            {{ userStore.UserDetails.status === 0 ? 'Deactivate' : 'Activate' }} User
+            {{ userStore.UserDetails.status == 0 ? 'Deactivate' : 'Activate' }} User
           </div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
@@ -64,7 +64,7 @@
 
         <q-card-section>
           Are you sure you want to
-          {{ userStore.UserDetails.status === 0 ? 'deactivate' : 'activate' }} this user?
+          {{ userStore.UserDetails.status == 0 ? 'deactivate' : 'activate' }} this user?
           <div class="text-center text-bold">{{ userStore.UserDetails.full_name }}</div>
         </q-card-section>
 
@@ -205,7 +205,7 @@ const loadingStatus = ref(false) // Reactive variable to track status change loa
 // Function to toggle user status
 const toggleUserStatus = () => {
   loadingStatus.value = true // Set loading to true
-  let userStatus = userStore.UserDetails.status === 0 ? 1 : 0 // Determine the new status
+  let userStatus = userStore.UserDetails.status == 0 ? 1 : 0 // Determine the new status
   userStore
     .ChangeStatus({ id: userStore.UserDetails.id, is_deleted: userStatus }) // Call the API to change status
     .then((response) => {
