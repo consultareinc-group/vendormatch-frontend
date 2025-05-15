@@ -49,11 +49,6 @@ const routes = [
         component: () => import('src/pages/request-for-quotation/RFQResponse.vue'),
       },
       {
-        path: 'create-account',
-        name: 'create-account',
-        component: () => import('src/pages/CreateAccount.vue'),
-      },
-      {
         path: 'accounts',
         component: () => import('src/pages/account/AccountList.vue'),
         meta: { level: 0 }
