@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Buyer Response Dialog -->
-    <q-dialog class="rfq-reply" v-model="rfqStore.ShowRFQReplyDialog" persistent>
+    <q-dialog class="rfq-reply" v-model="rfqStore.ShowBuyerReplyFormDialog" persistent>
       <q-card style="min-width: 500px">
         <q-card-section>
           <div class="text-h6">Reply to Vendor Response</div>
@@ -105,9 +105,9 @@
               :options="statusOptions"
               :label="`Decision ${rfqStore.RFQResponseDetails?.status === 'Pending' ? '*' : ''}`"
               :rules="
-                rfqStore.RFQResponseDetails?.status === 'Pending' && [
-                  (val) => !!val || 'Please select a decision',
-                ]
+                rfqStore.RFQResponseDetails?.status === 'Pending'
+                  ? [(val) => !!val || 'Please select a decision']
+                  : []
               "
               emit-value
               map-options
@@ -223,7 +223,7 @@ const submitBuyerResponse = () => {
     })
     .finally(() => {
       submitting.value = false
-      rfqStore.ShowRFQReplyDialog = false
+      rfqStore.ShowBuyerReplyFormDialog = false
     })
 }
 </script>
