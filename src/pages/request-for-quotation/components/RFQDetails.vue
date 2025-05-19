@@ -189,7 +189,7 @@
                       round
                       color="positive"
                       icon="chat"
-                      @click="showBuyerResponse(props.row)"
+                      @click="showReplyForm(props.row)"
                     >
                       <q-tooltip>Respond</q-tooltip>
                     </q-btn>
@@ -215,7 +215,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <RFQReply v-if="rfqStore.ShowRFQReplyDialog" />
+    <BuyerReplyForm v-if="rfqStore.ShowBuyerReplyFormDialog" />
+    <VendorReplyForm v-if="rfqStore.ShowVendorReplyFormDialog" />
   </div>
 </template>
 
@@ -228,7 +229,8 @@ import { useAuthStore } from 'src/stores/auth'
 import { useRoute } from 'vue-router'
 import html2pdf from 'html2pdf.js'
 
-import RFQReply from './RFQReply.vue'
+import BuyerReplyForm from './BuyerReplyForm.vue'
+import VendorReplyForm from './VendorReplyForm.vue'
 
 const rfqStore = useRFQStore()
 const authStore = useAuthStore()
@@ -291,7 +293,9 @@ const columns = [
 
 const getRFQResponses = () => {
   rfqStore
-    .GetRFQResponses(`id=${rfqStore.RFQDetails.id}&offset=${rfqStore.RFQResponseMessages.length}`)
+    .GetRFQResponses(
+      `id=${rfqStore.RFQDetails.request_for_quotation_id ?? rfqStore.RFQDetails.id}&offset=${rfqStore.RFQResponseMessages.length}`,
+    )
     .then((response) => {
       if (response.status === 'success') {
         rfqStore.RFQResponseMessages.push(...response.data)
@@ -332,6 +336,7 @@ onMounted(() => {
     })
 
   rfqResponsesLoadingState.value = true
+  rfqStore.RFQResponseMessages = []
   getRFQResponses()
 })
 
@@ -364,8 +369,15 @@ const downloadPDF = () => {
     })
 }
 
-const showBuyerResponse = (response) => {
+const showReplyForm = (response) => {
   rfqStore.RFQResponseDetails = response
-  rfqStore.ShowRFQReplyDialog = true
+  const role = authStore.UserInformation.role
+  if (role == 1 || (role != 2 && role != 0)) {
+    rfqStore.ShowBuyerReplyFormDialog = true
+  } else if (route.name === 'rfq-responses') {
+    rfqStore.ShowVendorReplyFormDialog = true
+  } else {
+    rfqStore.ShowBuyerReplyFormDialog = true
+  }
 }
 </script>
