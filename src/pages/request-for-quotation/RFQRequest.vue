@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <div class="q-pa-md">
     <div class="row q-col-gutter-md">
       <!-- Filters -->
       <div class="col-12">
@@ -114,7 +114,7 @@
     </div>
     <RFQDetails v-if="rfqStore.ShowRFQDetailsDialog" />
     <EditRFQ v-if="rfqStore.ShowRFQEditDialog" />
-  </q-page>
+  </div>
 </template>
 
 <script setup>

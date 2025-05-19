@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <div class="q-pa-md">
     <div class="row q-col-gutter-md">
       <!-- Filters -->
       <div class="col-12">
@@ -62,7 +62,19 @@
           >
             <template v-slot:body-cell-status="props">
               <q-td :props="props">
-                <q-chip :color="getStatusColor(props.value)" text-color="white" size="sm">
+                <q-chip
+                  :color="
+                    props.value === 'Pending'
+                      ? 'warning'
+                      : props.value === 'Accepted'
+                        ? 'positive'
+                        : props.value === 'Declined'
+                          ? 'negative'
+                          : 'primary'
+                  "
+                  text-color="white"
+                  size="sm"
+                >
                   {{ props.value }}
                 </q-chip>
               </q-td>
@@ -92,14 +104,7 @@
                   >
                     <q-tooltip>View Details</q-tooltip>
                   </q-btn>
-                  <q-btn
-                    v-if="props.row.status === 'Pending'"
-                    flat
-                    round
-                    color="positive"
-                    icon="chat"
-                    @click="respondToRFQ(props.row)"
-                  >
+                  <q-btn flat round color="positive" icon="chat" @click="respondToRFQ(props.row)">
                     <q-tooltip>Respond</q-tooltip>
                   </q-btn>
                 </q-btn-group>
@@ -109,130 +114,8 @@
         </q-card>
       </div>
     </div>
-
-    <!-- RFQ Details Dialog -->
-    <q-dialog v-model="showDetailsDialog" full-width>
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">RFQ Details</div>
-        </q-card-section>
-
-        <q-card-section v-if="selectedRFQ">
-          <div class="row q-col-gutter-md">
-            <div class="col-12 col-md-6">
-              <q-list>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Product Name</q-item-label>
-                    <q-item-label>{{ selectedRFQ.product_name }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Category</q-item-label>
-                    <q-item-label>{{ selectedRFQ.category }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Quantity</q-item-label>
-                    <q-item-label>{{ selectedRFQ.quantity }} {{ selectedRFQ.unit }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <q-list>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Target Price</q-item-label>
-                    <q-item-label>${{ selectedRFQ.target_price }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Delivery Location</q-item-label>
-                    <q-item-label>{{ selectedRFQ.delivery_location }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Delivery Date</q-item-label>
-                    <q-item-label>{{
-                      formatDate(selectedRFQ.required_delivery_date)
-                    }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-
-            <div class="col-12">
-              <q-list>
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Specifications</q-item-label>
-                    <q-item-label>{{ selectedRFQ.specifications }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Required Certifications</q-item-label>
-                    <div class="q-gutter-xs">
-                      <q-chip
-                        v-for="cert in selectedRFQ.required_certifications"
-                        :key="cert"
-                        size="sm"
-                      >
-                        {{ cert }}
-                      </q-chip>
-                    </div>
-                  </q-item-section>
-                </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Packaging Requirements</q-item-label>
-                    <div class="q-gutter-xs">
-                      <q-chip
-                        v-for="pkg in selectedRFQ.packaging_requirements"
-                        :key="pkg"
-                        size="sm"
-                      >
-                        {{ pkg }}
-                      </q-chip>
-                    </div>
-                  </q-item-section>
-                </q-item>
-
-                <q-item>
-                  <q-item-section>
-                    <q-item-label overline>Additional Notes</q-item-label>
-                    <q-item-label>{{ selectedRFQ.additional_notes }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Close" color="primary" v-close-popup />
-          <q-btn
-            v-if="selectedRFQ?.status === 'Pending'"
-            color="primary"
-            label="Respond"
-            @click="respondToRFQ(selectedRFQ)"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </q-page>
+    <RFQDetails v-if="rfqStore.ShowRFQDetailsDialog" />
+  </div>
 </template>
 
 <script setup>
@@ -241,13 +124,11 @@ import { useQuasar } from 'quasar'
 // import { useRouter } from 'vue-router'
 import { date } from 'quasar'
 import { useRFQStore } from 'src/stores/rfq'
+import RFQDetails from './components/RFQDetails.vue'
 
 const $q = useQuasar()
 // const router = useRouter()
 const rfqStore = useRFQStore()
-
-const showDetailsDialog = ref(false)
-const selectedRFQ = ref(null)
 
 const pagination = ref({
   sortBy: 'date',
@@ -313,38 +194,29 @@ const rfq_responses = ref(rfqStore.RFQResponses)
 
 const rfqLoadingState = ref(false)
 
-// const getRFQs = () => {
-//   rfqLoadingState.value = true
-//   if (rfqStore.RFQResponses.length) {
-//     rfqLoadingState.value = false
-//   }
+const getRFQResponse = () => {
+  rfqLoadingState.value = true
+  if (rfqStore.RFQResponses.length) {
+    rfqLoadingState.value = false
+  }
 
-//   rfqStore
-//     .GetRFQs(`offset=${rfq_responses.value.length}`)
-//     .then((response) => {
-//       if (response.status === 'success') {
-//         rfqStore.RFQResponses.push(...response.data)
-//       }
-//     })
-//     .finally(() => {
-//       rfqLoadingState.value = false
-//     })
-// }
+  rfqStore
+    .GetRFQResponses(`offset=${rfq_responses.value.length}`)
+    .then((response) => {
+      if (response.status === 'success') {
+        rfqStore.RFQResponses.push(...response.data)
+      }
+    })
+    .finally(() => {
+      rfqLoadingState.value = false
+    })
+}
 
 onMounted(() => {
-  // if (!rfqStore.RFQResponses.length) {
-  //   getRFQs()
-  // }
-})
-
-const getStatusColor = (status) => {
-  const colors = {
-    Pending: 'warning',
-    Responded: 'info',
-    Closed: 'positive',
+  if (!rfqStore.RFQResponses.length) {
+    getRFQResponse()
   }
-  return colors[status] || 'grey'
-}
+})
 
 const formatDate = (dateStr) => {
   return date.formatDate(dateStr, 'MMMM D, YYYY hh:mm A')
@@ -382,8 +254,8 @@ const applyFilters = () => {
 }
 
 const viewRFQDetails = (rfq) => {
-  selectedRFQ.value = rfq
-  showDetailsDialog.value = true
+  rfqStore.RFQDetails = rfq
+  rfqStore.ShowRFQDetailsDialog = true
 }
 
 const respondToRFQ = (rfq) => {
