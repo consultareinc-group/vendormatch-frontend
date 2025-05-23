@@ -158,5 +158,15 @@ export const useRFQStore = defineStore('rfq', {
           });
       });
     },
+    GetMessages(request) {
+      return new Promise((resolve, reject) => {
+        // Make a GET request to fetch messages based on the offset
+        api.get(`vendor-match/rfq-message?${request}`).then((response) => {
+          resolve(response.data); // Resolve the promise with the API response data
+        }).catch((error) => {
+          reject(error); // Reject the promise with the error response data
+        });
+      });
+    },
   },
 })
