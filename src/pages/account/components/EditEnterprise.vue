@@ -123,6 +123,7 @@ const editForm = ref({
 const categoryOptions = [
   'Food',
   'Non-Food',
+  'Food & Non-Food',
   'Organic',
   'Non-Organic',
   'Dietary Supplements',
