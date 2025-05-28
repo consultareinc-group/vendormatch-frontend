@@ -401,6 +401,7 @@ const enterprise_id = ref(null)
 const categoryOptions = [
   'Food',
   'Non-Food',
+  'Food & Non-Food',
   'Organic',
   'Non-Organic',
   'Dietary Supplements',
