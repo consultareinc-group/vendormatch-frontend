@@ -12,7 +12,7 @@
           <!-- Enterprise Information -->
           <q-step :name="1" title="Enterprise Information" icon="business" :done="step > 1">
             <q-form @submit="onEnterpriseSubmit" class="q-gutter-md">
-              <div class="row q-col-gutter-md q-mb-md">
+              <!-- <div class="row q-col-gutter-md q-mb-md">
                 <div class="col-12">
                   <q-checkbox v-model="hasEnterprise" label="Already have an enterprise?" />
                 </div>
@@ -42,7 +42,7 @@
                     </template>
                   </q-select>
                 </div>
-              </div>
+              </div> -->
               <div v-if="!hasEnterprise" class="row q-col-gutter-md">
                 <div class="col-12">
                   <q-input
@@ -115,7 +115,7 @@
                   />
                 </div>
 
-                <div class="col-12 col-md-6">
+                <!-- <div class="col-12 col-md-6">
                   <q-input
                     v-model="enterprise.email"
                     type="email"
@@ -129,11 +129,7 @@
                     dense
                     autocomplete="off"
                   />
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <q-input v-model="enterprise.website" label="Website" outlined dense />
-                </div>
+                </div> -->
 
                 <div class="col-12 col-md-6">
                   <q-input
@@ -159,6 +155,10 @@
                       </q-icon>
                     </template>
                   </q-input>
+                </div>
+
+                <div class="col-12">
+                  <q-input v-model="enterprise.website" label="Website" outlined dense />
                 </div>
               </div>
 
@@ -283,7 +283,7 @@ const enterprise = ref({
   country: '',
   postal_code: '',
   contact_number: '',
-  email: '',
+  email: 'info@consultareinc.com',
   website: '',
   established_date: '',
 })
@@ -401,48 +401,48 @@ watch(
   },
 )
 
-const enterpriseOptions = ref([])
-const searchEnterpriseLoadingState = ref(false)
+// const enterpriseOptions = ref([])
+// const searchEnterpriseLoadingState = ref(false)
 
-const fetchEnterprises = async (val, update) => {
-  searchEnterpriseLoadingState.value = true
-  try {
-    const response = await accountStore.SearchEnterprise(`search=${val}`)
-    if (response.status === 'success') {
-      // Use a Set to avoid duplicate enterprise entries
-      const existingIds = new Set(accountStore.Enterprises.map((enterprise) => enterprise.id))
-      response.data.forEach((enterprise) => {
-        if (!existingIds.has(enterprise.id)) {
-          accountStore.Enterprises.push(enterprise)
-        }
-      })
+// const fetchEnterprises = async (val, update) => {
+//   searchEnterpriseLoadingState.value = true
+//   try {
+//     const response = await accountStore.SearchEnterprise(`search=${val}`)
+//     if (response.status === 'success') {
+//       // Use a Set to avoid duplicate enterprise entries
+//       const existingIds = new Set(accountStore.Enterprises.map((enterprise) => enterprise.id))
+//       response.data.forEach((enterprise) => {
+//         if (!existingIds.has(enterprise.id)) {
+//           accountStore.Enterprises.push(enterprise)
+//         }
+//       })
 
-      update(() => {
-        enterpriseOptions.value = accountStore.Enterprises
-      })
-    }
-  } finally {
-    searchEnterpriseLoadingState.value = false
-  }
-}
+//       update(() => {
+//         enterpriseOptions.value = accountStore.Enterprises
+//       })
+//     }
+//   } finally {
+//     searchEnterpriseLoadingState.value = false
+//   }
+// }
 
-const filterEnterprise = (val, update) => {
-  if (!val) {
-    update(() => (enterpriseOptions.value = accountStore.Enterprises))
-    return
-  }
+// const filterEnterprise = (val, update) => {
+//   if (!val) {
+//     update(() => (enterpriseOptions.value = accountStore.Enterprises))
+//     return
+//   }
 
-  update(() => {
-    enterpriseOptions.value = accountStore.Enterprises.filter((enterprise) =>
-      enterprise.name.toLowerCase().includes(val.toLowerCase()),
-    )
-  })
+//   update(() => {
+//     enterpriseOptions.value = accountStore.Enterprises.filter((enterprise) =>
+//       enterprise.name.toLowerCase().includes(val.toLowerCase()),
+//     )
+//   })
 
-  if (!enterpriseOptions.value.length) {
-    accountStore.Enterprises = [] // Clear old data before fetching
-    fetchEnterprises(val, update)
-  }
-}
+//   if (!enterpriseOptions.value.length) {
+//     accountStore.Enterprises = [] // Clear old data before fetching
+//     fetchEnterprises(val, update)
+//   }
+// }
 
 const onEnterpriseSubmit = () => {
   step.value = 2
