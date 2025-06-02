@@ -10,6 +10,11 @@ const routes = [
     name: 'signin',
     component: () => import('src/pages/SignIn.vue')
   },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: () => import('src/pages/SignUp.vue')
+  },
 
 
   // Always leave this as last one,
