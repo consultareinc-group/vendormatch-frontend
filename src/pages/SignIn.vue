@@ -56,7 +56,7 @@
             :loading="btnLoadingState"
           />
           <div class="flex justify-end">
-            <a href="https://vendormatch.pro/connect-match-grow">Sign Up</a>
+            <a href="https://vendormatch.pro/signup">Sign Up</a>
           </div>
         </q-form>
       </q-card-section>

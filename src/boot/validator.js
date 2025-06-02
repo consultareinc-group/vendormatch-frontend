@@ -8,6 +8,12 @@ export default boot(async ({ router }) => {
   const authStore = useAuthStore();
   const token = LocalStorage.getItem('Bearer');
 
+  router.isReady().then(() => {
+    if (router.currentRoute.value.name !== 'signin' || router.currentRoute.value.name !== 'signup') {
+      return;
+    }
+  });
+
   if (token) {
     try {
       const response = await authStore.ValidateToken();
@@ -39,17 +45,24 @@ export default boot(async ({ router }) => {
       } else {
         router.isReady().then(() => {
           router.push({ name: 'signin' });
+
         });
       }
     } catch (error) {
       console.error("Token validation failed:", error);
       router.isReady().then(() => {
+
         router.push({ name: 'signin' });
+
       });
     }
   } else {
     router.isReady().then(() => {
-      router.push({ name: 'signin' });
+      if (router.currentRoute.value.name === 'signup') {
+        router.push({ name: 'signup' });
+      } else {
+        router.push({ name: 'signin' });
+      }
     });
   }
 });
