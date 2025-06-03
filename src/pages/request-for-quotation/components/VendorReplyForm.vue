@@ -31,21 +31,27 @@
               </div>
             </div>
             <div v-else>
-              <q-chat-message
-                v-for="message in messages"
-                :key="message"
-                :bg-color="message.sent_by == message.buyer_id ? 'accent' : 'grey-4'"
-                :name="
-                  message.sent_by != message.buyer_id
-                    ? message.enterprise_name
-                    : message.buyer_id == authStore.UserInformation.id
-                      ? 'You'
-                      : message.buyer_name
-                "
-                :text="[message.message]"
-                :sent="message.sent_by == authStore.UserInformation.id"
-                :stamp="timeAgo(message.date_time_added)"
-              />
+              <div v-if="messages.length">
+                <q-chat-message
+                  v-for="message in messages"
+                  :key="message.id"
+                  :bg-color="message.sent_by == message.buyer_id ? 'accent' : 'grey-4'"
+                  :name="
+                    message.sent_by != message.buyer_id
+                      ? message.enterprise_name
+                      : message.buyer_id == authStore.UserInformation.id
+                        ? 'You'
+                        : message.buyer_name
+                  "
+                  :text="constructedMessage(message)"
+                  :sent="message.sent_by == authStore.UserInformation.id"
+                  :stamp="timeAgo(message.date_time)"
+                />
+              </div>
+              <div v-else class="text-center text-grey">
+                <q-icon name="chat" size="50px" />
+                <div class="text-subtitle2">No messages yet</div>
+              </div>
             </div>
           </div>
         </q-card-section>
@@ -60,6 +66,7 @@
               type="textarea"
               label="Message to Buyer *"
               :rules="[(val) => !!val || 'Please provide a message']"
+              lazy-rules
               outlined
               dense
               autogrow
@@ -99,85 +106,64 @@ const vendorResponseForm = ref({
   message: '', // Message input for vendor's reply
 })
 
-const messages = ref([]) // Store chat messages
+const messages = ref([])
+const messageLoadingState = ref(false)
+const chatContainer = ref(null)
 
-const messageLoadingState = ref(false) // Track loading state for messages
+// Scroll to the bottom of the chat container
+const scrollToBottom = () => {
+  if (chatContainer.value) {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+  }
+}
 
+// Fetch messages for the selected RFQ response
 const getMessages = () => {
-  // Fetch messages from the store
   rfqStore
     .GetMessages(
       `offset=${messages.value.length}&rfq_response_id=${rfqStore.RFQResponseDetails.id}`,
     )
     .then((response) => {
-      if (response.status == 'success') {
-        // If fetch is successful
-        messages.value.push(...response.data) // Add new messages to the list
+      if (response.status === 'success') {
+        messages.value.push(...response.data)
       }
 
       if (response.data.length) {
-        // If more messages exist, fetch again (pagination)
         getMessages()
       }
+      scrollToBottom()
     })
     .finally(() => {
-      messageLoadingState.value = false // Set loading state to false after fetch
+      messageLoadingState.value = false
     })
 }
+
 onMounted(() => {
-  // When component is mounted
-  messageLoadingState.value = true // Set loading state to true
-  getMessages() // Start fetching messages
+  messageLoadingState.value = true
+  getMessages()
 })
 
-const submitBuyerResponse = () => {
-  // Handle reply form submission
-  submitting.value = true // Set submitting state to true
-  vendorResponseForm.value.rfq_response_id = rfqStore.RFQResponseDetails.id // Attach RFQ response ID to form
-  rfqStore
-    .ReplyToRFQResponse(vendorResponseForm.value) // Send reply to store
-    .then((response) => {
-      let status = Boolean(response.status == 'success') // Check if reply was successful
-      $q.notify({
-        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> your reply ${status ? 'has been' : 'was not'} sent.</p>`,
-        color: `${status ? 'green' : 'red'}-2`, // Set notification color
-        position: 'top-right', // Notification position
-        textColor: `${status ? 'green' : 'red'}`, // Notification text color
-        html: true, // Enable HTML in notification
-      })
-
-      if (status) {
-        // If reply was successful
-        let index = rfqStore.RFQResponseMessages.findIndex(
-          (response) => response.id == rfqStore.RFQResponseDetails.id,
-        )
-        index != -1 &&
-          (rfqStore.RFQResponseMessages[index].status = vendorResponseForm.value.status) // Update message status in store
-      }
-    })
-    .finally(() => {
-      submitting.value = false // Reset submitting state
-      rfqStore.ShowBuyerReplyFormDialog = false // Close reply dialog
-    })
-}
-
-const chatContainer = ref(null) // Reference to chat container DOM element
-
-const scrollToBottom = () => {
-  // Scroll chat to bottom
-  if (chatContainer.value) {
-    chatContainer.value.scrollTop = chatContainer.value.scrollHeight
-  }
-}
-// Watch for changes in messages and scroll to bottom when updated
+// Scroll when messages are updated
 watch(
-  messages,
+  () => messages.value.length,
   async () => {
-    await nextTick() // Wait for DOM update
-    scrollToBottom() // Scroll chat to bottom
+    await nextTick()
+    scrollToBottom()
   },
-  { deep: true },
 )
+
+// Construct message content based on counter offer details
+const constructedMessage = (message) => {
+  if (message.counter_offer_price && message.counter_offer_quantity) {
+    return [
+      `Counter Offer Price: $${message.counter_offer_price}`,
+      `Counter Offer Quantity: ${message.counter_offer_quantity}`,
+      message.message,
+    ]
+  }
+  return [message.message]
+}
+
 const timeAgo = (timestamp) => {
   // Format timestamp as "time ago"
   const now = new Date()
@@ -201,6 +187,40 @@ const timeAgo = (timestamp) => {
     }
   }
   return 'just now'
+}
+
+const submitBuyerResponse = () => {
+  // Handle reply form submission
+  submitting.value = true // Set submitting state to true
+  vendorResponseForm.value.rfq_response_id = rfqStore.RFQResponseDetails.id // Attach RFQ response ID to form
+  vendorResponseForm.value.buyer_id = rfqStore.RFQResponseDetails.buyer_id // Attach buyer ID to form
+  rfqStore
+    .ReplyToRFQResponse(vendorResponseForm.value) // Send reply to store
+    .then((response) => {
+      let status = Boolean(response.status == 'success') // Check if reply was successful
+      $q.notify({
+        message: `<p class='q-mb-none'><b>${status ? 'Success' : 'Fail'}!</b> your reply ${status ? 'has been' : 'was not'} sent.</p>`,
+        color: `${status ? 'green' : 'red'}-2`, // Set notification color
+        position: 'top', // Notification position
+        textColor: `${status ? 'green' : 'red'}`, // Notification text color
+        html: true, // Enable HTML in notification
+      })
+
+      if (status) {
+        messages.value.push({
+          message: vendorResponseForm.value.message, // Add new message to chat
+          sent_by: authStore.UserInformation.id, // Set sender ID
+          buyer_id: rfqStore.RFQResponseDetails.buyer_id, // Set buyer ID
+          date_time: new Date().toISOString(), // Set current timestamp
+          enterprise_name: authStore.UserInformation.enterprise_name, // Set sender's enterprise name
+        })
+        vendorResponseForm.value.message = '' // Clear message input on success
+      }
+    })
+    .finally(() => {
+      submitting.value = false // Reset submitting state
+      rfqStore.ShowBuyerReplyFormDialog = false // Close reply dialog
+    })
 }
 </script>
 
