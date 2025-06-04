@@ -185,6 +185,11 @@
                 <q-td :props="props">
                   <q-btn-group flat>
                     <q-btn
+                      v-if="
+                        authStore.UserInformation.id == props.row.vendor_id ||
+                        authStore.UserInformation.role == 1 ||
+                        authStore.UserInformation.role == 2
+                      "
                       flat
                       round
                       color="positive"
