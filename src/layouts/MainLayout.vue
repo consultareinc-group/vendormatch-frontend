@@ -97,12 +97,7 @@
           <q-item clickable v-ripple to="/request-for-quotation">
             <q-item-section class="q-ml-xl q-pl-sm">Create RFQ</q-item-section>
           </q-item>
-          <q-item
-            v-if="authStore.UserInformation.role == 1 || authStore.UserInformation.level == 0"
-            clickable
-            v-ripple
-            to="/rfq-requests"
-          >
+          <q-item clickable v-ripple to="/rfq-requests">
             <q-item-section class="q-ml-xl q-pl-sm">RFQ Requests</q-item-section>
           </q-item>
           <q-item
