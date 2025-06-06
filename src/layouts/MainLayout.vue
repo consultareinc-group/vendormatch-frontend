@@ -25,7 +25,7 @@
                   <q-item-section>Profile</q-item-section>
                 </q-item> -->
                 <q-item
-                  v-if="authStore.UserInformation.level === 0"
+                  v-if="authStore.UserInformation.level == 0"
                   clickable
                   v-close-popup
                   to="/accounts"
@@ -70,9 +70,9 @@
 
         <q-item
           v-if="
-            (authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2) ||
-            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2) ||
-            authStore.UserInformation.role === 2
+            (authStore.UserInformation.role == 0 && authStore.UserInformation.level !== 2) ||
+            (authStore.UserInformation.role == 1 && authStore.UserInformation.level == 2) ||
+            authStore.UserInformation.role == 2
           "
           clickable
           v-ripple
@@ -86,9 +86,9 @@
 
         <q-expansion-item
           v-if="
-            (authStore.UserInformation.role === 0 && authStore.UserInformation.level !== 2) ||
-            (authStore.UserInformation.role === 1 && authStore.UserInformation.level === 2) ||
-            authStore.UserInformation.role === 2
+            (authStore.UserInformation.role == 0 && authStore.UserInformation.level !== 2) ||
+            (authStore.UserInformation.role == 1 && authStore.UserInformation.level == 2) ||
+            authStore.UserInformation.role == 2
           "
           icon="request_quote"
           label="RFQ"
@@ -98,7 +98,7 @@
             <q-item-section class="q-ml-xl q-pl-sm">Create RFQ</q-item-section>
           </q-item>
           <q-item
-            v-if="authStore.UserInformation.role === 1 || authStore.UserInformation.level === 0"
+            v-if="authStore.UserInformation.role == 1 || authStore.UserInformation.level == 0"
             clickable
             v-ripple
             to="/rfq-requests"
@@ -106,7 +106,11 @@
             <q-item-section class="q-ml-xl q-pl-sm">RFQ Requests</q-item-section>
           </q-item>
           <q-item
-            v-if="authStore.UserInformation.role !== 1 || authStore.UserInformation.level === 0"
+            v-if="
+              authStore.UserInformation.role == 0 ||
+              authStore.UserInformation.role == 2 ||
+              authStore.UserInformation.level == 0
+            "
             clickable
             v-ripple
             to="/rfq-responses"
