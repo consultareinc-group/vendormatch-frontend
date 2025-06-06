@@ -104,9 +104,9 @@
                   >
                     <q-tooltip>View Details</q-tooltip>
                   </q-btn>
-                  <q-btn flat round color="positive" icon="chat" @click="respondToRFQ(props.row)">
+                  <!-- <q-btn flat round color="positive" icon="chat" @click="respondToRFQ(props.row)">
                     <q-tooltip>Respond</q-tooltip>
-                  </q-btn>
+                  </q-btn> -->
                 </q-btn-group>
               </q-td>
             </template>
@@ -258,12 +258,12 @@ const viewRFQDetails = (rfq) => {
   rfqStore.ShowRFQDetailsDialog = true
 }
 
-const respondToRFQ = (rfq) => {
-  $q.notify({
-    type: 'info',
-    message: `Opening response form for RFQ ${rfq.id}`,
-  })
-}
+// const respondToRFQ = (rfq) => {
+//   $q.notify({
+//     type: 'info',
+//     message: `Opening response form for RFQ ${rfq.id}`,
+//   })
+// }
 </script>
 
 <style lang="scss" scoped>
