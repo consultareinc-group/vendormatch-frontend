@@ -33,7 +33,19 @@
           <q-img src="../assets/vendormatch-logo.png" width="200px"></q-img>
         </q-item-label>
 
-        <q-item clickable v-ripple :to="{ name: 'vendor' }">
+        <q-item
+          clickable
+          v-ripple
+          :to="{
+            name:
+              authStore.UserInformation.level == 0
+                ? 'dashboard'
+                : authStore.UserInformation.role !== 1
+                  ? 'vendor'
+                  : 'buyer',
+          }"
+          v-if="authStore.UserInformation.role !== 1"
+        >
           <q-item-section avatar>
             <q-icon name="dashboard" />
           </q-item-section>
