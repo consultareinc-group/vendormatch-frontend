@@ -79,8 +79,10 @@
       </div>
     </div>
 
-    <div class="q-pa-md q-mt-xl">
-      <div ref="chartContainer"></div>
+    <div class="q-pa-md q-mt-xl text-center">
+      <h6 class="q-my-none">Registered Users</h6>
+      <q-skeleton v-if="registeredUserLoading" height="360px" />
+      <div v-else ref="chartContainer"></div>
     </div>
 
     <div class="q-mt-xl q-px-md">
@@ -113,7 +115,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import { date } from 'quasar'
 import Inquiries from './inquiry/InquiryPage.vue'
 import Highcharts from 'highcharts'
 import { useDashboardStore } from '../../../stores/dashboard'
@@ -134,8 +137,168 @@ const totalVendors = ref(0)
 const totalBuyers = ref(0)
 const totalVendorsAndBuyers = ref(0)
 const totalUserLoading = ref(true)
+const registeredUserLoading = ref(true)
+
+const registerUsers = ref({
+  Jan: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Feb: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Mar: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Apr: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  May: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Jun: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Jul: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Aug: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Sep: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Oct: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Nov: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+  Dec: {
+    vendor: 0,
+    buyer: 0,
+    vendor_buyer: 0,
+  },
+})
 
 const chartContainer = ref(null)
+
+const chartInstance = () => {
+  Highcharts.chart(chartContainer.value, {
+    chart: {
+      type: 'line',
+    },
+    title: {
+      text: '',
+    },
+    xAxis: {
+      categories: [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ],
+      title: {
+        text: date.formatDate(Date.now(), 'YYYY'),
+      },
+    },
+    yAxis: {
+      title: {
+        text: 'User Count',
+      },
+    },
+    plotOptions: {
+      line: {
+        dataLabels: {
+          enabled: true,
+        },
+        enableMouseTracking: false,
+      },
+    },
+    series: [
+      {
+        name: 'Vendor',
+        data: [
+          registerUsers.value.Jan.vendor,
+          registerUsers.value.Feb.vendor,
+          registerUsers.value.Mar.vendor,
+          registerUsers.value.Apr.vendor,
+          registerUsers.value.May.vendor,
+          registerUsers.value.Jun.vendor,
+          registerUsers.value.Jul.vendor,
+          registerUsers.value.Aug.vendor,
+          registerUsers.value.Sep.vendor,
+          registerUsers.value.Oct.vendor,
+          registerUsers.value.Nov.vendor,
+          registerUsers.value.Dec.vendor,
+        ],
+      },
+      {
+        name: 'Buyer',
+        data: [
+          registerUsers.value.Jan.buyer,
+          registerUsers.value.Feb.buyer,
+          registerUsers.value.Mar.buyer,
+          registerUsers.value.Apr.buyer,
+          registerUsers.value.May.buyer,
+          registerUsers.value.Jun.buyer,
+          registerUsers.value.Jul.buyer,
+          registerUsers.value.Aug.buyer,
+          registerUsers.value.Sep.buyer,
+          registerUsers.value.Oct.buyer,
+          registerUsers.value.Nov.buyer,
+          registerUsers.value.Dec.buyer,
+        ],
+      },
+      {
+        name: 'Vendor & Buyer',
+        data: [
+          registerUsers.value.Jan.vendor_buyer,
+          registerUsers.value.Feb.vendor_buyer,
+          registerUsers.value.Mar.vendor_buyer,
+          registerUsers.value.Apr.vendor_buyer,
+          registerUsers.value.May.vendor_buyer,
+          registerUsers.value.Jun.vendor_buyer,
+          registerUsers.value.Jul.vendor_buyer,
+          registerUsers.value.Aug.vendor_buyer,
+          registerUsers.value.Sep.vendor_buyer,
+          registerUsers.value.Oct.vendor_buyer,
+          registerUsers.value.Nov.vendor_buyer,
+          registerUsers.value.Dec.vendor_buyer,
+        ],
+      },
+    ],
+  })
+}
 
 onMounted(() => {
   dashboardStore
@@ -231,60 +394,21 @@ onMounted(() => {
       totalUserLoading.value = false
     })
 
-  Highcharts.chart(chartContainer.value, {
-    chart: {
-      type: 'line',
-    },
-    title: {
-      text: 'Registered Users',
-    },
-    xAxis: {
-      categories: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ],
-      title: {
-        text: '2025',
-      },
-    },
-    yAxis: {
-      title: {
-        text: 'User Count',
-      },
-    },
-    plotOptions: {
-      line: {
-        dataLabels: {
-          enabled: true,
-        },
-        enableMouseTracking: false,
-      },
-    },
-    series: [
-      {
-        name: 'Vendor',
-        data: [16, 18, 23, 27, 32, 36, 39, 38, 36, 29, 22, 18],
-      },
-      {
-        name: 'Buyer',
-        data: [3, 4, 1, 5, 10, 15, 18, 17, 12, 7, 2, 1],
-      },
-      {
-        name: 'Vendor & Buyer',
-        data: [3, 4, 1, 4, 10, 17, 18, 17, 15, 7, 2, 9],
-      },
-    ],
-  })
+  dashboardStore
+    .GetRegisteredUsers()
+    .then((response) => {
+      if (response.status === 'success') {
+        registerUsers.value = response.data
+      } else {
+        console.error('Failed to fetch registered users:', response.message)
+      }
+    })
+    .finally(() => {
+      registeredUserLoading.value = false
+      nextTick(() => {
+        chartInstance()
+      })
+    })
 })
 
 const tab = ref('inquiries')

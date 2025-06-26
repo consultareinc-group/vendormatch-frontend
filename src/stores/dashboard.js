@@ -60,5 +60,14 @@ export const useDashboardStore = defineStore('dashboard', {
         });
       });
     },
+    GetRegisteredUsers() {
+      return new Promise((resolve, reject) => {
+        api.get(`vendor-match/dashboard/user/registered`).then((response) => {
+          resolve(response.data);
+        }).catch((error) => {
+          reject(error);
+        });
+      });
+    },
   },
 })
