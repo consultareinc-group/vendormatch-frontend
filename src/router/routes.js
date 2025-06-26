@@ -12,6 +12,12 @@ const routes = [
         component: () => import('src/pages/product/ProductList.vue')
       },
       {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: () => import('src/pages/dashboard/admin/AdminDashboard.vue'),
+        meta: { level: 0 }
+      },
+      {
         path: 'dashboard/vendor',
         name: 'vendor',
         component: () => import('src/pages/dashboard/VendorDashboard.vue'),
