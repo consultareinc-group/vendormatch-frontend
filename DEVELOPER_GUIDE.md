@@ -27,18 +27,18 @@
 
 ## Tech Stack
 
-| Layer            | Technology                          |
-| ---------------- | ----------------------------------- |
-| Framework        | Vue 3 (Composition API) + Quasar v2 |
-| State Management | Pinia                               |
-| Routing          | Vue Router 4                        |
-| HTTP Client      | Axios                               |
-| UI Components    | Quasar Material Components          |
-| Charts           | Highcharts                          |
-| PDF              | PDFjs-dist + html2pdf.js            |
-| i18n             | Vue-i18n 9                          |
-| Build Tool       | Vite (via Quasar CLI)               |
-| Code Quality     | ESLint + Prettier                   |
+| Layer | Technology |
+|---|---|
+| Framework | Vue 3 (Composition API) + Quasar v2 |
+| State Management | Pinia |
+| Routing | Vue Router 4 |
+| HTTP Client | Axios |
+| UI Components | Quasar Material Components |
+| Charts | Highcharts |
+| PDF | PDFjs-dist + html2pdf.js |
+| i18n | Vue-i18n 9 |
+| Build Tool | Vite (via Quasar CLI) |
+| Code Quality | ESLint + Prettier |
 
 ---
 
@@ -69,12 +69,12 @@ The dev server auto-opens the browser. Hot Module Replacement (HMR) is enabled.
 
 ### Available Scripts
 
-| Command          | Description                        |
-| ---------------- | ---------------------------------- |
-| `npm run dev`    | Start dev server with HMR          |
-| `npm run build`  | Production build (output: `dist/`) |
-| `npm run lint`   | Run ESLint                         |
-| `npm run format` | Auto-format with Prettier          |
+| Command | Description |
+|---|---|
+| `npm run dev` | Start dev server with HMR |
+| `npm run build` | Production build (output: `dist/`) |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Auto-format with Prettier |
 
 ---
 
@@ -136,12 +136,12 @@ vendormatch-frontend/
 
 Key settings:
 
-| Setting         | Value                                        | Notes                                                    |
-| --------------- | -------------------------------------------- | -------------------------------------------------------- |
-| Router mode     | `history`                                    | Clean URLs — requires server rewrite rules in production |
-| Boot files      | `i18n`, `axios`, `validator`, `auto-refresh` | Executed in this order on startup                        |
-| Plugins         | `Notify`, `Dialog`                           | Toast notifications and modal dialogs                    |
-| Target browsers | Chrome/Firefox 115+, Safari 14               | ES2022 features available                                |
+| Setting | Value | Notes |
+|---|---|---|
+| Router mode | `history` | Clean URLs — requires server rewrite rules in production |
+| Boot files | `i18n`, `axios`, `validator`, `auto-refresh` | Executed in this order on startup |
+| Plugins | `Notify`, `Dialog` | Toast notifications and modal dialogs |
+| Target browsers | Chrome/Firefox 115+, Safari 14 | ES2022 features available |
 
 ### `jsconfig.json`
 
@@ -234,13 +234,13 @@ The Bearer token is stored in Quasar's `LocalStorage` under the key `'Bearer'` a
 
 ### User Roles & Levels
 
-| Value      | Meaning                   |
-| ---------- | ------------------------- |
-| `role: 0`  | Vendor                    |
-| `role: 1`  | Buyer                     |
-| `role: 2`  | Agency / Sub-vendor       |
+| Value | Meaning |
+|---|---|
+| `role: 0` | Vendor |
+| `role: 1` | Buyer |
+| `role: 2` | Agency / Sub-vendor |
 | `level: 0` | Admin (highest privilege) |
-| `level: 2` | Standard user             |
+| `level: 2` | Standard user |
 
 Role-conditional rendering example:
 
@@ -258,20 +258,20 @@ State is managed with [Pinia](https://pinia.vuejs.org/). All stores are in `src/
 
 ### Store Overview
 
-| Store                | File            | Responsibility                       |
-| -------------------- | --------------- | ------------------------------------ |
-| `useAuthStore`       | `auth.js`       | Login, logout, token, user info      |
-| `useUserStore`       | `user.js`       | User search, update, password change |
-| `useDashboardStore`  | `dashboard.js`  | Dashboard statistics & chart data    |
-| `useProductStore`    | `products.js`   | Product CRUD, favorites, search      |
-| `useRFQStore`        | `rfq.js`        | RFQ CRUD, responses, messages        |
-| `useEnterpriseStore` | `enterprise.js` | Enterprise management                |
-| `useVendorStore`     | `vendor.js`     | Vendor search/listing                |
-| `useBuyerStore`      | `buyer.js`      | Buyer search/listing                 |
-| `useAccountStore`    | `account.js`    | Account registration                 |
-| `useMessageStore`    | `chat.js`       | In-app messaging                     |
-| `useHelperStore`     | `helper.js`     | PDF utilities                        |
-| `useTriggersStore`   | `triggers.js`   | UI state (dialogs, drawers)          |
+| Store | File | Responsibility |
+|---|---|---|
+| `useAuthStore` | `auth.js` | Login, logout, token, user info |
+| `useUserStore` | `user.js` | User search, update, password change |
+| `useDashboardStore` | `dashboard.js` | Dashboard statistics & chart data |
+| `useProductStore` | `products.js` | Product CRUD, favorites, search |
+| `useRFQStore` | `rfq.js` | RFQ CRUD, responses, messages |
+| `useEnterpriseStore` | `enterprise.js` | Enterprise management |
+| `useVendorStore` | `vendor.js` | Vendor search/listing |
+| `useBuyerStore` | `buyer.js` | Buyer search/listing |
+| `useAccountStore` | `account.js` | Account registration |
+| `useMessageStore` | `chat.js` | In-app messaging |
+| `useHelperStore` | `helper.js` | PDF utilities |
+| `useTriggersStore` | `triggers.js` | UI state (dialogs, drawers) |
 
 ### Using a Store in a Component
 
@@ -350,21 +350,21 @@ async InsertProduct(formData) {
 
 ### Common API Endpoints
 
-| Resource        | Method     | Endpoint                      |
-| --------------- | ---------- | ----------------------------- |
-| Login           | POST       | `/login`                      |
-| Logout          | DELETE     | `/logout`                     |
-| Validate token  | GET        | `/validate-token`             |
-| Products        | GET/POST   | `/vendor-match/product`       |
-| Product detail  | GET/DELETE | `/vendor-match/product/:id`   |
-| RFQs            | GET/POST   | `/vendor-match/rfq`           |
-| RFQ responses   | GET/POST   | `/vendor-match/rfq-response`  |
-| Inquiries       | GET        | `/vendor-match/inquiry`       |
-| Users           | GET        | `/vendor-match/user`          |
-| Update user     | PUT        | `/user-information/:id`       |
-| Enterprises     | GET/POST   | `/enterprise`                 |
-| Messages        | GET/POST   | `/vendor-match/chat`          |
-| Dashboard stats | GET        | `/vendor-match/dashboard/...` |
+| Resource | Method | Endpoint |
+|---|---|---|
+| Login | POST | `/login` |
+| Logout | DELETE | `/logout` |
+| Validate token | GET | `/validate-token` |
+| Products | GET/POST | `/vendor-match/product` |
+| Product detail | GET/DELETE | `/vendor-match/product/:id` |
+| RFQs | GET/POST | `/vendor-match/rfq` |
+| RFQ responses | GET/POST | `/vendor-match/rfq-response` |
+| Inquiries | GET | `/vendor-match/inquiry` |
+| Users | GET | `/vendor-match/user` |
+| Update user | PUT | `/user-information/:id` |
+| Enterprises | GET/POST | `/enterprise` |
+| Messages | GET/POST | `/vendor-match/chat` |
+| Dashboard stats | GET | `/vendor-match/dashboard/...` |
 
 ### Response Format
 
@@ -419,8 +419,8 @@ UI toggle state (open/close dialogs) lives in the `triggers` store:
 import { useTriggersStore } from 'src/stores/triggers'
 
 const triggers = useTriggersStore()
-triggers.AddProductDialog = true // open dialog
-triggers.AddProductDialog = false // close dialog
+triggers.AddProductDialog = true   // open dialog
+triggers.AddProductDialog = false  // close dialog
 ```
 
 ### Shared Components
@@ -459,15 +459,9 @@ Keep component-specific class names descriptive:
 
 ```scss
 // In a scoped style block
-.product-card {
-  border-radius: 8px;
-}
-.stats-card {
-  min-height: 120px;
-}
-.login-card {
-  max-width: 400px;
-}
+.product-card { border-radius: 8px; }
+.stats-card   { min-height: 120px; }
+.login-card   { max-width: 400px; }
 ```
 
 ---
@@ -479,7 +473,6 @@ Translations are in `src/i18n/en-US/`.
 ### Adding a Translation Key
 
 1. Open `src/i18n/en-US/index.js` and add your key:
-
    ```js
    export default {
      failed: 'Action failed',
@@ -489,7 +482,6 @@ Translations are in `src/i18n/en-US/`.
    ```
 
 2. Use it in a template:
-
    ```vue
    <p>{{ $t('myNewKey') }}</p>
    ```
@@ -543,7 +535,6 @@ export const useMyFeatureStore = defineStore('myfeature', {
 ### New API Endpoint
 
 Add the action to the relevant store. Follow the existing naming convention:
-
 - `Get` → fetch list or single item
 - `Insert` → create
 - `Update` → modify
@@ -563,7 +554,6 @@ npm run format     # Auto-fix formatting
 ### ESLint Config
 
 Configured in `eslint.config.js` with Vue 3 rules. Key rules enforced:
-
 - No unused variables
 - Vue 3 `<script setup>` best practices
 - Consistent component naming
@@ -589,7 +579,6 @@ Output is placed in `dist/spa/`. This is a standard static SPA bundle.
 Because the router uses **history mode**, the web server must redirect all requests to `index.html`. Example configs:
 
 **Nginx:**
-
 ```nginx
 location / {
   try_files $uri $uri/ /index.html;
@@ -597,7 +586,6 @@ location / {
 ```
 
 **Apache:**
-
 ```apache
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -642,4 +630,4 @@ Update the base URL in `src/boot/axios.js` before building for a specific enviro
 
 ---
 
-_For questions or issues, open a ticket in the project repository._
+*For questions or issues, open a ticket in the project repository.*
